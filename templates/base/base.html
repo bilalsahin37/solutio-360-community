@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Solutio 360 - 360 Dereceli Şikayet Çözüm Yönetim Sistemi{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Solutio 360">
+    <link rel="apple-touch-icon" href="{% static 'images/icons/icon-192x192.png' %}">
+    
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    <style>
+        body {
+            background: #181c20 !important;
+        }
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+        header.bg-white {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            z-index: 2;
+            box-shadow: 0 2px 8px 0 rgba(0,0,0,0.07);
+        }
+        main.container {
+            padding-top: 90px;
+            z-index: 1;
+            position: relative;
+        }
+        footer.bg-white {
+            z-index: 2;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    {% block particles_bg %}{% endblock %}
+    
+    <!-- Offline Gösterge -->
+    <div class="offline-indicator" id="offline-indicator">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-2.828 2.828a1 1 0 111.414 1.414m5.656-5.656a1 1 0 010 1.414m0 0L21 21" />
+        </svg>
+        <span>Çevrimdışı Mod</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'home' %}" class="text-2xl font-bold text-gray-800">
+                    Solutio 360
+                </a>
+                
+                <div class="hidden md:flex space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'complaints:complaint_create' %}" class="text-gray-600 hover:text-blue-600 font-semibold">Başvuru Oluştur</a>
+                        <a href="{% url 'complaints:complaint_list' %}" class="text-gray-600 hover:text-blue-600 font-semibold">Başvurularım</a>
+                        <a href="{% url 'reports:report_list' %}" class="text-gray-600 hover:text-blue-600 font-semibold">Raporlarım</a>
+                        <a href="/dashboard/" class="hover:text-blue-400 transition">Dashboard</a>
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin:index' %}" class="text-gray-600 hover:text-gray-900">Admin</a>
+                        {% endif %}
+                        <a href="{% url 'account_logout' %}" class="text-gray-600 hover:text-gray-900">Çıkış</a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="text-gray-600 hover:text-gray-900">Giriş</a>
+                        <a href="{% url 'account_signup' %}" class="text-gray-600 hover:text-gray-900">Kayıt Ol</a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile menu button -->
+                <button class="md:hidden" id="mobile-menu-button">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div class="md:hidden hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'complaints:complaint_create' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Şikayet Başvurusu</a>
+                        <a href="{% url 'complaints:complaint_list' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Şikayetlerim</a>
+                        <a href="{% url 'reports:report_list' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Raporlarım</a>
+                        <a href="/dashboard/" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Dashboard</a>
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin:index' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Admin</a>
+                        {% endif %}
+                        <a href="{% url 'account_logout' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Çıkış</a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Giriş</a>
+                        <a href="{% url 'account_signup' %}" class="block px-3 py-2 text-gray-600 hover:text-gray-900">Kayıt Ol</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-sm mt-auto">
+        <div class="container mx-auto px-4 py-6">
+            <div class="text-center text-gray-600">
+                <p>&copy; {% now "Y" %} Solutio 360. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PWA Install Modal -->
+    <div id="pwa-install-modal">
+        <div class="pwa-modal-content">
+            <button id="pwa-install-close" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold text-white mb-4">Uygulamayı Yükle</h2>
+            <p class="text-gray-300 mb-6">Solutio 360'ı cihazınıza yükleyerek daha hızlı erişin ve çevrimdışı özelliklerden yararlanın!</p>
+            <button id="pwa-install-btn" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Yükle
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script type="module" src="{% static 'js/pwa-install.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- Mobile menu script -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <!-- Offline/Online Durum Kontrolü -->
+    <script>
+        const offlineIndicator = document.getElementById('offline-indicator');
+        
+        function updateOnlineStatus() {
+            if (!navigator.onLine) {
+                offlineIndicator.classList.add('show');
+            } else {
+                offlineIndicator.classList.remove('show');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        // Sayfa yüklendiğinde durumu kontrol et
+        document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+    </script>
+
+    <!-- Service Worker Register -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register("{% static 'js/service-worker.js' %}")
+            .then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+</body>
+</html> 

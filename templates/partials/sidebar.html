@@ -1,0 +1,250 @@
+{% load static %}
+
+<!-- Yan Menü (Sidebar) -->
+<aside class="hidden md:flex md:flex-shrink-0 md:w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed h-full left-0 top-16 z-30" role="navigation" aria-label="Ana navigasyon">
+    <div class="flex flex-col w-full">
+        
+        <!-- Navigasyon Menüsü -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            
+            <!-- Dashboard -->
+            <a href="{% url 'dashboard' %}" 
+               class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                <i class="fas fa-tachometer-alt mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                Dashboard
+            </a>
+
+            <!-- Şikayetler Bölümü -->
+            <div class="space-y-1">
+                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Şikayetler
+                </h3>
+                
+                <a href="{% url 'complaints:complaint_list' %}" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-list mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Tüm Şikayetler
+                </a>
+                
+                <a href="{% url 'complaints:complaint_create' %}" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-plus mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Yeni Şikayet
+                </a>
+                
+                {% if user.is_personnel %}
+                <a href="{% url 'complaints:reviewer_panel' %}" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-clock mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Bekleyen Şikayetler
+                    <span class="ml-auto bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                        {{ pending_complaints_count|default:0 }}
+                    </span>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Raporlar Bölümü -->
+            <div class="space-y-1">
+                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Raporlar
+                </h3>
+                
+                <a href="{% url 'reports:report_list' %}" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-chart-bar mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Raporlar
+                </a>
+                
+                <a href="#" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-chart-line mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Analitik
+                </a>
+            </div>
+
+            <!-- Yönetim Bölümü - Sadece yetkili kullanıcılar -->
+            {% if user.is_staff or user.is_personnel %}
+            <div class="space-y-1">
+                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Yönetim
+                </h3>
+                
+                {% if user.is_staff %}
+                <a href="{% url 'admin:index' %}" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-cogs mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Admin Panel
+                </a>
+                {% endif %}
+                
+                <a href="#" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-users mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Kullanıcılar
+                </a>
+                
+                <a href="#" 
+                   class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    <i class="fas fa-file-alt mr-3 text-gray-400 group-hover:text-blue-500"></i>
+                    Sistem Logları
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Hızlı İşlemler -->
+            <div class="space-y-1">
+                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Hızlı İşlemler
+                </h3>
+                
+                <button onclick="showQuickComplaintModal()" 
+                        class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-700 hover:text-green-700 dark:hover:text-green-300 transition-colors">
+                    <i class="fas fa-plus-circle mr-3 text-gray-400 group-hover:text-green-500"></i>
+                    Hızlı Şikayet
+                </button>
+                
+                <button onclick="showSearchModal()" 
+                        class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-yellow-50 dark:hover:bg-gray-700 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors">
+                    <i class="fas fa-search mr-3 text-gray-400 group-hover:text-yellow-500"></i>
+                    Hızlı Arama
+                </button>
+            </div>
+
+        </nav>
+
+        <!-- Sidebar Alt Bilgiler -->
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+            <!-- Kullanıcı Bilgileri -->
+            <div class="flex items-center">
+                {% if user.avatar %}
+                    <img class="h-10 w-10 rounded-full object-cover" src="{{ user.avatar.url }}" alt="{{ user.get_full_name }}">
+                {% else %}
+                    <div class="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 dark:text-gray-300"></i>
+                    </div>
+                {% endif %}
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ user.get_full_name|default:user.username }}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ user.department.name|default:"Genel" }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- PWA Install Button -->
+            <button id="pwa-install-button" 
+                    class="hidden mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+                    title="Uygulamayı yükle">
+                <i class="fas fa-download mr-2"></i>
+                Uygulamayı Yükle
+            </button>
+        </div>
+    </div>
+</aside>
+
+<!-- Sidebar JavaScript -->
+<script>
+// Hızlı şikayet modal'ı göster
+function showQuickComplaintModal() {
+    // Modal HTML'ini oluştur
+    const modalHTML = `
+        <div id="quick-complaint-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                <div class="mt-3">
+                    <div class="flex items-center justify-between pb-3">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Hızlı Şikayet</h3>
+                        <button onclick="closeQuickComplaintModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="quick-complaint-form" method="post" action="{% url 'complaints:complaint_create' %}">
+                        {% csrf_token %}
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Başlık</label>
+                                <input type="text" name="title" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Açıklama</label>
+                                <textarea name="description" rows="3" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="closeQuickComplaintModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                                    İptal
+                                </button>
+                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                    Gönder
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Modal'ı sayfaya ekle
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Hızlı şikayet modal'ını kapat
+function closeQuickComplaintModal() {
+    const modal = document.getElementById('quick-complaint-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Hızlı arama modal'ı göster
+function showSearchModal() {
+    const modalHTML = `
+        <div id="search-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                <div class="mt-3">
+                    <div class="flex items-center justify-between pb-3">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Hızlı Arama</h3>
+                        <button onclick="closeSearchModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <input type="text" id="search-input" placeholder="Şikayet, rapor veya kullanıcı ara..." 
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div id="search-results" class="max-h-64 overflow-y-auto">
+                            <p class="text-gray-500 dark:text-gray-400 text-center py-4">Arama yapmak için yazın...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Arama input'una focus ver
+    setTimeout(() => {
+        document.getElementById('search-input').focus();
+    }, 100);
+}
+
+// Hızlı arama modal'ını kapat
+function closeSearchModal() {
+    const modal = document.getElementById('search-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// ESC tuşu ile modal'ları kapat
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeQuickComplaintModal();
+        closeSearchModal();
+    }
+});
+</script> 

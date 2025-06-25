@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="w-full-page bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-4 text-blue-700">Rapor Oluştur / Düzenle</h2>
+    <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-700 rounded">
+      Bu form ile yeni bir rapor oluşturabilir veya mevcut bir raporu düzenleyebilirsiniz. Lütfen aşağıdaki alanları eksiksiz ve doğru şekilde doldurun.<br>
+      <span class="font-semibold">Parametreler</span> alanı, raporun kapsamını veya filtrelerini belirlemek için kullanılır. Örneğin: <code>{"kategori": "satış", "yıl": 2024}</code>
+    </div>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Kaydet</button>
+    </form>
+  </div>
+{% endblock %} 

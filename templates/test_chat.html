@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body>
+    <h1>Chat Test Sayfası</h1>
+    
+    <!-- Clean Chat Widget -->
+    <div id="clean-chat" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000;">
+        <button id="chat-btn" style="
+            width: 60px; height: 60px; border-radius: 50%; border: none;
+            background: #007bff; color: white; font-size: 24px; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        ">💬</button>
+        
+        <div id="chat-window" style="
+            position: absolute; bottom: 70px; right: 0; width: 320px; height: 400px;
+            background: white; border: 1px solid #ddd; border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); display: none; flex-direction: column;
+        ">
+            <div style="background: #007bff; color: white; padding: 15px;">
+                <strong>AI Asistan</strong>
+                <button onclick="closeChat()" style="float: right; background: none; border: none; color: white;">&times;</button>
+            </div>
+            
+            <div id="messages" style="flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa;">
+                <div style="background: #e9ecef; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                    Merhaba! Size nasıl yardımcı olabilirim?
+                </div>
+            </div>
+            
+            <div style="padding: 15px;">
+                <input type="text" id="msg-input" placeholder="Mesajınızı yazın..." style="width: 70%; padding: 8px;">
+                <button onclick="sendMsg()" style="padding: 8px 12px; background: #007bff; color: white; border: none;">Gönder</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let chatOpen = false;
+    
+    function toggleChat() {
+        const chatWindow = document.getElementById('chat-window');
+        chatOpen = !chatOpen;
+        chatWindow.style.display = chatOpen ? 'flex' : 'none';
+    }
+    
+    function closeChat() {
+        chatOpen = false;
+        document.getElementById('chat-window').style.display = 'none';
+    }
+    
+    function addMsg(text, isUser = false) {
+        const messages = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            background: ${isUser ? '#007bff' : '#e9ecef'};
+            color: ${isUser ? 'white' : '#333'};
+            padding: 10px; border-radius: 10px; margin-bottom: 10px;
+            ${isUser ? 'margin-left: 50px; text-align: right;' : 'margin-right: 50px;'}
+        `;
+        messageDiv.textContent = text;
+        messages.appendChild(messageDiv);
+        messages.scrollTop = messages.scrollHeight;
+    }
+    
+    async function sendMsg() {
+        const input = document.getElementById('msg-input');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        addMsg(message, true);
+        input.value = '';
+        addMsg('AI yazıyor...', false);
+        
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+            
+            document.getElementById('messages').lastChild.remove();
+            
+            if (response.ok) {
+                const data = await response.json();
+                addMsg(data.response || 'Yanıt alınamadı.');
+            } else {
+                addMsg('Bağlantı hatası.');
+            }
+        } catch (error) {
+            document.getElementById('messages').lastChild.remove();
+            addMsg('Ağ hatası.');
+        }
+    }
+    
+    document.getElementById('chat-btn').onclick = toggleChat;
+    document.getElementById('msg-input').onkeypress = function(e) {
+        if (e.key === 'Enter') sendMsg();
+    };
+    
+    console.log('Chat test page loaded');
+    </script>
+</body>
+</html> 

@@ -1,0 +1,75 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Django PWA Projeleri İçin .cursorulesBu .cursorules dosyası, Django tabanlı Progressive Web App (PWA) projeleri geliştirirken Cursor AI'sının izlemesi gereken yönergeleri ve en iyi uygulamaları içerir. Bu kurallar, kod kalitesini, proje yapısını ve PWA özelliklerinin doğru entegrasyonunu sağlamaya yardımcı olacaktır..cursorules# .cursorules
+# Bu dosya, AI'nın Django PWA projeleri bağlamında nasıl davranması gerektiğini tanımlar.
+
+# 1. Genel Kodlama Standartları
+# Python kodu için PEP 8 standartlarına kesinlikle uyun.
+# Her fonksiyon, sınıf ve karmaşık mantık bloğu için açıklayıcı docstring'ler ve yorumlar ekleyin.
+# Her kod bloğunun ve fonksiyonun işlevi, yorum satırları olarak Türkçe açıklansın.
+# Satır uzunluğunu 79 karakterle sınırlayın (PEP 8).
+# Import'ları PEP 8'e göre düzenleyin (standart kütüphane, üçüncü taraf, yerel).
+
+# 2. Django Proje Yapısı ve Geliştirme
+# Yeni Django uygulamaları için `django-admin startapp` komutunu kullanın.
+# Her uygulamanın kendi `models.py`, `views.py`, `urls.py`, `admin.py` dosyaları olmalı.
+# Şablonlar (templates) için `templates/<app_name>/` dizin yapısını kullanın.
+# Statik dosyalar (static files) için `static/<app_name>/` dizin yapısını kullanın.
+# Veritabanı sorgularında OGM (Object-Relational Mapper) kullanın, ham SQL'den kaçının (performans gerektirmeyen durumlar hariç).
+# Güvenlik açıkları için (SQL injection, XSS, CSRF) Django'nun yerleşik korumalarını kullanın ve AI'dan bu konularda uyarılarda bulunmasını bekleyin.
+# Formlar için Django Formlarını veya ModelFormlarını kullanın.
+
+# 3. Progressive Web App (PWA) Özellikleri
+# Her PWA projesi için bir `manifest.json` dosyası ekleyin.
+# `manifest.json` dosyasında 'name', 'short_name', 'start_url', 'display', 'background_color', 'theme_color' ve 'icons' alanları eksiksiz olmalı.
+# Uygulama için bir Service Worker (`sw.js`) oluşturun.
+# Service Worker'ı kaydedin ve çevrimdışı önbellekleme stratejilerini (Cache-First, Network-First vb.) uygulayın.
+# Temel çevrimdışı işlevsellik için statik varlıkların (HTML, CSS, JS, resimler) önbelleğe alındığından emin olun.
+# Gerekirse, verileri IndexedDB gibi istemci tarafı depolama mekanizmalarında önbelleğe alın.
+# Push Bildirimleri (Notification API) ve Arka Plan Senkronizasyonu (Background Sync API) gibi PWA API'larının kullanımında rehberlik sağlayın.
+
+# 4. Frontend Geliştirme (PWA Bağlamında)
+# Modern JavaScript (ES6+) standartlarını kullanın.
+# CSS ve JavaScript dosyaları için CDN bağımlılıklarından kaçının. Mümkünse tüm frontend varlıklarını projenin statik dosyaları içinde barındırın veya bir paketleyici (webpack, parcel vb.) kullanarak birleştirin ve sıkıştırın.
+# Performans için resimleri optimize edin (boyut, format) ve lazy loading uygulayın.
+# Erişilebilirlik (Accessibility - A11y) standartlarına uyun (ARIA nitelikleri, semantik HTML).
+# Kullanıcı arayüzünde (UI) hızlı yanıt verme ve akıcı deneyim sağlamak için dikkat edin.
+
+# 5. Dağıtım ve Performans
+# Üretim ortamı için `DEBUG = False` ayarının yapıldığından emin olun.
+# Statik dosyaların toplanması ve sunulması için uygun yapılandırmaları (örn. Whitenoise) önerin.
+# Gzip veya Brotli sıkıştırma kullanın.
+# HTTP/2 kullanın.
+# HTTPS'in etkin olduğundan emin olun (PWA gerekliliği).
+
+# 6. Güvenlik
+# SECRET_KEY'in gizli tutulduğundan ve üretimde rastgele bir değer olduğundan emin olun.
+# Hassas bilgileri (.env dosyaları veya sunucu ortam değişkenleri) ile yönetin.
+# Django'nun `ALLOWED_HOSTS` ayarını doğru yapılandırın.
+
+# 7. Test
+# Birim testleri (unit tests) ve entegrasyon testleri (integration tests) yazmayı teşvik edin.
+# Django'nun test çerçevesini kullanın.
+
+# 8. Raporlama ve İstatistik
+# Uygulama içi istatistikler ve raporlama için Django'nun veritabanı modellerini kullanın.
+# Karmaşık raporlar için Django'nun ORM'ini etkili bir şekilde kullanın (aggregate functions, annotations).
+# Harici bir analitik hizmeti kullanılıyorsa (örn. Google Analytics), kullanıcı gizliliğine uygun şekilde entegrasyonu sağlayın.
+# Raporlama arayüzleri için Django Admin paneli veya özel view'ler oluşturmayı düşünün.
+# Veri görselleştirmeleri için istemci tarafı JavaScript kütüphaneleri (örn. Chart.js, D3.js) kullanırken, CDN bağımlılığını önleyin ve varlıkları lokal olarak barındırın.
+# Gerçek zamanlı (real-time) istatistikler gerekiyorsa, WebSockets (Django Channels) entegrasyonu hakkında rehberlik sağlayın.
+# Toplanan verilerin güvenli ve anonim olduğundan emin olun.
+
+# 9. Dil Tercihi
+# Tüm çıktılar Türkçe olmalı, ancak teknik terimler (API isimleri, kütüphane adları) İngilizce kalabilir.
+
+# 10. Örnek Kod Davranışı
+# Sağlanan tüm kod örnekleri, Django ve PWA best practices'e uygun olmalı.
+# Örnek kodlar çalıştırılabilir ve projenin mevcut yapısına kolayca entegre edilebilir olmalı.
+# Karmaşık örneklerde adım adım açıklamalar ve bağlam sağlayın.
+
+# 10. Kütüphaneler
+# CDN bağımlılığı olmadan her kütüphane static olarak yüklensin ve ona göre tasarlansın. Her projede CDN bağımlılığı olmayacak şekilde proje tasarlansın

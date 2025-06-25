@@ -1,0 +1,1721 @@
+<!-- Modern Responsive Navigation -->
+<nav class="modern-navbar">
+    <div class="navbar-content">
+        <!-- Logo ve Brand -->
+        <div class="brand-section">
+            <div class="logo-container">
+                <svg width="28" height="28" viewBox="0 0 32 32" class="brand-logo">
+                    <defs>
+                        <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4f46e5"/>
+                            <stop offset="100%" style="stop-color:#7c3aed"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="32" height="32" rx="6" fill="url(#brandGradient)"/>
+                    <path d="M8 12h16M8 16h16M8 20h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span class="brand-name">Solutio 360</span>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="main-navigation desktop-nav" id="mainNav">
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">Ana Sayfa</span>
+                </a>
+                
+                <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                
+                <a href="{% url 'complaints:complaint_list' %}" class="nav-item {% if 'complaints' in request.resolver_match.namespace %}active{% endif %}">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">Şikayetler</span>
+                </a>
+                
+                <a href="{% url 'reports:report_list' %}" class="nav-item {% if 'reports' in request.resolver_match.namespace %}active{% endif %}">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Raporlar</span>
+                </a>
+                
+                {% if user.is_staff %}
+                <a href="{% url 'analytics:ml_dashboard' %}" class="nav-item {% if 'analytics' in request.resolver_match.namespace %}active{% endif %}">
+                    <span class="nav-icon">🧠</span>
+                    <span class="nav-text">ML Dashboard</span>
+                </a>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Desktop Actions -->
+        <div class="nav-actions desktop-actions">
+            {% if user.is_authenticated %}
+                <!-- Bildirimler -->
+                <div class="notification-wrapper">
+                    <button class="action-btn notification-btn" id="notificationBtn" title="Bildirimler">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="notification-count" id="notificationCount">0</span>
+                    </button>
+                    
+                    <!-- Bildirim Dropdown -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Bildirimler</h3>
+                            <button class="mark-all-read" id="markAllRead">Tümünü Okundu İşaretle</button>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-empty">Yeni bildirim yok</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kullanıcı Menüsü -->
+                <div class="user-menu-wrapper">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=4f46e5&color=fff&size=32" 
+                             alt="Profil" class="user-avatar">
+                        <div class="user-info">
+                            <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                            <span class="user-role">{{ user.get_role_display|default:"Kullanıcı" }}</span>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Kullanıcı Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-header">
+                            <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=4f46e5&color=fff&size=48" 
+                                 alt="Profil" class="dropdown-avatar">
+                            <div class="dropdown-user-info">
+                                <span class="dropdown-user-name">{{ user.get_full_name|default:user.username }}</span>
+                                <span class="dropdown-user-email">{{ user.email }}</span>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-menu">
+                            <a href="{% url 'users:profile' %}" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Profilim
+                            </a>
+                            <a href="{% url 'users:settings' %}" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="m21 12-6-6-6 6-6-6"/>
+                                </svg>
+                                Ayarlar
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'account_logout' %}" class="dropdown-item logout">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16,17 21,12 16,7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Çıkış Yap
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tema Toggle -->
+                <button class="action-btn theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sun-icon">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="m12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="moon-icon" style="display: none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            {% else %}
+                <!-- Giriş Butonları -->
+                <div class="auth-buttons">
+                    <a href="{% url 'account_login' %}" class="btn btn-ghost">Giriş Yap</a>
+                    <a href="{% url 'account_signup' %}" class="btn btn-primary">Kayıt Ol</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobileOverlay">
+    <div class="mobile-menu-content">
+        <div class="mobile-menu-header">
+            <span class="mobile-brand">Solutio 360</span>
+            <button class="mobile-close" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div class="mobile-nav-items">
+                <a href="{% url 'home' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <span class="mobile-nav-icon">🏠</span>
+                    <span>Ana Sayfa</span>
+                </a>
+                <a href="{% url 'dashboard' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <span class="mobile-nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'complaints:complaint_list' %}" class="mobile-nav-item {% if 'complaints' in request.resolver_match.namespace %}active{% endif %}">
+                    <span class="mobile-nav-icon">📝</span>
+                    <span>Şikayetler</span>
+                </a>
+                <a href="{% url 'reports:report_list' %}" class="mobile-nav-item {% if 'reports' in request.resolver_match.namespace %}active{% endif %}">
+                    <span class="mobile-nav-icon">📈</span>
+                    <span>Raporlar</span>
+                </a>
+            </div>
+            
+            <div class="mobile-user-section">
+                <div class="mobile-user-info">
+                    <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=4f46e5&color=fff&size=48" 
+                         alt="Profil" class="mobile-user-avatar">
+                    <div class="mobile-user-details">
+                        <span class="mobile-user-name">{{ user.get_full_name|default:user.username }}</span>
+                        <span class="mobile-user-role">{{ user.get_role_display|default:"Kullanıcı" }}</span>
+                    </div>
+                </div>
+                
+                <div class="mobile-user-actions">
+                    <a href="{% url 'users:profile' %}" class="mobile-action-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Profilim
+                    </a>
+                    <a href="{% url 'users:settings' %}" class="mobile-action-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6"/>
+                        </svg>
+                        Ayarlar
+                    </a>
+                    <a href="{% url 'account_logout' %}" class="mobile-action-btn logout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16,17 21,12 16,7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Çıkış Yap
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="mobile-auth-section">
+                <a href="{% url 'account_login' %}" class="mobile-auth-btn secondary">Giriş Yap</a>
+                <a href="{% url 'account_signup' %}" class="mobile-auth-btn primary">Kayıt Ol</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Modern Responsive Navigation Styles */
+.modern-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 999996;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dark .modern-navbar {
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.navbar-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 64px;
+}
+
+/* Brand Section */
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+}
+
+/* Main Navigation */
+.main-navigation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-item:hover {
+    color: #4f46e5;
+    background: #f8fafc;
+}
+
+.nav-item.active {
+    color: #4f46e5;
+    background: #ede9fe;
+}
+
+.nav-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.nav-text {
+    font-size: 0.875rem;
+}
+
+/* Nav Actions */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.action-btn:hover {
+    color: #4f46e5;
+    background: #f8fafc;
+}
+
+/* Notification Badge Animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(239, 68, 68, 0.5);
+    }
+}
+
+.notification-count {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 1003 !important;
+    border: 2px solid white;
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    animation: pulse 2s infinite;
+    pointer-events: none;
+}
+
+/* User Menu */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.logout-link {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.logout-link:hover {
+    color: #ef4444;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-ghost {
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+    color: #4f46e5;
+    background: #f8fafc;
+}
+
+.btn-primary {
+    color: white;
+    background: #4f46e5;
+    border: 1px solid #4f46e5;
+}
+
+.btn-primary:hover {
+    background: #4338ca;
+    border-color: #4338ca;
+}
+
+/* Mobile Toggle */
+.mobile-toggle {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    gap: 4px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.hamburger-line {
+    width: 20px;
+    height: 2px;
+    background: #64748b;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.mobile-toggle.active .hamburger-line:first-child {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobile-toggle.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-toggle.active .hamburger-line:last-child {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Notification Dropdown */
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 320px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1002;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.notification-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.notification-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.mark-all-read {
+    font-size: 0.75rem;
+    color: #4f46e5;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.mark-all-read:hover {
+    background: #f8fafc;
+}
+
+.notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-empty {
+    padding: 2rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f8fafc;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.notification-item:hover {
+    background: #f8fafc;
+}
+
+.notification-item.unread {
+    background: #fef7ff;
+}
+
+.notification-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4f46e5;
+    margin-top: 0.5rem;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+}
+
+.notification-message {
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+}
+
+/* User Menu */
+.user-menu-wrapper {
+    position: relative;
+}
+
+.user-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.user-menu-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 280px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 999997;
+}
+
+.user-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.dropdown-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+}
+
+.dropdown-user-info {
+    flex: 1;
+}
+
+.dropdown-user-name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.dropdown-user-email {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+.user-dropdown-menu {
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+.dropdown-item.logout {
+    color: #ef4444;
+}
+
+.dropdown-item.logout:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 0.5rem 0;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .desktop-nav,
+    .desktop-actions {
+        display: none;
+    }
+    
+    .mobile-toggle {
+        display: flex;
+    }
+    
+    .navbar-content {
+        padding: 0 1rem;
+    }
+    
+    .brand-name {
+        font-size: 1.125rem;
+    }
+}
+
+/* Mobile Menu */
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-menu-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100%;
+    background: white;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu-overlay.active .mobile-menu-content {
+    transform: translateX(0);
+}
+
+.mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0;
+}
+
+.mobile-brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    color: #64748b;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-close:hover {
+    background: #f8fafc;
+}
+
+.mobile-nav-items {
+    padding: 1rem;
+    flex: 1;
+}
+
+.mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item.active {
+    color: #4f46e5;
+    background: #f8fafc;
+}
+
+.mobile-nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.mobile-user-section {
+    padding: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    flex-shrink: 0;
+}
+
+.mobile-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.mobile-user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+}
+
+.mobile-user-details {
+    flex: 1;
+}
+
+.mobile-user-name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.mobile-user-role {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+.mobile-user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.mobile-action-btn:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+.mobile-action-btn.logout {
+    color: #ef4444;
+    border-color: #fecaca;
+}
+
+.mobile-action-btn.logout:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.mobile-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #ef4444;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-logout-btn:hover {
+    background: #dc2626;
+}
+
+/* Responsive Styles for Notification Badge and Chat */
+@media (max-width: 768px) {
+    .notification-count {
+        font-size: 10px;
+        min-width: 16px;
+        height: 16px;
+        top: -6px;
+        right: -6px;
+        border-width: 1px;
+    }
+    
+    .notification-dropdown {
+        width: 280px;
+        right: -10px;
+    }
+    
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .auth-buttons .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .mobile-toggle {
+        display: flex;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-count {
+        font-size: 9px;
+        min-width: 14px;
+        height: 14px;
+        top: -5px;
+        right: -5px;
+    }
+    
+    .notification-dropdown {
+        width: 250px;
+        right: -20px;
+    }
+    
+    .auth-buttons {
+        gap: 0.5rem;
+    }
+    
+    .auth-buttons .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .brand-name {
+        font-size: 1rem;
+    }
+}
+
+.mobile-auth-section {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.mobile-auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.mobile-auth-btn.primary {
+    background: #4f46e5;
+    color: white;
+}
+
+.mobile-auth-btn.primary:hover {
+    background: #4338ca;
+}
+
+.mobile-auth-btn.secondary {
+    background: transparent;
+    color: #4f46e5;
+    border: 1px solid #4f46e5;
+}
+
+.mobile-auth-btn.secondary:hover {
+    background: #4f46e5;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .user-info {
+        display: none;
+    }
+    
+    .nav-text {
+        display: none;
+    }
+    
+    .nav-item {
+        padding: 0.5rem;
+        gap: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-navigation,
+    .auth-buttons,
+    .action-btn:not(.mobile-toggle) {
+        display: none;
+    }
+    
+    .mobile-toggle {
+        display: flex;
+    }
+    
+    .navbar-content {
+        padding: 0 1rem;
+    }
+}
+
+/* Theme Support */
+@media (prefers-color-scheme: dark) {
+    .modern-navbar {
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+    
+    .nav-item {
+        color: #94a3b8;
+    }
+    
+    .nav-item:hover,
+    .nav-item.active {
+        color: #a855f7;
+        background: rgba(168, 85, 247, 0.1);
+    }
+    
+    .action-btn {
+        color: #94a3b8;
+    }
+    
+    .action-btn:hover {
+        color: #a855f7;
+        background: rgba(168, 85, 247, 0.1);
+    }
+    
+    .user-name {
+        color: #f8fafc;
+    }
+    
+    .logout-link {
+        color: #f8fafc;
+    }
+    
+    .logout-link:hover {
+        color: #a855f7;
+        background: rgba(168, 85, 247, 0.1);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Enhanced Notification Badge Visibility */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(239, 68, 68, 0.5);
+    }
+}
+
+.notification-count {
+    z-index: 10000 !important;
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4) !important;
+    animation: pulse 2s infinite !important;
+    pointer-events: none !important;
+    border: 3px solid white !important;
+    font-weight: 700 !important;
+}
+
+/* Ensure dropdown has proper z-index */
+.notification-dropdown {
+    z-index: 9999 !important;
+}
+
+/* Chat button proper z-index */
+#manual-chatbot-toggle,
+#ai-chatbot-toggle {
+    z-index: 1000 !important;
+}
+
+/* Enhanced responsive design for notification badge */
+@media (max-width: 768px) {
+    .notification-count {
+        font-size: 10px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        top: -6px !important;
+        right: -6px !important;
+        border-width: 2px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-count {
+        font-size: 9px !important;
+        min-width: 14px !important;
+        height: 14px !important;
+        top: -5px !important;
+        right: -5px !important;
+        border-width: 2px !important;
+    }
+}
+</style>
+
+<script>
+// Modern Navigation JavaScript
+class NavigationManager {
+    constructor() {
+        this.mobileMenuOpen = false;
+        this.notificationDropdownOpen = false;
+        this.userDropdownOpen = false;
+        this.notifications = [];
+        this.unreadCount = 0;
+        
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.loadNotifications();
+        this.initTheme();
+        
+        // Periyodik bildirim kontrolü
+        setInterval(() => {
+            this.loadNotifications();
+        }, 30000); // 30 saniye
+    }
+    
+    bindEvents() {
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => this.toggleMobileMenu());
+        }
+        
+        // Notification dropdown
+        const notificationBtn = document.getElementById('notificationBtn');
+        if (notificationBtn) {
+            notificationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleNotificationDropdown();
+            });
+        }
+        
+        // User dropdown
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleUserDropdown();
+            });
+        }
+        
+        // Mark all notifications as read
+        const markAllRead = document.getElementById('markAllRead');
+        if (markAllRead) {
+            markAllRead.addEventListener('click', () => this.markAllNotificationsRead());
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.notification-wrapper')) {
+                this.closeNotificationDropdown();
+            }
+            if (!e.target.closest('.user-menu-wrapper')) {
+                this.closeUserDropdown();
+            }
+        });
+        
+        // Close mobile menu when clicking overlay
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', (e) => {
+                if (e.target === mobileOverlay) {
+                    this.closeMobileMenu();
+                }
+            });
+        }
+        
+        // ESC key to close dropdowns
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeAllDropdowns();
+            }
+        });
+    }
+    
+    toggleMobileMenu() {
+        const overlay = document.getElementById('mobileOverlay');
+        const toggle = document.getElementById('mobileToggle');
+        
+        if (this.mobileMenuOpen) {
+            this.closeMobileMenu();
+        } else {
+            this.openMobileMenu();
+        }
+    }
+    
+    openMobileMenu() {
+        const overlay = document.getElementById('mobileOverlay');
+        const toggle = document.getElementById('mobileToggle');
+        
+        if (overlay && toggle) {
+            overlay.classList.add('active');
+            toggle.classList.add('active');
+            this.mobileMenuOpen = true;
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    closeMobileMenu() {
+        const overlay = document.getElementById('mobileOverlay');
+        const toggle = document.getElementById('mobileToggle');
+        
+        if (overlay && toggle) {
+            overlay.classList.remove('active');
+            toggle.classList.remove('active');
+            this.mobileMenuOpen = false;
+            document.body.style.overflow = '';
+        }
+    }
+    
+    toggleNotificationDropdown() {
+        if (this.notificationDropdownOpen) {
+            this.closeNotificationDropdown();
+        } else {
+            this.openNotificationDropdown();
+        }
+    }
+    
+    openNotificationDropdown() {
+        const dropdown = document.getElementById('notificationDropdown');
+        if (dropdown) {
+            this.closeUserDropdown(); // Close other dropdowns
+            dropdown.classList.add('active');
+            this.notificationDropdownOpen = true;
+        }
+    }
+    
+    closeNotificationDropdown() {
+        const dropdown = document.getElementById('notificationDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('active');
+            this.notificationDropdownOpen = false;
+        }
+    }
+    
+    toggleUserDropdown() {
+        if (this.userDropdownOpen) {
+            this.closeUserDropdown();
+        } else {
+            this.openUserDropdown();
+        }
+    }
+    
+    openUserDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            this.closeNotificationDropdown(); // Close other dropdowns
+            dropdown.classList.add('active');
+            this.userDropdownOpen = true;
+        }
+    }
+    
+    closeUserDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('active');
+            this.userDropdownOpen = false;
+        }
+    }
+    
+    closeAllDropdowns() {
+        this.closeNotificationDropdown();
+        this.closeUserDropdown();
+        this.closeMobileMenu();
+    }
+    
+    async loadNotifications() {
+        try {
+            const response = await fetch('/api/notifications/', {
+                headers: {
+                    'Authorization': `Bearer ${this.getAuthToken()}`,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.notifications = data.notifications || [];
+                this.unreadCount = data.unread_count || 0;
+                this.updateNotificationUI();
+            }
+        } catch (error) {
+            console.error('Bildirim yükleme hatası:', error);
+        }
+    }
+    
+    updateNotificationUI() {
+        // Update notification count badge
+        const countBadge = document.getElementById('notificationCount');
+        if (countBadge) {
+            if (this.unreadCount > 0) {
+                countBadge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
+                countBadge.style.display = 'flex';
+            } else {
+                countBadge.style.display = 'none';
+            }
+        }
+        
+        // Update notification list
+        const notificationList = document.getElementById('notificationList');
+        if (notificationList) {
+            if (this.notifications.length === 0) {
+                notificationList.innerHTML = '<div class="notification-empty">Yeni bildirim yok</div>';
+            } else {
+                notificationList.innerHTML = this.notifications.map(notification => 
+                    this.createNotificationHTML(notification)
+                ).join('');
+                
+                // Bind click events to notification items
+                notificationList.querySelectorAll('.notification-item').forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        this.handleNotificationClick(this.notifications[index]);
+                    });
+                });
+            }
+        }
+    }
+    
+    createNotificationHTML(notification) {
+        const timeAgo = this.formatTimeAgo(notification.created_at);
+        const unreadClass = notification.is_read ? '' : 'unread';
+        
+        return `
+            <div class="notification-item ${unreadClass}">
+                <div class="notification-icon"></div>
+                <div class="notification-content">
+                    <div class="notification-title">${notification.title || 'Bildirim'}</div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${timeAgo}</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    formatTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) return 'Az önce';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} dakika önce`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} saat önce`;
+        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} gün önce`;
+        
+        return date.toLocaleDateString('tr-TR');
+    }
+    
+    async handleNotificationClick(notification) {
+        if (!notification.is_read) {
+            await this.markNotificationAsRead(notification.id);
+        }
+        
+        if (notification.url) {
+            window.location.href = notification.url;
+        }
+    }
+    
+    async markNotificationAsRead(notificationId) {
+        try {
+            const response = await fetch(`/api/notifications/${notificationId}/read/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.getAuthToken()}`,
+                    'X-CSRFToken': this.getCSRFToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                this.loadNotifications(); // Reload notifications
+            }
+        } catch (error) {
+            console.error('Bildirim okuma hatası:', error);
+        }
+    }
+    
+    async markAllNotificationsRead() {
+        try {
+            const response = await fetch('/api/notifications/mark-all-read/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.getAuthToken()}`,
+                    'X-CSRFToken': this.getCSRFToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                this.loadNotifications(); // Reload notifications
+            }
+        } catch (error) {
+            console.error('Tüm bildirimleri okuma hatası:', error);
+        }
+    }
+    
+    initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        this.setTheme(savedTheme);
+    }
+    
+    setTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+        
+        this.updateThemeIcons(theme);
+    }
+    
+    updateThemeIcons(theme) {
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        
+        if (sunIcon && moonIcon) {
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        }
+    }
+    
+    getAuthToken() {
+        // JWT token'ı localStorage'dan al
+        return localStorage.getItem('authToken') || '';
+    }
+    
+    getCSRFToken() {
+        const token = document.querySelector('[name=csrfmiddlewaretoken]');
+        return token ? token.value : '';
+    }
+}
+
+// Theme toggle function (global)
+function toggleTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    if (window.navigationManager) {
+        window.navigationManager.setTheme(newTheme);
+    }
+}
+
+// Mobile menu toggle function (global)
+function toggleMobileMenu() {
+    if (window.navigationManager) {
+        window.navigationManager.toggleMobileMenu();
+    }
+}
+
+// Initialize navigation when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.navigationManager = new NavigationManager();
+});
+</script>
+
+<script>
+function toggleTheme() {
+    const html = document.documentElement;
+    html.classList.toggle('dark');
+    
+    if (html.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+    } else {
+        localStorage.setItem('theme', 'light');
+    }
+}
+</script>
+
+<script>
+// Navigation JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Dropdown functionality
+    const dropdowns = document.querySelectorAll('[data-dropdown]');
+    
+    dropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('[data-dropdown-trigger]');
+        const panel = dropdown.querySelector('[data-dropdown-panel]');
+        
+        if (trigger && panel) {
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Close other dropdowns
+                dropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current dropdown
+                dropdown.classList.toggle('active');
+            });
+        }
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    });
+    
+    // Mobile menu functionality
+    window.toggleMobileMenu = function() {
+        const overlay = document.getElementById('mobileOverlay');
+        const toggle = document.getElementById('mobileToggle');
+        
+        overlay.classList.toggle('active');
+        toggle.classList.toggle('active');
+        
+        // Prevent body scroll when menu is open
+        if (overlay.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    };
+    
+    // Theme toggle functionality
+    window.toggleTheme = function() {
+        const html = document.documentElement;
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        
+        html.classList.toggle('dark');
+        
+        if (html.classList.contains('dark')) {
+            localStorage.setItem('theme', 'dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        } else {
+            localStorage.setItem('theme', 'light');
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+        }
+    };
+    
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.querySelector('.sun-icon').classList.add('hidden');
+        document.querySelector('.moon-icon').classList.remove('hidden');
+    }
+});
+</script>
+
+<style>
+/* Enhanced Notification Badge Visibility */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(239, 68, 68, 0.5);
+    }
+}
+
+.notification-count {
+    z-index: 10000 !important;
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4) !important;
+    animation: pulse 2s infinite !important;
+    pointer-events: none !important;
+    border: 3px solid white !important;
+    font-weight: 700 !important;
+}
+
+/* Chat button proper z-index */
+#manual-chatbot-toggle,
+#ai-chatbot-toggle {
+    z-index: 1000 !important;
+}
+
+/* Enhanced responsive design for notification badge */
+@media (max-width: 768px) {
+    .notification-count {
+        font-size: 10px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        top: -6px !important;
+        right: -6px !important;
+        border-width: 2px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-count {
+        font-size: 9px !important;
+        min-width: 14px !important;
+        height: 14px !important;
+        top: -5px !important;
+        right: -5px !important;
+        border-width: 2px !important;
+    }
+}
+</style> 

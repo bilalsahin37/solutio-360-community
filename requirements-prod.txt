@@ -1,0 +1,50 @@
+# Production Requirements for Solutio 360 PWA
+# ============================================
+
+# Core Framework
+Django==5.2.2
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+django-allauth==0.57.0
+
+# Database & ORM
+psycopg2-binary==2.9.9
+redis==5.0.1
+django-redis==5.4.0
+
+# Performance & Caching
+gunicorn==21.2.0
+whitenoise==6.6.0
+django-compressor==4.4
+
+# Monitoring & Observability
+sentry-sdk==1.38.0
+prometheus-client==0.19.0
+psutil==5.9.6
+
+# API & Documentation
+drf-spectacular==0.26.5
+django-filter==23.4
+
+# Security
+django-ratelimit==4.1.0
+django-csp==3.7
+
+# Task Queue
+celery==5.3.4
+django-celery-beat==2.5.0
+django-celery-results==2.5.0
+
+# Search & Analytics
+elasticsearch==8.10.1
+elasticsearch-dsl==8.9.0
+
+# File Storage
+Pillow==10.1.0
+django-storages==1.14.2
+boto3==1.34.0
+
+# Utilities
+python-decouple==3.8
+pytz==2023.3
+requests==2.31.0 

@@ -1,0 +1,697 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Dashboard - Solutio 360{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/chart.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="w-full px-6 py-6">
+    <!-- Hoş geldin mesajı -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {% if is_admin_view %}
+                {% trans 'Yönetici Paneli' %}
+            {% else %}
+                {% trans 'Hoş geldiniz' %}, {{ user.get_full_name|default:user.username }}
+            {% endif %}
+        </h1>
+        <p class="text-gray-600 dark:text-gray-300">
+            {% if is_admin_view %}
+                {% trans 'Sistem geneli istatistikler ve yönetim araçları' %}
+            {% else %}
+                {% trans 'Şikayetlerinizi buradan takip edebilirsiniz' %}
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Ana İstatistik Kartları -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Toplam Şikayetler -->
+        <div class="relative overflow-hidden rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1" 
+             style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important; color: white !important; border: none !important;">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-lg" style="background: rgba(255, 255, 255, 0.2) !important;">
+                        <svg class="w-8 h-8" fill="white" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium" style="color: white !important; opacity: 0.9;">{% trans 'Toplam Şikayet' %}</p>
+                        <p class="text-4xl font-bold" style="color: white !important;">{{ total_complaints }}</p>
+                        {% if not is_admin_view %}
+                            <p class="text-xs mt-1" style="color: white !important; opacity: 0.8;">{% trans 'Tüm zamanlar' %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- Dekoratif element -->
+            <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255, 255, 255, 0.1) !important;"></div>
+            <div class="absolute -bottom-6 -left-6 w-20 h-20 rounded-full" style="background: rgba(255, 255, 255, 0.05) !important;"></div>
+        </div>
+
+        <!-- Bekleyen Şikayetler -->
+        <div class="relative overflow-hidden rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1" 
+             style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #dc2626 100%) !important; color: white !important; border: none !important;">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-lg" style="background: rgba(255, 255, 255, 0.2) !important;">
+                        <svg class="w-8 h-8" fill="white" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium" style="color: white !important; opacity: 0.9;">{% trans 'Bekleyen' %}</p>
+                        <p class="text-4xl font-bold" style="color: white !important;">{{ pending_complaints }}</p>
+                        <p class="text-xs mt-1" style="color: white !important; opacity: 0.8;">{% trans 'İnceleme aşamasında' %}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Dekoratif element -->
+            <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255, 255, 255, 0.1) !important;"></div>
+            <div class="absolute -bottom-6 -left-6 w-20 h-20 rounded-full" style="background: rgba(255, 255, 255, 0.05) !important;"></div>
+        </div>
+
+        <!-- Çözülen Şikayetler -->
+        <div class="relative overflow-hidden rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1" 
+             style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important; color: white !important; border: none !important;">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-lg" style="background: rgba(255, 255, 255, 0.2) !important;">
+                        <svg class="w-8 h-8" fill="white" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium" style="color: white !important; opacity: 0.9;">{% trans 'Çözülen' %}</p>
+                        <p class="text-4xl font-bold" style="color: white !important;">{{ resolved_complaints }}</p>
+                        <p class="text-xs mt-1" style="color: white !important; opacity: 0.8;">{% trans 'Başarıyla çözüldü' %}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Dekoratif element -->
+            <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255, 255, 255, 0.1) !important;"></div>
+            <div class="absolute -bottom-6 -left-6 w-20 h-20 rounded-full" style="background: rgba(255, 255, 255, 0.05) !important;"></div>
+        </div>
+
+        <!-- Bu Ay / Yeni Şikayetler -->
+        <div class="relative overflow-hidden rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1" 
+             style="background: linear-gradient(135deg, #9333ea 0%, #6366f1 50%, #1e40af 100%) !important; color: white !important; border: none !important;">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-lg" style="background: rgba(255, 255, 255, 0.2) !important;">
+                        <svg class="w-8 h-8" fill="white" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium" style="color: white !important; opacity: 0.9;">
+                            {% if is_admin_view %}
+                                {% trans 'Son 30 Gün' %}
+                            {% else %}
+                                {% trans 'Bu Ay' %}
+                            {% endif %}
+                        </p>
+                        <p class="text-4xl font-bold" style="color: white !important;">
+                            {% if is_admin_view %}
+                                {{ new_complaints }}
+                            {% else %}
+                                {{ this_month_complaints }}
+                            {% endif %}
+                        </p>
+                        <p class="text-xs mt-1" style="color: white !important; opacity: 0.8;">{% trans 'Yeni şikayet' %}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Dekoratif element -->
+            <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full" style="background: rgba(255, 255, 255, 0.1) !important;"></div>
+            <div class="absolute -bottom-6 -left-6 w-20 h-20 rounded-full" style="background: rgba(255, 255, 255, 0.05) !important;"></div>
+        </div>
+    </div>
+
+    {% if is_admin_view %}
+    <!-- Admin için Ek İstatistik Kartları -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Detaylı İstatistikler' %}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- Toplam Kullanıcılar -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-indigo-100 text-sm font-medium">{% trans 'Toplam Kullanıcı' %}</p>
+                            <p class="text-4xl font-bold text-white">{{ total_users }}</p>
+                            <p class="text-indigo-200 text-xs mt-1">Bu ay: {{ new_users_this_month }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dekoratif element -->
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
+                <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-white bg-opacity-5 rounded-full"></div>
+            </div>
+
+            <!-- Bugünkü Şikayetler -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-cyan-500 via-teal-600 to-blue-700 rounded-xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-cyan-100 text-sm font-medium">{% trans 'Bugün' %}</p>
+                            <p class="text-4xl font-bold text-white">{{ today_complaints }}</p>
+                            <p class="text-cyan-200 text-xs mt-1">Bu hafta: {{ this_week_complaints }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dekoratif element -->
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
+                <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-white bg-opacity-5 rounded-full"></div>
+        </div>
+
+            <!-- Çözüm Oranı -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-rose-500 via-pink-600 to-purple-700 rounded-xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-rose-100 text-sm font-medium">{% trans 'Çözüm Oranı' %}</p>
+                            <p class="text-4xl font-bold text-white">%{{ resolution_rate }}</p>
+                            <p class="text-rose-200 text-xs mt-1">Çözülen/Toplam</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dekoratif element -->
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
+                <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-white bg-opacity-5 rounded-full"></div>
+            </div>
+
+            <!-- Toplam Raporlar -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-amber-600 via-orange-600 to-red-700 rounded-xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-amber-100 text-sm font-medium">{% trans 'Toplam Rapor' %}</p>
+                            <p class="text-4xl font-bold text-white">{{ total_reports }}</p>
+                            <p class="text-amber-200 text-xs mt-1">Son 30 gün: {{ recent_reports }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dekoratif element -->
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
+                <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-white bg-opacity-5 rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Admin için Durum Dağılımı -->
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Durum Dağılımı' %}</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <!-- Taslak -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+                <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ status_stats.DRAFT }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Taslak' %}</div>
+            </div>
+            
+            <!-- Gönderildi -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700 text-center">
+                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ status_stats.SUBMITTED }}</div>
+                <div class="text-sm text-blue-500 dark:text-blue-400">{% trans 'Gönderildi' %}</div>
+            </div>
+            
+            <!-- İnceleniyor -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700 text-center">
+                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ status_stats.IN_REVIEW }}</div>
+                <div class="text-sm text-yellow-500 dark:text-yellow-400">{% trans 'İnceleniyor' %}</div>
+            </div>
+            
+            <!-- İşlemde -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-orange-200 dark:border-orange-700 text-center">
+                <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ status_stats.IN_PROGRESS }}</div>
+                <div class="text-sm text-orange-500 dark:text-orange-400">{% trans 'İşlemde' %}</div>
+            </div>
+            
+            <!-- Çözüldü -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-green-700 text-center">
+                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ status_stats.RESOLVED }}</div>
+                <div class="text-sm text-green-500 dark:text-green-400">{% trans 'Çözüldü' %}</div>
+            </div>
+            
+            <!-- Kapatıldı -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+                <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ status_stats.CLOSED }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Kapatıldı' %}</div>
+            </div>
+            
+            <!-- İptal Edildi -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-red-200 dark:border-red-700 text-center">
+                <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ status_stats.CANCELLED }}</div>
+                <div class="text-sm text-red-500 dark:text-red-400">{% trans 'İptal' %}</div>
+            </div>
+            
+            <!-- Geri Çekildi -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700 text-center">
+                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ status_stats.WITHDRAWN }}</div>
+                <div class="text-sm text-purple-500 dark:text-purple-400">{% trans 'Geri Çekildi' %}</div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Kullanıcı için Durum Kartları -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Şikayet Durumları' %}</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <!-- Taslak -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+                <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ status_counts.DRAFT }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Taslak' %}</div>
+            </div>
+            
+            <!-- Gönderildi -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700 text-center">
+                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ status_counts.SUBMITTED }}</div>
+                <div class="text-sm text-blue-500 dark:text-blue-400">{% trans 'Gönderildi' %}</div>
+            </div>
+            
+            <!-- İnceleniyor -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700 text-center">
+                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ status_counts.IN_REVIEW }}</div>
+                <div class="text-sm text-yellow-500 dark:text-yellow-400">{% trans 'İnceleniyor' %}</div>
+            </div>
+            
+            <!-- İşlemde -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-orange-200 dark:border-orange-700 text-center">
+                <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ status_counts.IN_PROGRESS }}</div>
+                <div class="text-sm text-orange-500 dark:text-orange-400">{% trans 'İşlemde' %}</div>
+            </div>
+            
+            <!-- Çözüldü -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-green-700 text-center">
+                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ status_counts.RESOLVED }}</div>
+                <div class="text-sm text-green-500 dark:text-green-400">{% trans 'Çözüldü' %}</div>
+            </div>
+            
+            <!-- Kapatıldı -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+                <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ status_counts.CLOSED }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Kapatıldı' %}</div>
+            </div>
+            
+            <!-- İptal Edildi -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-red-200 dark:border-red-700 text-center">
+                <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ status_counts.CANCELLED }}</div>
+                <div class="text-sm text-red-500 dark:text-red-400">{% trans 'İptal' %}</div>
+    </div>
+            
+            <!-- Geri Çekildi -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700 text-center">
+                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ status_counts.WITHDRAWN }}</div>
+                <div class="text-sm text-purple-500 dark:text-purple-400">{% trans 'Geri Çekildi' %}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Grafikler ve listeler -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {% if is_admin_view %}
+        <!-- Günlük Şikayet Trendi (Admin) -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Son 30 Gün Trend' %}</h2>
+            <canvas id="dailyTrendChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Kategori Dağılımı (Admin) -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Kategori Dağılımı' %}</h2>
+            <div class="space-y-3">
+                {% for stat in category_stats %}
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600 dark:text-gray-300">{{ stat.category__name|default:"Kategorisiz" }}</span>
+                    <div class="flex items-center">
+                        <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ stat.count|floatformat:0 }}%"></div>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ stat.count }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- En Aktif Kullanıcılar (Admin) -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'En Aktif Kullanıcılar' %}</h2>
+            <div class="space-y-3">
+                {% for user in top_users %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                {% if user.submitter__first_name or user.submitter__last_name %}
+                                    {{ user.submitter__first_name }} {{ user.submitter__last_name }}
+                                {% else %}
+                                    {{ user.submitter__username }}
+                                {% endif %}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">@{{ user.submitter__username }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ user.complaint_count }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">şikayet</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">{% trans 'Henüz kullanıcı verisi yok' %}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Son Aktiviteler (Admin) -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700 lg:col-span-3">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{% trans 'Son Aktiviteler' %}</h2>
+                <a href="/complaints/" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    {% trans 'Tümünü Gör' %}
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for activity in recent_activities %}
+                <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.137 0-4.146.832-5.636 2.172M6.343 7.343A7.957 7.957 0 0112 5c2.137 0 4.146.832 5.636 2.172"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            <a href="{{ activity.get_absolute_url }}" class="hover:text-blue-600">{{ activity.title }}</a>
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ activity.submitter.get_full_name|default:activity.submitter.username }} • {{ activity.created_at|date:"d.m.Y H:i" }}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1
+                            {% if activity.status == 'RESOLVED' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
+                            {% elif activity.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300
+                            {% elif activity.status == 'SUBMITTED' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
+                            {% else %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% endif %}">
+                            {{ activity.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="lg:col-span-3">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-4">{% trans 'Henüz aktivite yok' %}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <!-- Kullanıcı için Kategori Dağılımı -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Kategori Dağılımı' %}</h2>
+            {% if category_stats %}
+                <div class="space-y-3">
+                    {% for stat in category_stats %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 dark:text-gray-300">{{ stat.category__name|default:"Kategorisiz" }}</span>
+                        <div class="flex items-center">
+                            <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-2">
+                                {% widthratio stat.count total_complaints 100 as percentage %}
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ percentage }}%"></div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ stat.count }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">{% trans 'Henüz kategori verisi yok' %}</p>
+            {% endif %}
+        </div>
+
+        <!-- Durum Dağılımı Grafik -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Durum Dağılımı' %}</h2>
+            <canvas id="statusChart" width="400" height="200"></canvas>
+        </div>
+        {% endif %}
+
+        <!-- Son Aktiviteler -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700 {% if not is_admin_view %}lg:col-span-2{% endif %}">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    {% if is_admin_view %}
+                        {% trans 'Son Aktiviteler' %}
+                    {% else %}
+                        {% trans 'Son Şikayetleriniz' %}
+                    {% endif %}
+                </h2>
+                <a href="/complaints/" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    {% trans 'Tümünü Gör' %}
+                </a>
+            </div>
+            
+            <div class="space-y-4">
+                {% if is_admin_view %}
+                    {% for activity in recent_activities %}
+                    <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.137 0-4.146.832-5.636 2.172M6.343 7.343A7.957 7.957 0 0112 5c2.137 0 4.146.832 5.636 2.172"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                <a href="{{ activity.get_absolute_url }}" class="hover:text-blue-600">{{ activity.title }}</a>
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ activity.submitter.get_full_name|default:activity.submitter.username }} • {{ activity.created_at|date:"d.m.Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if activity.status == 'RESOLVED' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
+                                {% elif activity.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300
+                                {% elif activity.status == 'SUBMITTED' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
+                                {% else %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% endif %}">
+                                {{ activity.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-4">{% trans 'Henüz aktivite yok' %}</p>
+                    {% endfor %}
+                {% else %}
+                    {% for complaint in recent_complaints %}
+                    <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.137 0-4.146.832-5.636 2.172M6.343 7.343A7.957 7.957 0 0112 5c2.137 0 4.146.832 5.636 2.172"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                <a href="/complaints/{{ complaint.pk }}/" class="hover:text-blue-600">{{ complaint.title }}</a>
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ complaint.created_at|date:"d.m.Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if complaint.status == 'RESOLVED' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
+                                {% elif complaint.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300
+                                {% elif complaint.status == 'SUBMITTED' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
+                                {% else %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% endif %}">
+                                {{ complaint.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-4">{% trans 'Henüz şikayetiniz yok' %}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Hızlı Eylemler -->
+    <div class="mt-8">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{% trans 'Hızlı Eylemler' %}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/complaints/create/" class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition">
+                <svg class="w-8 h-8 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white">{% trans 'Yeni Şikayet' %}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Şikayet oluştur' %}</p>
+                </div>
+            </a>
+            
+            <a href="/reports/" class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition">
+                <svg class="w-8 h-8 text-green-600 dark:text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white">{% trans 'Raporlar' %}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Rapor görüntüle' %}</p>
+                </div>
+            </a>
+            
+            {% if is_admin_view %}
+            <a href="/admin/" class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition">
+                <svg class="w-8 h-8 text-purple-600 dark:text-purple-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white">{% trans 'Yönetim' %}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Admin panel' %}</p>
+                </div>
+            </a>
+            {% else %}
+            <a href="/complaints/" class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition">
+                <svg class="w-8 h-8 text-purple-600 dark:text-purple-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white">{% trans 'Şikayetlerim' %}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{% trans 'Tüm şikayetler' %}</p>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if is_admin_view %}
+    // Admin için günlük trend grafiği
+    const dailyTrendCtx = document.getElementById('dailyTrendChart').getContext('2d');
+    const dailyTrendData = {{ daily_complaints|safe }};
+    
+    new Chart(dailyTrendCtx, {
+        type: 'line',
+        data: {
+            labels: dailyTrendData.map(item => item.date),
+            datasets: [{
+                label: 'Günlük Şikayetler',
+                data: dailyTrendData.map(item => item.count),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(156, 163, 175, 0.3)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(156, 163, 175, 0.3)'
+                    }
+                }
+            }
+        }
+    });
+    {% else %}
+    // Kullanıcı için durum dağılımı grafiği
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusData = {
+        labels: ['Taslak', 'Gönderildi', 'İnceleniyor', 'İşlemde', 'Çözüldü', 'Kapatıldı', 'İptal', 'Geri Çekildi'],
+        datasets: [{
+            data: [
+                {{ status_counts.DRAFT }},
+                {{ status_counts.SUBMITTED }},
+                {{ status_counts.IN_REVIEW }},
+                {{ status_counts.IN_PROGRESS }},
+                {{ status_counts.RESOLVED }},
+                {{ status_counts.CLOSED }},
+                {{ status_counts.CANCELLED }},
+                {{ status_counts.WITHDRAWN }}
+            ],
+            backgroundColor: [
+                '#9CA3AF', // Taslak - Gray
+                '#3B82F6', // Gönderildi - Blue
+                '#F59E0B', // İnceleniyor - Yellow
+                '#F97316', // İşlemde - Orange
+                '#10B981', // Çözüldü - Green
+                '#6B7280', // Kapatıldı - Gray
+                '#EF4444', // İptal - Red
+                '#8B5CF6'  // Geri Çekildi - Purple
+            ],
+            borderWidth: 0
+        }]
+    };
+    
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: statusData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %} 

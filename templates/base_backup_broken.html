@@ -1,0 +1,911 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+    <!-- Sayfa meta bilgileri ve temel ayarlar -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- Sayfa başlığı - SEO için önemli -->
+    <title>{% block title %}Solutio 360 - Yapay Zekalı Şikayet Yönetim Sistemi{% endblock %}</title>
+    
+    <!-- Meta açıklama ve anahtar kelimeler -->
+    <meta name="description" content="{% block meta_description %}Modern şikayet yönetim sistemi - Solutio 360{% endblock %}">
+    <meta name="keywords" content="şikayet, yönetim, sistem, solutio">
+    <meta name="author" content="Solutio 360 Team">
+    
+    <!-- PWA (Progressive Web App) manifest dosyası -->
+    <link rel="manifest" href="{% url 'manifest' %}">
+    
+    <!-- Favicon ve uygulama ikonları -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/icons/icon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icons/icon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/icons/icon-180x180.png' %}">
+    
+    <!-- Meta etiketleri - sosyal medya paylaşımları için -->
+    <meta property="og:title" content="{% block og_title %}Solutio 360{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Modern şikayet yönetim sistemi{% endblock %}">
+    <meta property="og:image" content="{% static 'images/og-image.png' %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card meta etiketleri -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Solutio 360{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Modern şikayet yönetim sistemi{% endblock %}">
+    <meta name="twitter:image" content="{% static 'images/twitter-card.png' %}">
+    
+    <!-- Güvenlik header'ları -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    
+    <!-- CSS dosyaları yükleme -->
+    {% load compress %}
+    
+    <!-- Ana CSS dosyaları -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+        <link rel="stylesheet" href="{% static 'css/app.css' %}">
+        {% block extra_css %}{% endblock %}
+    {% endcompress %}
+    
+    <!-- Tema ayarları için inline CSS - FOUC (Flash of Unstyled Content) önleme -->
+    <script>
+        // Tema yüklenirken flash engellemek için
+        // localStorage'dan tema tercihini oku ve hızlıca uygula
+        (function() {
+            const theme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (theme === 'dark' || (!theme && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Ana sayfa wrapper - layout ve spacing için -->
+    <div class="min-h-screen flex flex-col">
+        
+        <!-- Header/Navigation - sabit üst bar -->
+        {% include 'partials/header.html' %}
+        
+        <!-- Ana içerik alanı - flexbox ile responsive -->
+        <main class="flex-1 flex" role="main">
+            
+            <!-- Yan menü - sadece giriş yapmış kullanıcılarda -->
+            {% if user.is_authenticated %}
+                {% include 'partials/sidebar.html' %}
+            {% endif %}
+            
+            <!-- Sayfa içeriği - ana content alanı -->
+            <div class="flex-1 {% if user.is_authenticated %}ml-64{% endif %} w-full transition-all duration-200">
+                
+                <!-- Breadcrumb navigasyon - sayfa yolu göstergesi -->
+                {% block breadcrumb %}
+                    {% if user.is_authenticated %}
+                        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3" aria-label="Breadcrumb">
+                            <ol class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                                <li>
+                                    <a href="{% url 'dashboard' %}" class="hover:text-gray-700 dark:hover:text-gray-300">
+                                        <i class="fas fa-home"></i> Ana Sayfa
+                                    </a>
+                                </li>
+                                {% block breadcrumb_items %}{% endblock %}
+                            </ol>
+                        </nav>
+                    {% endif %}
+                {% endblock %}
+                
+                <!-- Sayfa başlık alanı -->
+                {% block page_header %}
+                    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                                {% block page_title %}Sayfa Başlığı{% endblock %}
+                            </h1>
+                            
+                            <!-- Sayfa özel butonlar -->
+                            <div class="flex items-center space-x-3">
+                                {% block page_actions %}{% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                {% endblock %}
+                
+                <!-- Flash mesajları - başarı/hata bildirimleri -->
+                {% if messages %}
+                    <div class="px-6 py-4">
+                        {% for message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 border border-yellow-400 text-yellow-700{% elif message.tags == 'success' %}bg-green-100 border border-green-400 text-green-700{% else %}bg-blue-100 border border-blue-400 text-blue-700{% endif %}" role="alert">
+            <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        {% if message.tags == 'error' %}
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        {% elif message.tags == 'warning' %}
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        {% elif message.tags == 'success' %}
+                                            <i class="fas fa-check-circle"></i>
+                                        {% else %}
+                                            <i class="fas fa-info-circle"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-3">
+                                        {{ message }}
+            </div>
+                                    <!-- Mesaj kapatma butonu -->
+                                    <div class="ml-auto pl-3">
+                                        <button type="button" class="inline-flex rounded-md p-1.5 hover:bg-gray-100" onclick="this.parentElement.parentElement.parentElement.style.display='none'">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+            </div>
+        </div>
+    </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- Ana sayfa içeriği - her sayfa kendi içeriğini buraya yazar -->
+                <div class="px-6 py-6 w-full-page full-width-content">
+                    {% block content %}
+                        <!-- Sayfa içeriği buraya gelecek -->
+                    {% endblock %}
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer - sayfa alt bilgisi -->
+        {% include 'partials/footer.html' %}
+    </div>
+    
+    <!-- Modal container - sayfa modal'ları için -->
+    <div id="modal-container">
+        {% block modals %}
+            <!-- Sayfa özel modal'ları buraya gelecek -->
+        {% endblock %}
+        </div>
+    
+    <!-- Toast notification container - anlık bildirimler için -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2" aria-live="polite" aria-atomic="true">
+        <!-- JavaScript ile dinamik toast'lar buraya eklenecek -->
+    </div>
+    
+         <!-- Instagram Messenger JavaScript -->
+     <script>
+     // Instagram-style Messenger functionality
+     let messengerOpen = false;
+     
+     function toggleMessenger() {
+         const window = document.getElementById('messenger-window');
+         messengerOpen = !messengerOpen;
+         window.style.display = messengerOpen ? 'flex' : 'none';
+         console.log('Messenger toggled:', messengerOpen);
+         if (messengerOpen) {
+             setTimeout(() => document.getElementById('messenger-input').focus(), 100);
+         }
+     }
+     
+     function closeMessenger() {
+         messengerOpen = false;
+         document.getElementById('messenger-window').style.display = 'none';
+         console.log('Messenger closed');
+     }
+     
+     function addMessage(text, isUser = false) {
+         const messages = document.getElementById('messenger-messages');
+         const messageDiv = document.createElement('div');
+         
+         messageDiv.style.cssText = `
+             background: ${isUser ? 'linear-gradient(45deg, #0095f6, #1877f2)' : 'white'};
+             color: ${isUser ? 'white' : '#262626'};
+             padding: 15px 20px; 
+             border-radius: 25px; 
+             margin-bottom: 15px; 
+             max-width: 85%; 
+             word-wrap: break-word;
+             font-size: 15px; 
+             line-height: 1.5;
+             ${isUser ? 'margin-left: auto;' : 'border: 1px solid #e1e1e1;'}
+         `;
+         messageDiv.textContent = text;
+         messages.appendChild(messageDiv);
+         messages.scrollTop = messages.scrollHeight;
+         console.log('Message added:', text);
+     }
+     
+     async function sendMessengerMessage() {
+         console.log('Send function called');
+         const input = document.getElementById('messenger-input');
+         const message = input.value.trim();
+         
+         if (!message) {
+             console.log('Empty message');
+             return;
+         }
+         
+         console.log('Sending message:', message);
+         addMessage(message, true);
+         input.value = '';
+         
+         // Show typing
+         const messages = document.getElementById('messenger-messages');
+         const typing = document.createElement('div');
+         typing.id = 'typing-temp';
+         typing.style.cssText = 'background: white; padding: 15px 20px; border-radius: 25px; margin-bottom: 15px; font-style: italic; border: 1px solid #e1e1e1;';
+         typing.textContent = 'AI yazıyor...';
+         messages.appendChild(typing);
+         messages.scrollTop = messages.scrollHeight;
+         
+         try {
+             const response = await fetch('/api/chat/', {
+                 method: 'POST',
+                 headers: { 
+                     'Content-Type': 'application/json'
+                 },
+                 body: JSON.stringify({ message })
+             });
+             
+             document.getElementById('typing-temp')?.remove();
+             
+             if (response.ok) {
+                 const data = await response.json();
+                 console.log('API response:', data);
+                 addMessage(data.response || data.message || 'Yanıt alınamadı.');
+             } else {
+                 console.error('API error:', response.status);
+                 addMessage('Bağlantı hatası.');
+             }
+         } catch (error) {
+             console.error('Network error:', error);
+             document.getElementById('typing-temp')?.remove();
+             addMessage('Ağ hatası.');
+         }
+     }
+     
+     // Setup events
+     document.addEventListener('DOMContentLoaded', function() {
+         // Messenger button
+         const btn = document.getElementById('messenger-btn');
+         if (btn) btn.onclick = toggleMessenger;
+         
+         // Close button  
+         const closeBtn = document.getElementById('close-messenger-btn');
+         if (closeBtn) closeBtn.onclick = closeMessenger;
+         
+         // Enter key
+         const input = document.getElementById('messenger-input');
+         if (input) {
+             input.addEventListener('keypress', function(e) {
+                 if (e.key === 'Enter') {
+                     e.preventDefault();
+                     sendMessengerMessage();
+                 }
+             });
+         }
+         
+         console.log('✅ Messenger initialized');
+     });
+     </script>
+    
+         <!-- Instagram-Style Messaging Widget -->
+     <div id="instagram-messenger" style="
+         position: fixed !important; 
+         bottom: 20px !important; 
+         right: 20px !important; 
+         z-index: 999999 !important;
+         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+     ">
+         <!-- Message Button (Instagram style) -->
+         <button id="messenger-btn" style="
+             width: 60px; height: 60px; border-radius: 50%; border: none;
+             background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45);
+             color: white; font-size: 24px; cursor: pointer;
+             box-shadow: 0 4px 16px rgba(131, 58, 180, 0.4);
+             transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
+             z-index: 999998 !important; position: relative;
+         " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">📧</button>
+         
+         <!-- Chat Window (Instagram DM style) -->
+         <div id="messenger-window" style="
+             position: fixed !important; 
+             bottom: 90px !important; 
+             right: 20px !important;
+             width: 360px; height: 520px; 
+             background: white; 
+             border-radius: 12px;
+             box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+             display: none; flex-direction: column;
+             z-index: 999999 !important;
+             overflow: hidden;
+             border: 1px solid #e1e1e1;
+         ">
+             <!-- Header (Instagram DM style) -->
+             <div style="
+                 background: white;
+                 padding: 16px 20px;
+                 border-bottom: 1px solid #e1e1e1;
+                 display: flex; align-items: center; justify-content: space-between;
+             ">
+                 <div style="display: flex; align-items: center; gap: 12px;">
+                     <!-- Profile Picture -->
+                     <div style="
+                         width: 40px; height: 40px; border-radius: 50%;
+                         background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45);
+                         display: flex; align-items: center; justify-content: center;
+                         color: white; font-size: 16px; font-weight: bold;
+                         border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                     ">AI</div>
+                     <div>
+                         <div style="font-weight: 600; font-size: 15px; color: #262626; margin-bottom: 2px;">Solutio 360 AI</div>
+                         <div style="font-size: 12px; color: #8e8e8e; display: flex; align-items: center; gap: 4px;">
+                             <div style="width: 6px; height: 6px; background: #4ade80; border-radius: 50%;"></div>
+                             Aktif
+                         </div>
+                     </div>
+                 </div>
+                 <button onclick="closeMessenger()" style="
+                     background: none; border: none; color: #8e8e8e; 
+                     font-size: 20px; cursor: pointer; padding: 6px;
+                     border-radius: 50%; width: 32px; height: 32px;
+                     display: flex; align-items: center; justify-content: center;
+                     transition: background 0.2s;
+                 " onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">×</button>
+             </div>
+             
+             <!-- Messages Area -->
+             <div id="messenger-messages" style="
+                 flex: 1; padding: 16px; overflow-y: auto; 
+                 background: white; max-height: 400px;
+                 scroll-behavior: smooth;
+             ">
+                 <!-- Welcome Message -->
+                 <div style="
+                     background: #f0f0f0; color: #262626;
+                     padding: 12px 16px; border-radius: 18px; 
+                     margin-bottom: 12px; max-width: 85%;
+                     font-size: 14px; line-height: 1.4;
+                     animation: slideIn 0.3s ease;
+                 ">
+                     👋 Merhaba! Ben Solutio 360 AI asistanınızım. Size nasıl yardımcı olabilirim?
+                 </div>
+             </div>
+             
+             <!-- Input Area (Instagram style) -->
+             <div style="
+                 padding: 16px; border-top: 1px solid #e1e1e1;
+                 background: white; display: flex; align-items: center; gap: 8px;
+             ">
+                 <div style="
+                     flex: 1; background: #f8f8f8; border-radius: 20px;
+                     display: flex; align-items: center; padding: 10px 16px;
+                     border: 1px solid transparent; transition: all 0.2s;
+                 " id="input-container">
+                     <input type="text" id="messenger-input" placeholder="Bir mesaj yazın..." style="
+                         flex: 1; background: none; border: none; outline: none;
+                         font-size: 14px; color: #262626; font-family: inherit;
+                     " onfocus="document.getElementById('input-container').style.border='1px solid #0095f6'"
+                        onblur="document.getElementById('input-container').style.border='1px solid transparent'">
+                 </div>
+                 <button onclick="sendMessengerMessage()" style="
+                     background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45); 
+                     color: white; 
+                     border: none;
+                     border-radius: 50%; 
+                     width: 45px; 
+                     height: 45px;
+                     display: flex; 
+                     align-items: center; 
+                     justify-content: center;
+                     cursor: pointer; 
+                     font-size: 18px; 
+                     font-weight: bold;
+                     transition: all 0.3s; 
+                     box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+                 " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">→</button>
+             </div>
+         </div>
+     </div>
+    
+    <!-- Loading spinner - AJAX işlemleri için -->
+    <div id="global-loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" role="status" aria-label="Yükleniyor">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span class="text-gray-700 dark:text-gray-300">Yükleniyor...</span>
+        </div>
+    </div>
+
+    <!-- JavaScript dosyaları yükleme -->
+    <!-- Temel JavaScript kütüphaneleri -->
+    <script src="{% static 'js/alpine.min.js' %}" defer></script>
+    
+    <!-- Ana uygulama JavaScript dosyaları -->
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    
+    <!-- Chat functionality handled by inline script below -->
+    
+    <!-- PWA desteği için service worker kaydı -->
+    <script src="{% static 'js/pwa.js' %}"></script>
+    
+    <!-- Sayfa özel JavaScript dosyaları -->
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Old chat scripts removed for clean implementation -->
+
+    <!-- Simple Chat Widget -->
+
+    {% if debug %}
+        <script>
+            // Debug modunda console mesajları
+            console.log('🚀 Solutio 360 Debug Modu Aktif');
+            console.log('Django Debug:', true);
+            console.log('User:', '{{ user.username|default:"Anonymous" }}');
+            console.log('Current Page:', window.location.pathname);
+        </script>
+    {% endif %}
+    
+    <!-- Instagram-Style Messaging Widget -->
+    <div id="instagram-messenger" style="
+        position: fixed !important; 
+        bottom: 20px !important; 
+        right: 20px !important; 
+        z-index: 999999 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    ">
+        <!-- Message Button -->
+        <button id="messenger-btn" style="
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            border: none;
+            background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45);
+            color: white; 
+            font-size: 28px; 
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(131, 58, 180, 0.4);
+            transition: all 0.3s ease; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            z-index: 999998 !important; 
+            position: relative;
+        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</button>
+        
+        <!-- Chat Window -->
+        <div id="messenger-window" style="
+            position: fixed !important; 
+            bottom: 90px !important; 
+            right: 20px !important;
+            width: 380px; 
+            height: 550px; 
+            background: white; 
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            display: none; 
+            flex-direction: column;
+            z-index: 999999 !important;
+            overflow: hidden;
+            border: 1px solid #e1e1e1;
+        ">
+            <!-- Header -->
+            <div style="
+                background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45);
+                padding: 20px;
+                color: white;
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between;
+            ">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="
+                        width: 45px; 
+                        height: 45px; 
+                        border-radius: 50%;
+                        background: rgba(255,255,255,0.2);
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center;
+                        color: white; 
+                        font-size: 18px; 
+                        font-weight: bold;
+                        border: 3px solid rgba(255,255,255,0.3);
+                    ">AI</div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px; margin-bottom: 2px;">Solutio 360 AI</div>
+                        <div style="font-size: 13px; opacity: 0.9; display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%;"></div>
+                            Aktif • Size yardımcı olmaya hazır
+                        </div>
+                    </div>
+                </div>
+                <button id="close-messenger-btn" style="
+                    background: rgba(255,255,255,0.2); 
+                    border: none; 
+                    color: white; 
+                    font-size: 22px; 
+                    cursor: pointer; 
+                    padding: 8px;
+                    border-radius: 50%; 
+                    width: 36px; 
+                    height: 36px;
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+            </div>
+            
+            <!-- Messages -->
+            <div id="messenger-messages" style="
+                flex: 1; 
+                padding: 20px; 
+                overflow-y: auto; 
+                background: #fafafa; 
+                max-height: 420px;
+                scroll-behavior: smooth;
+            ">
+                <!-- Welcome Message -->
+                <div style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    color: white;
+                    padding: 15px 20px; 
+                    border-radius: 25px; 
+                    margin-bottom: 15px; 
+                    max-width: 85%;
+                    font-size: 15px; 
+                    line-height: 1.5;
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                ">
+                    👋 Merhaba! Ben Solutio 360 AI asistanınızım. Size nasıl yardımcı olabilirim?
+                </div>
+                <div style="
+                    background: white; 
+                    color: #666;
+                    padding: 12px 18px; 
+                    border-radius: 25px; 
+                    margin-bottom: 15px; 
+                    max-width: 80%;
+                    font-size: 14px; 
+                    line-height: 1.4;
+                    border: 1px solid #e1e1e1;
+                ">
+                    💡 Şikayetleriniz, raporlarınız veya sistem hakkında sorularınız için buradayım!
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div style="
+                padding: 20px; 
+                border-top: 1px solid #e1e1e1;
+                background: white; 
+                display: flex; 
+                align-items: center; 
+                gap: 12px;
+            ">
+                <div style="
+                    flex: 1; 
+                    background: #f8f9fa; 
+                    border-radius: 25px;
+                    display: flex; 
+                    align-items: center; 
+                    padding: 12px 20px;
+                    border: 2px solid transparent; 
+                    transition: all 0.3s;
+                " id="input-container">
+                    <input type="text" id="messenger-input" placeholder="Mesaj yazın..." style="
+                        flex: 1; 
+                        background: none; 
+                        border: none; 
+                        outline: none;
+                        font-size: 15px; 
+                        color: #262626; 
+                        font-family: inherit;
+                    " onfocus="document.getElementById('input-container').style.border='2px solid #833AB4'"
+                       onblur="document.getElementById('input-container').style.border='2px solid transparent'">
+                </div>
+                <button id="send-messenger-btn" style="
+                    background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45); 
+                    color: white; 
+                    border: none;
+                    border-radius: 50%; 
+                    width: 45px; 
+                    height: 45px;
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                    cursor: pointer; 
+                    font-size: 18px; 
+                    font-weight: bold;
+                    transition: all 0.3s; 
+                    box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+                " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Global variables
+    let messengerOpen = false;
+    
+    // Instagram-style Messenger functionality
+    function toggleMessenger() {
+        console.log('🔄 Toggle messenger called');
+        const messengerWindow = document.getElementById('messenger-window');
+        if (!messengerWindow) {
+            console.error('❌ Messenger window not found');
+            return;
+        }
+        
+        messengerOpen = !messengerOpen;
+        messengerWindow.style.display = messengerOpen ? 'flex' : 'none';
+        console.log('📱 Messenger state:', messengerOpen ? 'OPEN' : 'CLOSED');
+        
+        if (messengerOpen) {
+            setTimeout(() => {
+                const input = document.getElementById('messenger-input');
+                if (input) input.focus();
+            }, 100);
+        }
+    }
+    
+    function closeMessenger() {
+        console.log('❌ Close messenger called');
+        window.messengerOpen = false;
+        const window = document.getElementById('messenger-window');
+        if (window) {
+            window.style.display = 'none';
+        }
+    }
+    
+    function addMessage(text, isUser = false) {
+        console.log('💬 Adding message:', text, 'User:', isUser);
+        const messages = document.getElementById('messenger-messages');
+        if (!messages) {
+            console.error('❌ Messages container not found');
+            return;
+        }
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            background: ${isUser ? 'linear-gradient(45deg, #0095f6, #1877f2)' : 'white'};
+            color: ${isUser ? 'white' : '#262626'};
+            padding: 15px 20px; 
+            border-radius: 25px; 
+            margin-bottom: 15px; 
+            max-width: 85%; 
+            word-wrap: break-word;
+            font-size: 15px; 
+            line-height: 1.5;
+            animation: slideIn 0.4s ease;
+            box-shadow: ${isUser ? '0 4px 12px rgba(0,149,246,0.3)' : '0 2px 8px rgba(0,0,0,0.1)'};
+            ${isUser ? 'margin-left: auto; text-align: right;' : 'border: 1px solid #e1e1e1;'}
+        `;
+        messageDiv.textContent = text;
+        messages.appendChild(messageDiv);
+        messages.scrollTop = messages.scrollHeight;
+        console.log('✅ Message added successfully');
+    }
+    
+    function showTyping() {
+        console.log('⌨️ Showing typing indicator');
+        const messages = document.getElementById('messenger-messages');
+        if (!messages) return;
+        
+        // Remove existing typing indicator
+        const existingTyping = document.getElementById('typing-indicator');
+        if (existingTyping) existingTyping.remove();
+        
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'typing-indicator';
+        typingDiv.style.cssText = `
+            background: white; 
+            color: #8e8e8e;
+            padding: 15px 20px; 
+            border-radius: 25px; 
+            margin-bottom: 15px; 
+            font-style: italic;
+            font-size: 14px;
+            max-width: 70%;
+            animation: pulse 1.5s infinite;
+            border: 1px solid #e1e1e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        `;
+        typingDiv.innerHTML = '💭 AI düşünüyor...';
+        messages.appendChild(typingDiv);
+        messages.scrollTop = messages.scrollHeight;
+    }
+    
+    function hideTyping() {
+        const typing = document.getElementById('typing-indicator');
+        if (typing) {
+            typing.remove();
+            console.log('🚫 Typing indicator hidden');
+        }
+    }
+    
+    async function sendMessengerMessage() {
+        console.log('📤 Send message function called');
+        
+        const input = document.getElementById('messenger-input');
+        if (!input) {
+            console.error('❌ Input element not found');
+            return;
+        }
+        
+        const message = input.value.trim();
+        console.log('📝 Message to send:', message);
+        
+        if (!message || message.length > 500) {
+            console.warn('⚠️ Message empty or too long');
+            return;
+        }
+        
+        // Add user message
+        addMessage(message, true);
+        input.value = '';
+        showTyping();
+        
+        try {
+            console.log('🌐 Sending API request to /api/chat/');
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                              document.querySelector('meta[name=csrf-token]')?.content || 
+                              '';
+            console.log('🔐 CSRF Token:', csrfToken ? 'Found' : 'Not Found');
+            
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ message })
+            });
+            
+            console.log('📡 API Response status:', response.status);
+            
+            hideTyping();
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ API Response data:', data);
+                addMessage(data.response || data.message || '🤖 Yanıt alınamadı.');
+            } else {
+                console.error('❌ API Error:', response.status, response.statusText);
+                const errorText = await response.text();
+                console.error('Error details:', errorText);
+                addMessage('⚠️ Bağlantı hatası. Lütfen tekrar deneyin.');
+            }
+        } catch (error) {
+            console.error('🔥 Network error:', error);
+            hideTyping();
+            addMessage('🔌 Ağ hatası. Tekrar deneyin.');
+        }
+    }
+    
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Instagram Messenger initializing...');
+        
+        // Remove old chat widgets
+        document.querySelectorAll('#clean-chat, [id*="chat-btn"], [id*="chat-window"]').forEach(el => {
+            if (!el.id.includes('messenger')) {
+                console.log('🗑️ Removing old chat element:', el.id);
+                el.remove();
+            }
+        });
+        
+        // Setup messenger button
+        const messengerBtn = document.getElementById('messenger-btn');
+        if (messengerBtn) {
+            messengerBtn.onclick = toggleMessenger;
+            console.log('✅ Messenger button event attached');
+        } else {
+            console.error('❌ Messenger button not found');
+        }
+        
+        // Setup close button
+        const closeBtn = document.getElementById('close-messenger-btn');
+        if (closeBtn) {
+            closeBtn.onclick = closeMessenger;
+            console.log('✅ Close button event attached');
+        }
+        
+        // Setup send button
+        const sendBtn = document.getElementById('send-messenger-btn');
+        if (sendBtn) {
+            sendBtn.onclick = sendMessengerMessage;
+            console.log('✅ Send button event attached');
+        }
+        
+        // Setup input enter key
+        const messengerInput = document.getElementById('messenger-input');
+        if (messengerInput) {
+            messengerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    console.log('⌨️ Enter key pressed, sending message');
+                    sendMessengerMessage();
+                }
+            });
+            console.log('✅ Input enter key event attached');
+        } else {
+            console.error('❌ Messenger input not found');
+        }
+        
+        console.log('✅ Instagram Messenger Widget loaded successfully');
+    });
+    
+    // CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* Scrollbar styling */
+        #messenger-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        #messenger-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        #messenger-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        #messenger-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    console.log('🎨 CSS animations loaded');
+    </script>
+</body>
+</html> 
+
+<!-- 
+HTML Yapısı Özeti:
+==================
+
+1. HEAD Bölümü:
+   - Meta etiketler ve SEO optimizasyonu
+   - PWA manifest ve favicon'lar
+   - CSS dosyaları ve tema ayarları
+   - Sosyal medya meta etiketleri
+
+2. BODY Yapısı:
+   - Header/Navigation (sabit üst bar)
+   - Main content (flexbox layout)
+   - Sidebar (giriş yapmış kullanıcılar için)
+   - Page content (dinamik içerik alanı)
+   - Footer
+
+3. JavaScript ve PWA:
+   - Service Worker kaydı
+   - PWA install prompt
+   - Analytics ve tracking
+   - Debug araçları
+
+4. Accessibility:
+   - ARIA etiketleri
+   - Keyboard navigation
+   - Screen reader desteği
+   - Semantic HTML yapısı
+
+Bu şablon responsive tasarım, dark mode desteği, 
+PWA özellikleri ve modern web standartlarını içerir.
+--> 

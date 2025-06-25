@@ -1,0 +1,137 @@
+name: Solutio 360 CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: solutio_360_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:6-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Python kurulumu
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Dependencies yükleme
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov
+    
+    - name: Linting (flake8)
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+    
+    - name: Code formatting (black)
+      run: |
+        black --check .
+    
+    - name: Import sorting (isort)
+      run: |
+        isort --check-only .
+    
+    - name: Django migrations check
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/solutio_360_test
+        REDIS_URL: redis://localhost:6379
+      run: |
+        python manage.py makemigrations --check --dry-run
+    
+    - name: Django testleri
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/solutio_360_test
+        REDIS_URL: redis://localhost:6379
+        SECRET_KEY: test-secret-key-for-ci
+      run: |
+        python manage.py test --settings=tests.settings
+    
+    - name: Coverage raporu
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/solutio_360_test
+        REDIS_URL: redis://localhost:6379
+        SECRET_KEY: test-secret-key-for-ci
+      run: |
+        coverage run --source='.' manage.py test --settings=tests.settings
+        coverage report --fail-under=80
+        coverage html
+    
+    - name: PWA Manifest doğrulama
+      run: |
+        python -c "import json; json.load(open('static/manifest.json'))"
+    
+    - name: Security check
+      run: |
+        pip install safety bandit
+        safety check
+        bandit -r . -f json || true
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Staging deployment
+      run: |
+        echo "Staging ortamına deploy ediliyor..."
+        # Buraya staging deployment komutları gelir
+
+  deploy-production:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Production deployment
+      run: |
+        echo "Production ortamına deploy ediliyor..."
+        # Buraya production deployment komutları gelir
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: OWASP ZAP Baseline Scan
+      uses: zaproxy/action-baseline@v0.7.0
+      with:
+        target: 'https://your-staging-url.com' 

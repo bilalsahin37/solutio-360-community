@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ayarlar - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900 py-8 w-full-page">
+    <div class="w-full px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Ayarlar</h1>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Hesap ve sistem ayarlarınızı yönetin</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sol Menü -->
+            <div class="lg:col-span-1">
+                <nav class="space-y-2">
+                    <a href="#account" class="settings-nav-item active" data-tab="account">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Hesap Bilgileri
+                    </a>
+                    <a href="#notifications" class="settings-nav-item" data-tab="notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        Bildirimler
+                    </a>
+                    <a href="#privacy" class="settings-nav-item" data-tab="privacy">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        Gizlilik
+                    </a>
+                    <a href="#security" class="settings-nav-item" data-tab="security">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        Güvenlik
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Ana İçerik -->
+            <div class="lg:col-span-3">
+                <!-- Hesap Bilgileri -->
+                <div id="account-tab" class="settings-tab active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Hesap Bilgileri</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Temel hesap bilgilerinizi güncelleyin</p>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" class="space-y-6">
+                                {% csrf_token %}
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="id_first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Ad
+                                        </label>
+                                        <input type="text" 
+                                               name="first_name" 
+                                               id="id_first_name"
+                                               value="{{ form.first_name.value|default:user.first_name }}"
+                                               class="form-input">
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="id_last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Soyad
+                                        </label>
+                                        <input type="text" 
+                                               name="last_name" 
+                                               id="id_last_name"
+                                               value="{{ form.last_name.value|default:user.last_name }}"
+                                               class="form-input">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="id_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        E-posta Adresi
+                                    </label>
+                                    <input type="email" 
+                                           name="email" 
+                                           id="id_email"
+                                           value="{{ form.email.value|default:user.email }}"
+                                           class="form-input">
+                                </div>
+                                
+                                <div class="flex justify-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                            <polyline points="17,21 17,13 7,13 7,21"/>
+                                            <polyline points="7,3 7,8 15,8"/>
+                                        </svg>
+                                        Kaydet
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bildirimler -->
+                <div id="notifications-tab" class="settings-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Bildirim Ayarları</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Hangi bildirimleri almak istediğinizi seçin</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">E-posta Bildirimleri</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Yeni şikayet ve güncellemeler için e-posta alın</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">Tarayıcı Bildirimleri</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Anlık bildirimler için tarayıcı izni verin</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="browser-notifications">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">SMS Bildirimleri</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Kritik güncellemeler için SMS alın</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gizlilik -->
+                <div id="privacy-tab" class="settings-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Gizlilik Ayarları</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Hesabınızın görünürlüğünü kontrol edin</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">Profil Görünürlüğü</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Profilinizi diğer kullanıcılar görebilsin</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">Aktivite Görünürlüğü</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Son aktiviteleriniz görünsün</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Güvenlik -->
+                <div id="security-tab" class="settings-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Güvenlik</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Hesabınızın güvenliğini artırın</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">Şifre</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Son değişiklik: {{ user.last_login|date:"d.m.Y" }}</p>
+                                    </div>
+                                    <a href="{% url 'users:password_change' %}" class="btn btn-secondary btn-sm">
+                                        Şifre Değiştir
+                                    </a>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">İki Faktörlü Doğrulama</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Hesabınız için ek güvenlik katmanı</p>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm">
+                                        Etkinleştir
+                                    </button>
+                                </div>
+                                
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-sm font-medium text-red-600 dark:text-red-400">Hesabı Sil</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Bu işlem geri alınamaz</p>
+                                        </div>
+                                        <button class="btn btn-danger btn-sm">
+                                            Hesabı Sil
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.settings-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.settings-nav-item:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+.settings-nav-item.active {
+    background: #4f46e5;
+    color: white;
+}
+
+.settings-tab {
+    display: none;
+}
+
+.settings-tab.active {
+    display: block;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.2s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #4f46e5;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+</style>
+
+<script>
+// Ayarlar tab sistemi
+document.addEventListener('DOMContentLoaded', function() {
+    const navItems = document.querySelectorAll('.settings-nav-item');
+    const tabs = document.querySelectorAll('.settings-tab');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const tabId = this.getAttribute('data-tab');
+            
+            // Aktif nav item'ı güncelle
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Aktif tab'ı güncelle
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId + '-tab').classList.add('active');
+        });
+    });
+    
+    // Tarayıcı bildirimleri
+    const browserNotifications = document.getElementById('browser-notifications');
+    if (browserNotifications) {
+        browserNotifications.addEventListener('change', function() {
+            if (this.checked) {
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(function(permission) {
+                        if (permission !== 'granted') {
+                            browserNotifications.checked = false;
+                        }
+                    });
+                } else {
+                    alert('Bu tarayıcı bildirimleri desteklemiyor.');
+                    this.checked = false;
+                }
+            }
+        });
+        
+        // Mevcut izin durumunu kontrol et
+        if ('Notification' in window && Notification.permission === 'granted') {
+            browserNotifications.checked = true;
+        }
+    }
+});
+</script>
+{% endblock %} 

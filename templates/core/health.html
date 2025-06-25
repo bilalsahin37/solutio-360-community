@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sistem Durumu{% endblock %}
+
+{% block content %}
+<div class="w-full-page p-6">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Sistem Durumu</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-green-100 p-4 rounded-lg">
+                <h3 class="font-semibold text-green-800">Sistem</h3>
+                <p class="text-green-600">Aktif</p>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-800">Veritabanı</h3>
+                <p class="text-blue-600">Bağlı</p>
+            </div>
+            <div class="bg-purple-100 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-800">Cache</h3>
+                <p class="text-purple-600">Çalışıyor</p>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <h2 class="text-lg font-semibold mb-4">Sistem Bilgileri</h2>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p><strong>Django:</strong> {{ django_version|default:"5.2.2" }}</p>
+                <p><strong>Python:</strong> {{ python_version|default:"3.11.9" }}</p>
+                <p><strong>Sunucu Zamanı:</strong> {{ server_time|default:"Şimdi" }}</p>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <a href="{% url 'dashboard' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Dashboard'a Dön</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

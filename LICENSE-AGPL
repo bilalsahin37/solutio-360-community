@@ -1,0 +1,119 @@
+Solutio 360 - AGPL + Commercial Exception License
+
+DUAL LICENSING TERMS
+====================
+
+This software is available under TWO licensing options:
+
+OPTION 1: GNU Affero General Public License v3.0 (AGPL-3.0)
+------------------------------------------------------------
+
+If you choose to use this software under AGPL-3.0, you MUST:
+
+✅ REQUIRED OBLIGATIONS:
+- Make ALL source code available to users
+- Include this license and copyright notice
+- Share ALL modifications under AGPL-3.0
+- Provide source code for ANY network service use
+- Allow users to download your complete source code
+
+❌ AGPL "NETWORK COPYLEFT" CLAUSE:
+If you use this software to provide a web service, SaaS, or any network-accessible 
+application, you MUST provide the complete source code to ALL users of that service.
+
+This includes:
+- Web applications
+- SaaS platforms  
+- API services
+- Mobile backends
+- Cloud deployments
+
+⚠️ WARNING FOR BUSINESSES:
+AGPL requires you to open-source your ENTIRE APPLICATION if you use this 
+software in any network service. This includes your proprietary business logic,
+integrations, and customizations.
+
+OPTION 2: Commercial License
+----------------------------
+
+If you do NOT want to comply with AGPL requirements, you can purchase a 
+Commercial License that allows:
+
+✅ COMMERCIAL BENEFITS:
+- Keep your source code proprietary
+- No obligation to share modifications
+- Use in closed-source products
+- Distribute without AGPL restrictions
+- Provide SaaS without source disclosure
+- OEM licensing rights
+- Custom license terms
+
+💰 COMMERCIAL LICENSE PRICING:
+- Developer License: $299/developer/year
+- Team License: $999/team/year (up to 10 developers)
+- Enterprise License: $2,999/site/year (unlimited developers)
+- OEM License: Custom pricing
+
+📞 COMMERCIAL LICENSE CONTACT:
+Email: sales@solutio360.com
+Phone: +90 XXX XXX XX XX
+Web: https://solutio360.com/commercial-license
+
+WHICH LICENSE SHOULD YOU CHOOSE?
+================================
+
+Choose AGPL if:
+✅ Your project is open source
+✅ You're comfortable sharing all source code
+✅ You want to contribute back to the community
+✅ You're doing research or education
+✅ Your use is non-commercial
+
+Choose Commercial License if:
+💼 You're building a commercial product
+💼 You need to keep source code private
+💼 You're offering SaaS/cloud services
+💼 You want to modify without sharing
+💼 You need proprietary integrations
+
+EXAMPLES
+========
+
+❌ AGPL VIOLATION - REQUIRES COMMERCIAL LICENSE:
+- Building a proprietary complaint management SaaS
+- Integrating into closed-source enterprise software
+- Offering managed hosting without source disclosure
+- Creating white-label solutions for customers
+
+✅ AGPL COMPLIANT - FREE USE:
+- University research project (source shared)
+- Open source complaint portal (all code public)
+- Personal learning/development (no distribution)
+- Contributing improvements back to community
+
+COPYRIGHT AND ENFORCEMENT
+=========================
+
+Copyright (c) 2024 [Your Name/Company]. All rights reserved.
+
+Unauthorized use under commercial scenarios without proper licensing 
+constitutes copyright infringement and will result in:
+
+⚖️ Legal action
+💰 Monetary damages
+🛑 Cease and desist orders
+🔒 Injunctive relief
+
+For licensing questions or to report license violations:
+legal@solutio360.com
+
+DISCLAIMER
+==========
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+SOFTWARE. 

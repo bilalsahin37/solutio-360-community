@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Messenger</title>
+</head>
+<body style="margin: 0; padding: 20px; background: #e0e0e0;">
+    <h1>Debug Messenger</h1>
+    <p>Bu sayfada sadece messenger widget var.</p>
+    
+    <button onclick="testToggle()" style="margin: 10px; padding: 10px;">Manual Toggle Test</button>
+    <button onclick="testElements()" style="margin: 10px; padding: 10px;">Test Elements</button>
+    
+    <div id="results" style="background: white; padding: 10px; margin: 10px 0; border-radius: 5px;"></div>
+
+    <!-- Instagram Messenger Widget -->
+    <div id="instagram-messenger" style="position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: Arial, sans-serif;">
+        <button id="messenger-btn" style="
+            width: 60px; height: 60px; border-radius: 50%; border: none;
+            background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45);
+            color: white; font-size: 28px; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(131, 58, 180, 0.4);
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
+        ">💬</button>
+        
+        <div id="messenger-window" style="
+            position: fixed; bottom: 90px; right: 20px; width: 380px; height: 550px;
+            background: white; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            display: none; flex-direction: column; z-index: 999999; overflow: hidden; border: 1px solid #e1e1e1;
+        ">
+            <div style="background: linear-gradient(45deg, #833AB4, #FD1D1D, #F77737, #FCAF45); padding: 20px; color: white;">
+                <h3 style="margin: 0;">Test Messenger</h3>
+                <button id="close-messenger-btn" style="float: right; background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+            </div>
+            
+            <div id="messenger-messages" style="flex: 1; padding: 20px; background: #fafafa;">
+                <div style="background: #667eea; color: white; padding: 15px; border-radius: 20px; margin-bottom: 10px;">
+                    Test mesajı - Bu görünmeli!
+                </div>
+            </div>
+            
+            <div style="padding: 20px; border-top: 1px solid #e1e1e1; background: white;">
+                <input type="text" id="messenger-input" placeholder="Test mesajı..." style="width: 80%; padding: 10px; border: 1px solid #ccc; border-radius: 20px;">
+                <button id="send-messenger-btn" style="width: 15%; padding: 10px; background: #833AB4; color: white; border: none; border-radius: 20px; cursor: pointer;">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let messengerOpen = false;
+    
+    function log(message) {
+        console.log(message);
+        document.getElementById('results').innerHTML += '<div>' + message + '</div>';
+    }
+    
+    function toggleMessenger() {
+        log('🔄 toggleMessenger called');
+        const win = document.getElementById('messenger-window');
+        if (!win) {
+            log('❌ messenger-window NOT FOUND');
+            return;
+        }
+        
+        messengerOpen = !messengerOpen;
+        win.style.display = messengerOpen ? 'flex' : 'none';
+        log('✅ Messenger is now: ' + (messengerOpen ? 'OPEN' : 'CLOSED'));
+    }
+    
+    function closeMessenger() {
+        log('❌ closeMessenger called');
+        messengerOpen = false;
+        const win = document.getElementById('messenger-window');
+        if (win) {
+            win.style.display = 'none';
+            log('✅ Messenger closed');
+        }
+    }
+    
+    function testToggle() {
+        log('🧪 Manual toggle test');
+        toggleMessenger();
+    }
+    
+    function testElements() {
+        log('🔍 Testing elements...');
+        const btn = document.getElementById('messenger-btn');
+        const win = document.getElementById('messenger-window');
+        const input = document.getElementById('messenger-input');
+        
+        log('messenger-btn: ' + (btn ? 'FOUND' : 'NOT FOUND'));
+        log('messenger-window: ' + (win ? 'FOUND' : 'NOT FOUND'));
+        log('messenger-input: ' + (input ? 'FOUND' : 'NOT FOUND'));
+        
+        if (btn) {
+            log('Button click test...');
+            btn.click();
+        }
+    }
+    
+    // Setup events
+    document.addEventListener('DOMContentLoaded', function() {
+        log('🚀 DOM loaded');
+        
+        const btn = document.getElementById('messenger-btn');
+        const closeBtn = document.getElementById('close-messenger-btn');
+        
+        if (btn) {
+            btn.addEventListener('click', toggleMessenger);
+            log('✅ Toggle event attached');
+        } else {
+            log('❌ Button not found for event');
+        }
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeMessenger);
+            log('✅ Close event attached');
+        }
+        
+        log('✅ Setup complete');
+    });
+    
+    log('📋 Script loaded');
+    </script>
+</body>
+</html> 

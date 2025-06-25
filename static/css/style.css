@@ -1,0 +1,412 @@
+/* Custom styles */
+
+/* Form styles */
+.form-input {
+    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus: border-blue-500 focus:ring-blue-500;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700;
+}
+
+.form-error {
+    @apply mt-2 text-sm text-red-600;
+}
+
+/* Button styles */
+.btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+    @apply bg-blue-600 text-white hover: bg-blue-700;
+}
+
+.btn-secondary {
+    @apply bg-gray-200 text-gray-800 hover: bg-gray-300;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white hover: bg-red-700;
+}
+
+.btn-success {
+    @apply bg-green-600 text-white hover: bg-green-700;
+}
+
+/* Card styles */
+.card {
+    @apply bg-white rounded-lg shadow-sm p-6;
+}
+
+.card-header {
+    @apply border-b border-gray-200 pb-4 mb-4;
+}
+
+.card-title {
+    @apply text-xl font-semibold text-gray-900;
+}
+
+/* Table styles */
+.table-container {
+    @apply overflow-x-auto;
+}
+
+.table {
+    @apply min-w-full divide-y divide-gray-200;
+}
+
+.table th {
+    @apply px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
+
+.table tr {
+    @apply hover: bg-gray-50;
+}
+
+/* Alert styles */
+.alert {
+    @apply p-4 rounded-lg mb-4;
+}
+
+.alert-success {
+    @apply bg-green-100 text-green-700;
+}
+
+.alert-error {
+    @apply bg-red-100 text-red-700;
+}
+
+.alert-warning {
+    @apply bg-yellow-100 text-yellow-700;
+}
+
+.alert-info {
+    @apply bg-blue-100 text-blue-700;
+}
+
+/* Badge styles */
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+    @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-error {
+    @apply bg-red-100 text-red-800;
+}
+
+.badge-info {
+    @apply bg-blue-100 text-blue-800;
+}
+
+/* Loading spinner */
+.spinner {
+    @apply animate-spin h-5 w-5 text-blue-600;
+}
+
+/* Pagination */
+.pagination {
+    @apply flex justify-center space-x-2 mt-4;
+}
+
+.pagination-item {
+    @apply px-3 py-1 rounded-md text-sm font-medium;
+}
+
+.pagination-item-active {
+    @apply bg-blue-600 text-white;
+}
+
+.pagination-item-inactive {
+    @apply bg-gray-200 text-gray-700 hover: bg-gray-300;
+}
+
+/* Filter styles */
+.filter-container {
+    @apply bg-white p-4 rounded-lg shadow-sm mb-4;
+}
+
+.filter-title {
+    @apply text-lg font-medium text-gray-900 mb-4;
+}
+
+.filter-group {
+    @apply mb-4;
+}
+
+.filter-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.filter-select {
+    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus: border-blue-500 focus:ring-blue-500;
+}
+
+/* Modal styles */
+.modal-backdrop {
+    @apply fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity;
+}
+
+.modal-container {
+    @apply fixed inset-0 z-10 overflow-y-auto;
+}
+
+.modal-content {
+    @apply relative bg-white rounded-lg mx-auto my-8 max-w-lg p-6;
+}
+
+.modal-header {
+    @apply flex justify-between items-center mb-4;
+}
+
+.modal-title {
+    @apply text-lg font-medium text-gray-900;
+}
+
+.modal-close {
+    @apply text-gray-400 hover: text-gray-500;
+}
+
+.modal-body {
+    @apply mt-2;
+}
+
+.modal-footer {
+    @apply mt-4 flex justify-end space-x-3;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+    .hide-on-mobile {
+        @apply hidden;
+    }
+}
+
+@media (min-width: 641px) {
+    .hide-on-desktop {
+        @apply hidden;
+    }
+}
+
+body {
+    background: #181c20;
+    color: #f3f4f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+.bg-white {
+    background: #23272f !important;
+    color: #f3f4f6 !important;
+}
+
+input, select, textarea {
+    background: #23272f;
+    color: #f3f4f6;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid #2563eb;
+    background: #181c20;
+}
+
+button, .btn {
+    transition: background 0.2s, color 0.2s;
+}
+
+.bg-blue-600 {
+    background: #2563eb !important;
+}
+
+.bg-blue-700 {
+    background: #1d4ed8 !important;
+}
+
+.bg-yellow-500 {
+    background: #eab308 !important;
+}
+
+.bg-yellow-600 {
+    background: #ca8a04 !important;
+}
+
+.bg-red-600 {
+    background: #dc2626 !important;
+}
+
+.bg-red-700 {
+    background: #b91c1c !important;
+}
+
+.bg-gray-300 {
+    background: #374151 !important;
+}
+
+.bg-gray-400 {
+    background: #4b5563 !important;
+}
+
+.text-gray-800 {
+    color: #f3f4f6 !important;
+}
+
+.text-gray-600 {
+    color: #d1d5db !important;
+}
+
+.text-blue-600 {
+    color: #60a5fa !important;
+}
+
+.rounded {
+    border-radius: 12px !important;
+}
+
+.shadow {
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* PWA Bildirimleri */
+.pwa-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    z-index: 9999;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwa-notification.success {
+    background: #10B981;
+}
+
+.pwa-notification.error {
+    background: #EF4444;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* PWA Kurulum Modal */
+#pwa-install-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.pwa-modal-content {
+    background: #23272f;
+    padding: 2rem;
+    border-radius: 16px;
+    max-width: 90vw;
+    width: 400px;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Offline İndikatör */
+.offline-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #EF4444;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.offline-indicator.show {
+    display: flex;
+    animation: bounceIn 0.3s ease-out;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive Tasarım */
+@media (max-width: 640px) {
+    .pwa-notification {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        text-align: center;
+    }
+
+    .offline-indicator {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        justify-content: center;
+    }
+}

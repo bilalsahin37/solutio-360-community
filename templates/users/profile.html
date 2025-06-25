@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profilim - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900 py-8 w-full-page">
+    <div class="w-full px-4 sm:px-6 lg:px-8">
+        <!-- Profil Header -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 h-32 relative">
+                <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+            </div>
+            
+            <div class="relative px-6 pb-6">
+                <!-- Avatar -->
+                <div class="flex items-end -mt-16 mb-4">
+                    <div class="relative">
+                        <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=4f46e5&color=fff&size=128" 
+                             alt="Profil Fotoğrafı" 
+                             class="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-lg">
+                        <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
+                    </div>
+                </div>
+                
+                <!-- Kullanıcı Bilgileri -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                            {{ user.get_full_name|default:user.username }}
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-300 mt-1">
+                            {{ user.profile.position|default:"Kullanıcı" }}
+                        </p>
+                        <div class="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center gap-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                {{ user.email }}
+                            </span>
+                            {% if user.profile and user.profile.department %}
+                            <span class="flex items-center gap-1">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9,22 9,12 15,12 15,22"/>
+                                </svg>
+                                {{ user.profile.department }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-4 sm:mt-0">
+                        <a href="{% url 'users:profile_edit' %}" 
+                           class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Profili Düzenle
+                        </a>
+                        <a href="{% url 'users:settings' %}" 
+                           class="btn btn-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6"/>
+                            </svg>
+                            Ayarlar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Sol Kolon - Profil Detayları -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Hakkımda -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Hakkımda</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if user.profile and user.profile.bio %}
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                {{ user.profile.bio }}
+                            </p>
+                        {% else %}
+                            <p class="text-gray-500 dark:text-gray-400 italic">
+                                Henüz bir biyografi eklenmemiş.
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Son Aktiviteler -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Son Aktiviteler</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400">
+                                        <path d="M14 9V5a3 3 0 0 0-6 0v4"/>
+                                        <rect x="2" y="9" width="20" height="12" rx="2" ry="2"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900 dark:text-white font-medium">Giriş yapıldı</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.last_login|date:"d.m.Y H:i" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-green-600 dark:text-green-400">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900 dark:text-white font-medium">Hesap oluşturuldu</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.date_joined|date:"d.m.Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Kolon - İstatistikler ve Bilgiler -->
+            <div class="space-y-8">
+                <!-- İstatistikler -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">İstatistikler</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Toplam Şikayet</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">
+                                    {{ total_complaints }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Taslak</span>
+                                <span class="font-semibold text-gray-600 dark:text-gray-400">
+                                    {{ draft_complaints }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Gönderildi</span>
+                                <span class="font-semibold text-orange-600 dark:text-orange-400">
+                                    {{ pending_complaints }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">İnceleniyor</span>
+                                <span class="font-semibold text-blue-600 dark:text-blue-400">
+                                    {{ in_review_complaints }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">İşlemde</span>
+                                <span class="font-semibold text-purple-600 dark:text-purple-400">
+                                    {{ in_progress_complaints }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Çözülen Şikayet</span>
+                                <span class="font-semibold text-green-600 dark:text-green-400">
+                                    {{ resolved_complaints }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- İletişim Bilgileri -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">İletişim</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ user.email }}</span>
+                            </div>
+                            
+                            {% if user.profile and user.profile.phone %}
+                            <div class="flex items-center gap-3">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ user.profile.phone }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hızlı Aksiyonlar -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Hızlı Aksiyonlar</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-2">
+                            <a href="{% url 'complaints:complaint_create' %}" 
+                               class="w-full btn btn-primary btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Yeni Şikayet
+                            </a>
+                            <a href="{% url 'complaints:complaint_list' %}" 
+                               class="w-full btn btn-secondary btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10,9 9,9 8,9"/>
+                                </svg>
+                                Şikayetlerim
+                            </a>
+                            <a href="{% url 'users:password_change' %}" 
+                               class="w-full btn btn-ghost btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <circle cx="12" cy="16" r="1"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                                Şifre Değiştir
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
