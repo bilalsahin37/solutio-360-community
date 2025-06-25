@@ -298,10 +298,10 @@ Commercial license. All rights reserved.
 """
 
     # Write documentation
-    with open("solutio-360-community/README.md", "w") as f:
+    with open("solutio-360-community/README.md", "w", encoding="utf-8") as f:
         f.write(community_readme)
 
-    with open("solutio-360-enterprise/README.md", "w") as f:
+    with open("solutio-360-enterprise/README.md", "w", encoding="utf-8") as f:
         f.write(enterprise_readme)
 
     print_success("Documentation created")
