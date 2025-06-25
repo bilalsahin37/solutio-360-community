@@ -1,0 +1,851 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Complaint Processing Dashboard - Solutio 360{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ml-dashboard.css' %}">
+<style>
+.ai-processing-dashboard {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.dashboard-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+}
+
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.processing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.processing-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.processing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.card-icon.ai-analysis { background: linear-gradient(45deg, #ff6b6b, #ee5a24); }
+.card-icon.routing { background: linear-gradient(45deg, #4834d4, #686de0); }
+.card-icon.sentiment { background: linear-gradient(45deg, #00d2d3, #54a0ff); }
+.card-icon.performance { background: linear-gradient(45deg, #5f27cd, #341f97); }
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.metric-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.metric-trend {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-left: 0.5rem;
+}
+
+.trend-up { background: #d4edda; color: #155724; }
+.trend-down { background: #f8d7da; color: #721c24; }
+.trend-stable { background: #e2e3e5; color: #383d41; }
+
+.real-time-feed {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 1rem;
+}
+
+.feed-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    color: #28a745;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.feed-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+    background: #e3f2fd;
+    transform: translateX(5px);
+}
+
+.feed-item.high-priority { border-left-color: #dc3545; }
+.feed-item.medium-priority { border-left-color: #ffc107; }
+.feed-item.low-priority { border-left-color: #28a745; }
+
+.feed-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.feed-content {
+    flex: 1;
+}
+
+.feed-description {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.feed-details {
+    font-size: 0.85rem;
+    color: #6c757d;
+    display: flex;
+    gap: 1rem;
+}
+
+.ai-insights-panel {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.insights-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.insights-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-left: 1rem;
+}
+
+.insight-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.insight-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.insight-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+.insight-confidence {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.department-routing-chart {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.routing-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.routing-stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.performance-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.chart-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.auto-response-preview {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.response-preview {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.response-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.response-type {
+    background: #007bff;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.response-confidence {
+    background: #28a745;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.response-text {
+    line-height: 1.6;
+    color: #2c3e50;
+}
+
+@media (max-width: 768px) {
+    .dashboard-title {
+        font-size: 2rem;
+    }
+    
+    .processing-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .performance-charts {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .processing-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ai-processing-dashboard">
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">🤖 AI Complaint Processing Dashboard</h1>
+            <p class="dashboard-subtitle">Enterprise-grade intelligent complaint management system</p>
+        </div>
+
+        <!-- Processing Metrics Grid -->
+        <div class="processing-grid">
+            <!-- AI Analysis Card -->
+            <div class="processing-card">
+                <div class="card-header">
+                    <div class="card-icon ai-analysis">🧠</div>
+                    <div class="card-title">GenAI Analysis</div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Processed Today</span>
+                    <div>
+                        <span class="metric-value" id="ai-processed-today">{{ ai_metrics.processed_today }}</span>
+                        <span class="metric-trend trend-up">+12%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Accuracy Rate</span>
+                    <div>
+                        <span class="metric-value" id="ai-accuracy">{{ ai_metrics.accuracy }}%</span>
+                        <span class="metric-trend trend-up">+2%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Avg Processing Time</span>
+                    <div>
+                        <span class="metric-value" id="ai-processing-time">{{ ai_metrics.avg_time }}s</span>
+                        <span class="metric-trend trend-down">-0.5s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Routing Card -->
+            <div class="processing-card">
+                <div class="card-header">
+                    <div class="card-icon routing">🎯</div>
+                    <div class="card-title">Smart Routing</div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Routing Accuracy</span>
+                    <div>
+                        <span class="metric-value" id="routing-accuracy">{{ routing_metrics.accuracy }}%</span>
+                        <span class="metric-trend trend-up">+5%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Auto-Assigned</span>
+                    <div>
+                        <span class="metric-value" id="auto-assigned">{{ routing_metrics.auto_assigned }}</span>
+                        <span class="metric-trend trend-stable">→</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Load Balance Score</span>
+                    <div>
+                        <span class="metric-value" id="load-balance">{{ routing_metrics.load_balance }}</span>
+                        <span class="metric-trend trend-up">+8%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sentiment Analysis Card -->
+            <div class="processing-card">
+                <div class="card-header">
+                    <div class="card-icon sentiment">💭</div>
+                    <div class="card-title">Sentiment Analysis</div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Positive</span>
+                    <div>
+                        <span class="metric-value sentiment-positive">{{ sentiment_metrics.positive }}%</span>
+                        <span class="metric-trend trend-up">+3%</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Neutral</span>
+                    <div>
+                        <span class="metric-value sentiment-neutral">{{ sentiment_metrics.neutral }}%</span>
+                        <span class="metric-trend trend-stable">→</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Negative</span>
+                    <div>
+                        <span class="metric-value sentiment-negative">{{ sentiment_metrics.negative }}%</span>
+                        <span class="metric-trend trend-down">-1%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Card -->
+            <div class="processing-card">
+                <div class="card-header">
+                    <div class="card-icon performance">⚡</div>
+                    <div class="card-title">Performance</div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Resolution Speed</span>
+                    <div>
+                        <span class="metric-value" id="resolution-speed">{{ performance_metrics.resolution_speed }}h</span>
+                        <span class="metric-trend trend-down">-2h</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Customer Satisfaction</span>
+                    <div>
+                        <span class="metric-value" id="satisfaction">{{ performance_metrics.satisfaction }}/5</span>
+                        <span class="metric-trend trend-up">+0.2</span>
+                    </div>
+                </div>
+                
+                <div class="metric-display">
+                    <span class="metric-label">Escalation Rate</span>
+                    <div>
+                        <span class="metric-value" id="escalation-rate">{{ performance_metrics.escalation_rate }}%</span>
+                        <span class="metric-trend trend-down">-3%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Processing Feed -->
+        <div class="real-time-feed">
+            <div class="feed-header">
+                <h3 class="feed-title">🔴 Real-time Processing Feed</h3>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    Live
+                </div>
+            </div>
+            
+            <div id="processing-feed">
+                <!-- Real-time feed items will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- AI Insights Panel -->
+        <div class="ai-insights-panel">
+            <div class="insights-header">
+                <div class="card-icon ai-analysis">🔮</div>
+                <h3 class="insights-title">AI-Generated Insights</h3>
+            </div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">📈</div>
+                <div class="insight-text">Technical complaints increased 15% - recommend additional tech support resources</div>
+                <div class="insight-confidence">92% confidence</div>
+            </div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">⚠️</div>
+                <div class="insight-text">Billing department approaching capacity limit - enable overflow routing</div>
+                <div class="insight-confidence">85% confidence</div>
+            </div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">🎯</div>
+                <div class="insight-text">Customer satisfaction score could improve with faster response templates</div>
+                <div class="insight-confidence">78% confidence</div>
+            </div>
+        </div>
+
+        <!-- Department Routing Chart -->
+        <div class="department-routing-chart">
+            <h3 class="chart-title">📊 Department Routing Distribution</h3>
+            <canvas id="departmentChart" width="400" height="200"></canvas>
+            
+            <div class="routing-stats">
+                <div class="routing-stat">
+                    <div class="stat-value">{{ dept_stats.technical }}%</div>
+                    <div class="stat-label">Technical Support</div>
+                </div>
+                <div class="routing-stat">
+                    <div class="stat-value">{{ dept_stats.billing }}%</div>
+                    <div class="stat-label">Billing</div>
+                </div>
+                <div class="routing-stat">
+                    <div class="stat-value">{{ dept_stats.customer_service }}%</div>
+                    <div class="stat-label">Customer Service</div>
+                </div>
+                <div class="routing-stat">
+                    <div class="stat-value">{{ dept_stats.product }}%</div>
+                    <div class="stat-label">Product Quality</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="performance-charts">
+            <div class="chart-container">
+                <h3 class="chart-title">AI Processing Volume</h3>
+                <canvas id="volumeChart" width="400" height="300"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="chart-title">Resolution Time Trends</h3>
+                <canvas id="resolutionChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Auto-Response Preview -->
+        <div class="auto-response-preview">
+            <h3 class="chart-title">🤖 AI Auto-Response Preview</h3>
+            
+            <div class="response-preview">
+                <div class="response-header">
+                    <span class="response-type">GenAI Response</span>
+                    <span class="response-confidence">94% Confidence</span>
+                </div>
+                <div class="response-text">
+                    Sayın müşterimiz, yaşadığınız teknik sorun için özür dileriz. Bu tür problemler genellikle önbellek temizleme ile çözülür. Lütfen tarayıcınızın önbelleğini temizleyip tekrar deneyin. Sorun devam ederse, teknik destek ekibimiz 2 saat içinde sizinle iletişime geçecektir.
+                </div>
+            </div>
+            
+            <div class="response-preview">
+                <div class="response-header">
+                    <span class="response-type">Smart Routing</span>
+                    <span class="response-confidence">89% Confidence</span>
+                </div>
+                <div class="response-text">
+                    Auto-routed to: Technical Support → Agent: Mehmet K. → Estimated resolution: 4 hours → Escalation path: Tech Lead → CTO
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script>
+// Real-time feed simulation
+function addFeedItem(type, description, priority, department, confidence) {
+    const feed = document.getElementById('processing-feed');
+    const item = document.createElement('div');
+    item.className = `feed-item ${priority}-priority`;
+    
+    const priorityColors = {
+        'high': '#dc3545',
+        'medium': '#ffc107', 
+        'low': '#28a745'
+    };
+    
+    const typeIcons = {
+        'analysis': '🧠',
+        'routing': '🎯',
+        'response': '💬',
+        'escalation': '⚠️'
+    };
+    
+    item.innerHTML = `
+        <div class="feed-icon" style="background: ${priorityColors[priority]}">
+            ${typeIcons[type]}
+        </div>
+        <div class="feed-content">
+            <div class="feed-description">${description}</div>
+            <div class="feed-details">
+                <span>Department: ${department}</span>
+                <span>Confidence: ${confidence}%</span>
+                <span>Time: ${new Date().toLocaleTimeString()}</span>
+            </div>
+        </div>
+    `;
+    
+    feed.insertBefore(item, feed.firstChild);
+    
+    // Keep only last 10 items
+    while (feed.children.length > 10) {
+        feed.removeChild(feed.lastChild);
+    }
+    
+    // Add animation
+    item.style.opacity = '0';
+    item.style.transform = 'translateX(-20px)';
+    setTimeout(() => {
+        item.style.transition = 'all 0.3s ease';
+        item.style.opacity = '1';
+        item.style.transform = 'translateX(0)';
+    }, 100);
+}
+
+// Simulate real-time updates
+setInterval(() => {
+    const types = ['analysis', 'routing', 'response', 'escalation'];
+    const priorities = ['high', 'medium', 'low'];
+    const departments = ['Technical', 'Billing', 'Customer Service', 'Product'];
+    const descriptions = [
+        'AI analyzed complaint sentiment: Negative',
+        'Smart routing to technical department',
+        'Auto-response generated and sent',
+        'Escalation triggered for critical issue',
+        'Department capacity optimization applied',
+        'Customer satisfaction prediction updated'
+    ];
+    
+    const type = types[Math.floor(Math.random() * types.length)];
+    const priority = priorities[Math.floor(Math.random() * priorities.length)];
+    const department = departments[Math.floor(Math.random() * departments.length)];
+    const description = descriptions[Math.floor(Math.random() * descriptions.length)];
+    const confidence = Math.floor(Math.random() * 20) + 80; // 80-100%
+    
+    addFeedItem(type, description, priority, department, confidence);
+}, 3000);
+
+// Department routing chart
+const deptCtx = document.getElementById('departmentChart').getContext('2d');
+new Chart(deptCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Technical Support', 'Billing', 'Customer Service', 'Product Quality', 'Logistics'],
+        datasets: [{
+            data: [{{ dept_stats.technical }}, {{ dept_stats.billing }}, {{ dept_stats.customer_service }}, {{ dept_stats.product }}, {{ dept_stats.logistics }}],
+            backgroundColor: [
+                '#ff6b6b',
+                '#4834d4', 
+                '#00d2d3',
+                '#5f27cd',
+                '#feca57'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    usePointStyle: true
+                }
+            }
+        }
+    }
+});
+
+// Volume chart
+const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+new Chart(volumeCtx, {
+    type: 'line',
+    data: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+        datasets: [{
+            label: 'AI Processing Volume',
+            data: [12, 8, 25, 45, 38, 22],
+            borderColor: '#4834d4',
+            backgroundColor: 'rgba(72, 52, 212, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Resolution time chart
+const resolutionCtx = document.getElementById('resolutionChart').getContext('2d');
+new Chart(resolutionCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Avg Resolution Time (hours)',
+            data: [6.2, 5.8, 4.9, 5.1, 7.3, 8.1, 6.7],
+            backgroundColor: [
+                '#ff6b6b',
+                '#feca57',
+                '#48ca65', 
+                '#ff9ff3',
+                '#54a0ff',
+                '#5f27cd',
+                '#00d2d3'
+            ],
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Hours'
+                }
+            }
+        }
+    }
+});
+
+// Real-time metric updates
+setInterval(() => {
+    // Update metrics with simulated real-time data
+    const elements = {
+        'ai-processed-today': () => Math.floor(Math.random() * 50) + 150,
+        'ai-accuracy': () => (Math.random() * 5 + 90).toFixed(1),
+        'routing-accuracy': () => (Math.random() * 8 + 85).toFixed(1),
+        'satisfaction': () => (Math.random() * 0.8 + 4.0).toFixed(1)
+    };
+    
+    Object.entries(elements).forEach(([id, generator]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = generator();
+        }
+    });
+}, 5000);
+
+// Initialize with some feed items
+document.addEventListener('DOMContentLoaded', () => {
+    addFeedItem('analysis', 'Critical complaint analyzed - high priority routing applied', 'high', 'Technical', 94);
+    addFeedItem('routing', 'Load balancing activated for billing department', 'medium', 'Billing', 87);
+    addFeedItem('response', 'Auto-response sent to customer inquiry', 'low', 'Customer Service', 91);
+});
+</script>
+{% endblock %} 

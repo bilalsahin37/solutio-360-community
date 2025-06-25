@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Offline - Solutio 360{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="text-center max-w-md mx-auto px-6">
+        <!-- Offline Icon -->
+        <div class="w-32 h-32 mx-auto mb-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+            <svg class="w-16 h-16 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.137 0-4.146.832-5.636 2.172M6.343 7.343A7.957 7.957 0 0112 5c2.137 0 4.146.832 5.636 2.172"></path>
+            </svg>
+        </div>
+        
+        <!-- Offline Message -->
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            İnternet Bağlantısı Yok
+        </h1>
+        
+        <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            Bu sayfa offline modda mevcut değil. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.
+        </p>
+        
+        <!-- Retry Button -->
+        <div class="space-y-4">
+            <button 
+                onclick="window.location.reload()" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+            >
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Tekrar Dene
+            </button>
+            
+            <button 
+                onclick="history.back()" 
+                class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+            >
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Geri Dön
+            </button>
+        </div>
+        
+        <!-- Available Offline Features -->
+        <div class="mt-12 text-left">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Offline Kullanılabilir Özellikler:
+            </h3>
+            
+            <ul class="space-y-2 text-gray-600 dark:text-gray-300">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Daha önce görüntülenen şikayetler
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Statik formlar ve sayfalar
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Tema ve dil ayarları
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bağlantı durumunu kontrol et
+function checkConnection() {
+    if (navigator.onLine) {
+        window.location.reload();
+    }
+}
+
+// Online olduğunda otomatik yenile
+window.addEventListener('online', checkConnection);
+
+// Periyodik bağlantı kontrolü
+setInterval(checkConnection, 5000);
+</script>
+{% endblock %} 

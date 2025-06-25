@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Şikayet Listesi</title>
+    <style>
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .header .info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .summary h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .complaint {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            page-break-inside: avoid;
+        }
+        
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .complaint-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .complaint-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .status-submitted { background-color: #3b82f6; }
+        .status-in-review { background-color: #f59e0b; }
+        .status-in-progress { background-color: #f97316; }
+        .status-resolved { background-color: #10b981; }
+        .status-closed { background-color: #6b7280; }
+        .status-cancelled { background-color: #ef4444; }
+        .status-withdrawn { background-color: #8b5cf6; }
+        .status-draft { background-color: #9ca3af; }
+        
+        .complaint-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .complaint-description {
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        
+        @page {
+            margin: 2cm;
+            @bottom-center {
+                content: "Sayfa " counter(page) " / " counter(pages);
+                font-size: 10px;
+                color: #666;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Şikayet Listesi</h1>
+        <div class="info">
+            <strong>Kullanıcı:</strong> {{ user.get_full_name|default:user.username }}<br>
+            <strong>Export Tarihi:</strong> {{ export_date|date:"d.m.Y H:i" }}<br>
+            <strong>Toplam Şikayet:</strong> {{ complaints|length }}
+        </div>
+    </div>
+
+    <div class="summary">
+        <h3>Özet</h3>
+        <p>Bu rapor {{ user.get_full_name|default:user.username }} kullanıcısına ait {{ complaints|length }} adet şikayeti içermektedir.</p>
+    </div>
+
+    {% for complaint in complaints %}
+    <div class="complaint">
+        <div class="complaint-header">
+            <div class="complaint-title">{{ complaint.title }}</div>
+            <div class="complaint-status status-{{ complaint.status|lower }}">
+                {{ complaint.get_status_display }}
+            </div>
+        </div>
+        
+        <div class="complaint-meta">
+            <div><strong>Kategori:</strong> {{ complaint.category|default:"Kategori Yok" }}</div>
+            <div><strong>Tarih:</strong> {{ complaint.created_at|date:"d.m.Y H:i" }}</div>
+        </div>
+        
+        <div class="complaint-description">
+            <strong>Açıklama:</strong><br>
+            {{ complaint.description|linebreaks }}
+        </div>
+        
+        {% if complaint.tags.exists %}
+        <div style="margin-top: 10px;">
+            <strong>Etiketler:</strong>
+            {% for tag in complaint.tags.all %}
+                <span style="background: #e5e7eb; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">
+                    {{ tag.name }}
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="complaint">
+        <p style="text-align: center; color: #666; font-style: italic;">Henüz şikayet bulunmuyor.</p>
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+        <p>Bu rapor Solutio 360 sistemi tarafından {{ export_date|date:"d.m.Y H:i" }} tarihinde oluşturulmuştur.</p>
+    </div>
+</body>
+</html> 

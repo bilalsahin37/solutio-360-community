@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ complaint.title }} - Şikayet Detayı{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <!-- Şikayet Başlık ve Durum -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-start mb-4">
+            <h1 class="text-2xl font-bold text-gray-900">{{ complaint.title }}</h1>
+            <div class="flex space-x-2">
+                <!-- Durum Badge -->
+                <span class="px-3 py-1 rounded-full text-sm font-medium
+                    {% if complaint.status == 'DRAFT' %}bg-gray-100 text-gray-800
+                    {% elif complaint.status == 'SUBMITTED' %}bg-blue-100 text-blue-800
+                    {% elif complaint.status == 'IN_REVIEW' %}bg-yellow-100 text-yellow-800
+                    {% elif complaint.status == 'IN_PROGRESS' %}bg-purple-100 text-purple-800
+                    {% elif complaint.status == 'RESOLVED' %}bg-green-100 text-green-800
+                    {% elif complaint.status == 'CLOSED' %}bg-gray-100 text-gray-800
+                    {% elif complaint.status == 'WITHDRAWN' %}bg-orange-100 text-orange-800
+                    {% elif complaint.status == 'CANCELLED' %}bg-red-100 text-red-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ complaint.get_status_display }}
+                </span>
+                
+                <!-- Öncelik Badge -->
+                <span class="px-3 py-1 rounded-full text-sm font-medium
+                    {% if complaint.priority == 'LOW' %}bg-green-100 text-green-800
+                    {% elif complaint.priority == 'MEDIUM' %}bg-yellow-100 text-yellow-800
+                    {% elif complaint.priority == 'HIGH' %}bg-orange-100 text-orange-800
+                    {% elif complaint.priority == 'CRITICAL' %}bg-red-100 text-red-800
+                    {% endif %}">
+                    {{ complaint.get_priority_display }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Şikayet İçeriği -->
+        <div class="prose max-w-none mb-6">
+            <p class="text-gray-700">{{ complaint.description|linebreaks }}</p>
+        </div>
+        
+        <!-- Şikayet Bilgileri -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
+            <div>
+                <strong>Şikayet Eden:</strong> 
+                {% if complaint.is_anonymous %}
+                    Anonim
+                {% else %}
+                    {{ complaint.submitter.get_full_name|default:complaint.submitter.username }}
+                {% endif %}
+            </div>
+            <div><strong>Oluşturma Tarihi:</strong> {{ complaint.created_at|date:"d.m.Y H:i" }}</div>
+            {% if complaint.category %}
+            <div><strong>Kategori:</strong> {{ complaint.category.name }}</div>
+            {% endif %}
+            {% if complaint.assigned_to %}
+            <div><strong>Atanan:</strong> {{ complaint.assigned_to.get_full_name|default:complaint.assigned_to.username }}</div>
+            {% endif %}
+            {% if complaint.due_date %}
+            <div><strong>Son Tarih:</strong> {{ complaint.due_date|date:"d.m.Y H:i" }}</div>
+            {% endif %}
+            {% if complaint.is_withdrawn %}
+            <div class="col-span-2 bg-orange-50 p-3 rounded-md">
+                <strong class="text-orange-800">Geri Çekilme Bilgisi:</strong>
+                <div class="mt-1 text-orange-700">
+                    <div><strong>Tarih:</strong> {{ complaint.withdrawal_date|date:"d.m.Y H:i" }}</div>
+                    {% if complaint.withdrawal_reason %}
+                    <div><strong>Sebep:</strong> {{ complaint.withdrawal_reason }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Aksiyon Butonları -->
+        {% if user.is_authenticated %}
+        <div class="flex flex-wrap gap-2 border-t pt-4">
+            <!-- Şikayet Sahibi İçin Butonlar -->
+            {% if complaint.submitter == user %}
+                <!-- Geri Çekme Butonu -->
+                {% if complaint.can_withdraw %}
+                <button onclick="openWithdrawModal()" 
+                        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    🔄 Şikayeti Geri Çek
+                </button>
+                {% endif %}
+                
+                <!-- Taslak Silme Butonu -->
+                {% if complaint.status == 'DRAFT' %}
+                <button onclick="openDeleteModal()" 
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    🗑️ Şikayeti Sil
+                </button>
+                {% endif %}
+                
+                <!-- Düzenleme Butonu -->
+                {% if complaint.status == 'DRAFT' %}
+                <a href="{% url 'complaints:complaint_update' complaint.pk %}" 
+                   class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    ✏️ Düzenle
+                </a>
+                {% endif %}
+            {% endif %}
+            
+            <!-- Admin/Yetkili İçin Butonlar -->
+            {% if user.is_staff or perms.complaints.change_complaint %}
+                <!-- İptal Butonu -->
+                {% if complaint.status not in 'CANCELLED,WITHDRAWN' %}
+                <button onclick="openCancelModal()" 
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    ❌ Şikayeti İptal Et
+                </button>
+                {% endif %}
+                
+                <!-- Durum Güncelleme -->
+                {% if complaint.status not in 'CANCELLED,WITHDRAWN' %}
+                <a href="{% url 'complaints:update_status' complaint.pk %}" 
+                   class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    🔄 Durum Güncelle
+                </a>
+                {% endif %}
+            {% endif %}
+            
+            <!-- Geri Dön Butonu -->
+            <a href="{% url 'complaints:complaint_list' %}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                ← Geri Dön
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Yorumlar Bölümü -->
+    {% if comments %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4">Yorumlar</h3>
+        {% for comment in comments %}
+        <div class="border-l-4 border-blue-500 pl-4 mb-4 last:mb-0">
+            <div class="flex justify-between items-start mb-2">
+                <strong class="text-gray-900">{{ comment.sender.get_full_name|default:comment.sender.username }}</strong>
+                <span class="text-sm text-gray-500">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            <p class="text-gray-700">{{ comment.content|linebreaks }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Yorum Ekleme Formu -->
+    {% if user.is_authenticated and complaint.status not in 'CANCELLED,WITHDRAWN' %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Yorum Ekle</h3>
+        <form method="post" action="{% url 'complaints:add_comment' complaint.pk %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                <textarea name="content" rows="4" required
+                          class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Yorumunuzu yazın..."></textarea>
+            </div>
+            <button type="submit" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                Yorum Ekle
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Geri Çekme Modal -->
+<div id="withdrawModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex justify-center items-center h-full">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Şikayeti Geri Çek</h3>
+            <form method="post" action="{% url 'complaints:withdraw_complaint' complaint.pk %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="withdrawal_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Geri Çekme Sebebi (isteğe bağlı):
+                    </label>
+                    <textarea id="withdrawal_reason" name="withdrawal_reason" rows="3" 
+                              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Neden bu şikayeti geri çekiyorsunuz?"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeWithdrawModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        İptal
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">
+                        Geri Çek
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- İptal Modal -->
+<div id="cancelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex justify-center items-center h-full">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Şikayeti İptal Et</h3>
+            <form method="post" action="{% url 'complaints:cancel_complaint' complaint.pk %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="cancellation_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        İptal Sebebi: <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="cancellation_reason" name="cancellation_reason" rows="3" required
+                              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                              placeholder="Bu şikayeti neden iptal ediyorsunuz?"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeCancelModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Vazgeç
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                        İptal Et
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Silme Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex justify-center items-center h-full">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Şikayeti Sil</h3>
+            <p class="text-gray-700 mb-4">
+                Bu şikayeti kalıcı olarak silmek istediğinizden emin misiniz? 
+                Bu işlem geri alınamaz.
+            </p>
+            <form method="post" action="{% url 'complaints:delete_draft' complaint.pk %}">
+                {% csrf_token %}
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeDeleteModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Vazgeç
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                        Sil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openWithdrawModal() {
+    document.getElementById('withdrawModal').classList.remove('hidden');
+}
+
+function closeWithdrawModal() {
+    document.getElementById('withdrawModal').classList.add('hidden');
+}
+
+function openCancelModal() {
+    document.getElementById('cancelModal').classList.remove('hidden');
+}
+
+function closeCancelModal() {
+    document.getElementById('cancelModal').classList.add('hidden');
+}
+
+function openDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+// Modal dışına tıklayınca kapat
+document.addEventListener('click', function(event) {
+    if (event.target.id === 'withdrawModal') closeWithdrawModal();
+    if (event.target.id === 'cancelModal') closeCancelModal();
+    if (event.target.id === 'deleteModal') closeDeleteModal();
+});
+
+// ESC tuşu ile modal kapat
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeWithdrawModal();
+        closeCancelModal();
+        closeDeleteModal();
+    }
+});
+</script>
+
+{% endblock %} 

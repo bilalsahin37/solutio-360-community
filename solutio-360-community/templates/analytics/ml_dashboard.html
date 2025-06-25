@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Makine Öğrenmesi Dashboard - Solutio 360{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script src="{% static 'js/plotly.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/ml-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ml-dashboard-container">
+    <!-- Başlık ve Genel Durum -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">
+                <i class="fas fa-brain"></i>
+                Makine Öğrenmesi Dashboard
+            </h1>
+            <p class="dashboard-subtitle">
+                Yapay zeka destekli analitik ve öngörülü çözümler
+            </p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="refreshAllModels()">
+                <i class="fas fa-sync-alt"></i>
+                Modelleri Yenile
+            </button>
+            <button class="btn btn-outline" onclick="exportInsights()">
+                <i class="fas fa-download"></i>
+                Öngörüleri İndir
+            </button>
+        </div>
+    </div>
+
+    <!-- ML Model Durumları -->
+    <div class="model-status-grid">
+        <div class="status-card anomaly-detection">
+            <div class="status-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Anomali Tespiti</h3>
+                <span class="status-badge active">Aktif</span>
+            </div>
+            <div class="status-metrics">
+                <div class="metric">
+                    <span class="metric-value" id="anomaly-score">{{ anomaly_score|floatformat:2 }}</span>
+                    <span class="metric-label">Anomali Skoru</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value" id="anomalies-detected">{{ anomalies_detected }}</span>
+                    <span class="metric-label">Tespit Edilen</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-card sentiment-analysis">
+            <div class="status-header">
+                <i class="fas fa-heart"></i>
+                <h3>Duygu Analizi</h3>
+                <span class="status-badge active">Aktif</span>
+            </div>
+            <div class="status-metrics">
+                <div class="metric">
+                    <span class="metric-value" id="avg-sentiment">{{ avg_sentiment|floatformat:2 }}</span>
+                    <span class="metric-label">Ortalama Duygu</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value" id="processed-texts">{{ processed_texts }}</span>
+                    <span class="metric-label">İşlenen Metin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-card prediction-model">
+            <div class="status-header">
+                <i class="fas fa-crystal-ball"></i>
+                <h3>Tahmin Modeli</h3>
+                <span class="status-badge active">Aktif</span>
+            </div>
+            <div class="status-metrics">
+                <div class="metric">
+                    <span class="metric-value" id="prediction-accuracy">{{ prediction_accuracy|floatformat:1 }}%</span>
+                    <span class="metric-label">Doğruluk</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value" id="predictions-made">{{ predictions_made }}</span>
+                    <span class="metric-label">Tahmin Yapılan</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-card rl-agent">
+            <div class="status-header">
+                <i class="fas fa-robot"></i>
+                <h3>Pekiştirmeli Öğrenme</h3>
+                <span class="status-badge learning">Öğreniyor</span>
+            </div>
+            <div class="status-metrics">
+                <div class="metric">
+                    <span class="metric-value" id="rl-reward">{{ rl_reward|floatformat:2 }}</span>
+                    <span class="metric-label">Toplam Ödül</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value" id="rl-actions">{{ rl_actions }}</span>
+                    <span class="metric-label">Eylem Sayısı</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Analitik Paneller -->
+    <div class="analytics-grid">
+        <!-- Gerçek Zamanlı Tahminler -->
+        <div class="analytics-panel predictions-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-chart-line"></i> Gerçek Zamanlı Tahminler</h3>
+                <div class="panel-actions">
+                    <button class="btn-icon" onclick="togglePredictions()">
+                        <i class="fas fa-play" id="predictions-toggle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="prediction-grid">
+                    <div class="prediction-item">
+                        <h4>Şikayet Hacmi Tahmini</h4>
+                        <div class="prediction-chart">
+                            <canvas id="volume-prediction-chart"></canvas>
+                        </div>
+                        <div class="prediction-summary">
+                            <span class="trend-indicator up">+{{ volume_trend }}%</span>
+                            <span class="trend-label">Gelecek 7 gün</span>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-item">
+                        <h4>Çözüm Süresi Tahmini</h4>
+                        <div class="prediction-chart">
+                            <canvas id="resolution-prediction-chart"></canvas>
+                        </div>
+                        <div class="prediction-summary">
+                            <span class="time-estimate">{{ avg_resolution_time }} saat</span>
+                            <span class="time-label">Ortalama süre</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duygu Analizi Özeti -->
+        <div class="analytics-panel sentiment-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-smile"></i> Duygu Analizi</h3>
+                <div class="sentiment-summary">
+                    <span class="sentiment-score {{ sentiment_class }}">
+                        {{ sentiment_label }}
+                    </span>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="sentiment-breakdown">
+                    <div class="sentiment-item positive">
+                        <div class="sentiment-bar">
+                            <div class="bar-fill" style="width: {{ positive_percentage }}%"></div>
+                        </div>
+                        <span class="sentiment-label">Pozitif ({{ positive_percentage }}%)</span>
+                    </div>
+                    <div class="sentiment-item neutral">
+                        <div class="sentiment-bar">
+                            <div class="bar-fill" style="width: {{ neutral_percentage }}%"></div>
+                        </div>
+                        <span class="sentiment-label">Nötr ({{ neutral_percentage }}%)</span>
+                    </div>
+                    <div class="sentiment-item negative">
+                        <div class="sentiment-bar">
+                            <div class="bar-fill" style="width: {{ negative_percentage }}%"></div>
+                        </div>
+                        <span class="sentiment-label">Negatif ({{ negative_percentage }}%)</span>
+                    </div>
+                </div>
+                <div class="sentiment-trends">
+                    <canvas id="sentiment-trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomali Tespiti -->
+        <div class="analytics-panel anomaly-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-radar"></i> Anomali Tespiti</h3>
+                <div class="anomaly-status">
+                    <span class="status-dot {{ anomaly_status }}"></span>
+                    <span class="status-text">{{ anomaly_status_text }}</span>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="anomaly-chart-container">
+                    <div id="anomaly-detection-plot"></div>
+                </div>
+                <div class="anomaly-alerts">
+                    {% for anomaly in recent_anomalies %}
+                    <div class="anomaly-alert">
+                        <i class="fas fa-warning"></i>
+                        <div class="alert-content">
+                            <span class="alert-title">{{ anomaly.title }}</span>
+                            <span class="alert-time">{{ anomaly.detected_at|timesince }} önce</span>
+                        </div>
+                        <span class="alert-severity {{ anomaly.severity }}">{{ anomaly.severity|title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Pekiştirmeli Öğrenme Metrikleri -->
+        <div class="analytics-panel rl-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-brain"></i> Öğrenme Performansı</h3>
+                <div class="rl-status">
+                    <span class="learning-phase">{{ rl_phase }}</span>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="rl-metrics-grid">
+                    <div class="rl-metric">
+                        <span class="metric-value">{{ rl_epsilon|floatformat:3 }}</span>
+                        <span class="metric-label">Keşif Oranı</span>
+                        <div class="metric-bar">
+                            <div class="bar-fill" style="width: {{ rl_epsilon_percent }}%"></div>
+                        </div>
+                    </div>
+                    <div class="rl-metric">
+                        <span class="metric-value">{{ rl_learning_rate|floatformat:3 }}</span>
+                        <span class="metric-label">Öğrenme Hızı</span>
+                        <div class="metric-bar">
+                            <div class="bar-fill" style="width: {{ rl_learning_percent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rl-rewards-chart">
+                    <canvas id="rl-rewards-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategori Tahmini -->
+        <div class="analytics-panel category-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-tags"></i> Kategori Tahmini</h3>
+                <div class="accuracy-badge">
+                    <span>{{ category_accuracy|floatformat:1 }}% doğru</span>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="category-distribution">
+                    <canvas id="category-prediction-chart"></canvas>
+                </div>
+                <div class="category-insights">
+                    <h4>Bu Hafta En Çok Tahmin Edilen</h4>
+                    <div class="insight-list">
+                        {% for category in top_predicted_categories %}
+                        <div class="insight-item">
+                            <span class="category-name">{{ category.name }}</span>
+                            <span class="prediction-count">{{ category.count }} tahmin</span>
+                            <div class="confidence-bar">
+                                <div class="bar-fill" style="width: {{ category.confidence }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performansı -->
+        <div class="analytics-panel performance-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-tachometer-alt"></i> Model Performansı</h3>
+                <div class="performance-status">
+                    <span class="status-indicator {{ overall_performance_status }}"></span>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="performance-metrics">
+                    <div class="perf-metric">
+                        <div class="metric-circle" data-percentage="{{ model_accuracy }}">
+                            <span class="metric-value">{{ model_accuracy|floatformat:1 }}%</span>
+                            <span class="metric-label">Doğruluk</span>
+                        </div>
+                    </div>
+                    <div class="perf-metric">
+                        <div class="metric-circle" data-percentage="{{ model_precision }}">
+                            <span class="metric-value">{{ model_precision|floatformat:1 }}%</span>
+                            <span class="metric-label">Hassasiyet</span>
+                        </div>
+                    </div>
+                    <div class="perf-metric">
+                        <div class="metric-circle" data-percentage="{{ model_recall }}">
+                            <span class="metric-value">{{ model_recall|floatformat:1 }}%</span>
+                            <span class="metric-label">Geri Çağırma</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="training-history">
+                    <canvas id="training-history-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Akıllı Öneriler -->
+    <div class="insights-section">
+        <div class="insights-header">
+            <h2><i class="fas fa-lightbulb"></i> Akıllı Öneriler</h2>
+            <span class="insights-count">{{ insights|length }} yeni öneri</span>
+        </div>
+        <div class="insights-grid">
+            {% for insight in insights %}
+            <div class="insight-card {{ insight.priority }}">
+                <div class="insight-icon">
+                    <i class="{{ insight.icon }}"></i>
+                </div>
+                <div class="insight-content">
+                    <h4 class="insight-title">{{ insight.title }}</h4>
+                    <p class="insight-description">{{ insight.description }}</p>
+                    <div class="insight-actions">
+                        <button class="btn btn-sm btn-primary" onclick="applyInsight({{ insight.id }})">
+                            Uygula
+                        </button>
+                        <button class="btn btn-sm btn-outline" onclick="dismissInsight({{ insight.id }})">
+                            Reddet
+                        </button>
+                    </div>
+                </div>
+                <div class="insight-confidence">
+                    <span class="confidence-score">{{ insight.confidence|floatformat:1 }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- WebSocket Bağlantısı için -->
+<script>
+// ML Dashboard WebSocket bağlantısı
+const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const mlSocket = new WebSocket(`${wsProtocol}://${window.location.host}/ws/ml-dashboard/`);
+
+mlSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    updateMLMetrics(data);
+};
+
+mlSocket.onclose = function(e) {
+    console.log('ML Dashboard WebSocket bağlantısı kapandı');
+    // Yeniden bağlanma mekanizması
+    setTimeout(function() {
+        location.reload();
+    }, 5000);
+};
+
+// Sayfa yüklendiğinde ML dashboard'u başlat
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMLDashboard();
+});
+</script>
+
+<script src="{% static 'js/ml-dashboard.js' %}"></script>
+{% endblock %} 

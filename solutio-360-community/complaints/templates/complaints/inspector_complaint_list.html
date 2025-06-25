@@ -1,0 +1,136 @@
+{% extends 'base/base.html' %}
+{% block title %}Denetçi Paneli{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto mt-8">
+    <h1 class="text-2xl font-bold mb-6">Denetçi Paneli - Atandığınız Şikayetler</h1>
+    <form method="get" class="flex flex-wrap gap-2 mb-6 items-end" id="filter-form">
+        <select name="category" multiple class="border rounded px-2 py-1 min-w-[150px]" size="2">
+            <option value="">Kategori</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if cat.id|stringformat:'s' in request.GET.getlist('category') %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="status" multiple class="border rounded px-2 py-1 min-w-[150px]" size="2">
+            <option value="">Durum</option>
+            {% for st in statuses %}
+                <option value="{{ st.id }}" {% if st.id|stringformat:'s' in request.GET.getlist('status') %}selected{% endif %}>{{ st.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="priority" multiple class="border rounded px-2 py-1 min-w-[150px]" size="2">
+            <option value="">Öncelik</option>
+            {% for pr in priorities %}
+                <option value="{{ pr.id }}" {% if pr.id|stringformat:'s' in request.GET.getlist('priority') %}selected{% endif %}>{{ pr.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="tags" multiple class="border rounded px-2 py-1 min-w-[150px]" size="2">
+            <option value="">Etiket</option>
+            {% for tag in tags %}
+                <option value="{{ tag.id }}" {% if tag.id|stringformat:'s' in request.GET.getlist('tags') %}selected{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="complained_institutions" multiple class="border rounded px-2 py-1 min-w-[150px]" id="filter-institutions" size="2">
+            <option value="">Kurum</option>
+            {% for inst in institutions %}
+                <option value="{{ inst.id }}" {% if inst.id|stringformat:'s' in request.GET.getlist('complained_institutions') %}selected{% endif %}>{{ inst.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="complained_units" multiple class="border rounded px-2 py-1 min-w-[150px]" id="filter-units" size="2">
+            <option value="">Birim</option>
+            {% for unit in units %}
+                <option value="{{ unit.id }}" data-inst="{{ unit.institution_id }}" {% if unit.id|stringformat:'s' in request.GET.getlist('complained_units') %}selected{% endif %}>{{ unit.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="complained_subunits" multiple class="border rounded px-2 py-1 min-w-[150px]" id="filter-subunits" size="2">
+            <option value="">Alt Birim</option>
+            {% for sub in subunits %}
+                <option value="{{ sub.id }}" data-unit="{{ sub.unit_id }}" {% if sub.id|stringformat:'s' in request.GET.getlist('complained_subunits') %}selected{% endif %}>{{ sub.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="complained_people" multiple class="border rounded px-2 py-1 min-w-[150px]" id="filter-people" size="2">
+            <option value="">Kişi</option>
+            {% for p in people %}
+                <option value="{{ p.id }}" data-subunit="{{ p.subunit_id }}" {% if p.id|stringformat:'s' in request.GET.getlist('complained_people') %}selected{% endif %}>{{ p.first_name }} {{ p.last_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="reviewers" multiple class="border rounded px-2 py-1 min-w-[150px]" size="2">
+            <option value="">İncelemeci</option>
+            {% for u in reviewers %}
+                <option value="{{ u.id }}" {% if u.id|stringformat:'s' in request.GET.getlist('reviewers') %}selected{% endif %}>{{ u.get_full_name|default:u.username }}</option>
+            {% endfor %}
+        </select>
+        <select name="inspectors" multiple class="border rounded px-2 py-1 min-w-[150px]" size="2">
+            <option value="">Denetçi</option>
+            {% for u in inspectors %}
+                <option value="{{ u.id }}" {% if u.id|stringformat:'s' in request.GET.getlist('inspectors') %}selected{% endif %}>{{ u.get_full_name|default:u.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Filtrele</button>
+        <a href="?" class="bg-gray-300 text-gray-800 px-3 py-1 rounded ml-2">Temizle</a>
+    </form>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded shadow">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">Başlık</th>
+                    <th class="px-4 py-2">Kategori</th>
+                    <th class="px-4 py-2">Durum</th>
+                    <th class="px-4 py-2">Kurum</th>
+                    <th class="px-4 py-2">Birim</th>
+                    <th class="px-4 py-2">Kişi</th>
+                    <th class="px-4 py-2">Oluşturulma</th>
+                    <th class="px-4 py-2">Detay</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                <tr class="border-b hover:bg-gray-100">
+                    <td class="px-4 py-2">{{ complaint.title }}</td>
+                    <td class="px-4 py-2">{{ complaint.category }}</td>
+                    <td class="px-4 py-2">{{ complaint.status }}</td>
+                    <td class="px-4 py-2">{% for i in complaint.complained_institutions.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td class="px-4 py-2">{% for u in complaint.complained_units.all %}{{ u.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td class="px-4 py-2">{% for p in complaint.complained_people.all %}{{ p.first_name }} {{ p.last_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td class="px-4 py-2">{{ complaint.created_at|date:'d.m.Y H:i' }}</td>
+                    <td class="px-4 py-2">
+                        <a href="{% url 'complaints:complaint_detail' complaint.pk %}" class="text-blue-600 hover:underline">Detay</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center py-4">Hiç şikayetiniz yok.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+// Hiyerarşik filtreleme: kurum > birim > alt birim > kişi
+const instSel = document.getElementById('filter-institutions');
+const unitSel = document.getElementById('filter-units');
+const subunitSel = document.getElementById('filter-subunits');
+const peopleSel = document.getElementById('filter-people');
+function filterUnits() {
+    const selectedInst = Array.from(instSel.selectedOptions).map(opt => opt.value);
+    Array.from(unitSel.options).forEach(opt => {
+        opt.style.display = selectedInst.length === 0 || selectedInst.includes(opt.getAttribute('data-inst')) ? '' : 'none';
+    });
+}
+function filterSubunits() {
+    const selectedUnits = Array.from(unitSel.selectedOptions).map(opt => opt.value);
+    Array.from(subunitSel.options).forEach(opt => {
+        opt.style.display = selectedUnits.length === 0 || selectedUnits.includes(opt.getAttribute('data-unit')) ? '' : 'none';
+    });
+}
+function filterPeople() {
+    const selectedSubunits = Array.from(subunitSel.selectedOptions).map(opt => opt.value);
+    Array.from(peopleSel.options).forEach(opt => {
+        opt.style.display = selectedSubunits.length === 0 || selectedSubunits.includes(opt.getAttribute('data-subunit')) ? '' : 'none';
+    });
+}
+if (instSel && unitSel) {
+    instSel.addEventListener('change', filterUnits);
+    unitSel.addEventListener('change', filterSubunits);
+    subunitSel.addEventListener('change', filterPeople);
+    filterUnits(); filterSubunits(); filterPeople();
+}
+</script>
+{% endblock %} 

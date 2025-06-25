@@ -1,0 +1,375 @@
+{% extends 'base/base.html' %}
+{% block title %}Şikayet Detayı{% endblock %}
+{% block content %}
+<div class="w-full-page mt-10 bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg">
+    <!-- Başlık ve Temel Bilgiler -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">{{ complaint.title }}</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 w-24">Kategori:</span>
+                    <span class="text-gray-900 dark:text-white">{{ complaint.category }}</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 w-24">Durum:</span>
+                    <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
+                        {% if complaint.status == 'SUBMITTED' %}bg-blue-100 text-blue-800
+                        {% elif complaint.status == 'IN_REVIEW' %}bg-yellow-100 text-yellow-800
+                        {% elif complaint.status == 'IN_PROGRESS' %}bg-orange-100 text-orange-800
+                        {% elif complaint.status == 'RESOLVED' %}bg-green-100 text-green-800
+                        {% elif complaint.status == 'CLOSED' %}bg-gray-100 text-gray-800
+                        {% elif complaint.status == 'CANCELLED' %}bg-red-100 text-red-800
+                        {% elif complaint.status == 'WITHDRAWN' %}bg-purple-100 text-purple-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ complaint.get_status_display|default:complaint.status }}
+                    </span>
+                </div>
+                <div class="flex items-center">
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 w-24">Öncelik:</span>
+                    <span class="text-gray-900 dark:text-white">{{ complaint.priority }}</span>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 w-32">Oluşturulma:</span>
+                    <span class="text-gray-900 dark:text-white">{{ complaint.created_at|date:'d.m.Y H:i' }}</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 w-32">Şikayet Eden:</span>
+                    <span class="text-gray-900 dark:text-white">{{ complaint.submitter.get_full_name|default:complaint.submitter.username }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Açıklama -->
+        <div class="mb-6">
+            <span class="font-semibold text-gray-700 dark:text-gray-300 block mb-2">Açıklama:</span>
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ complaint.description }}</p>
+            </div>
+        </div>
+        
+        <!-- Ek Dosyalar -->
+    {% if complaint.attachments %}
+            <div class="mb-6">
+                <span class="font-semibold text-gray-700 dark:text-gray-300 block mb-2">Ek Dosya:</span>
+                <a href="{{ complaint.attachments.url }}" 
+                   class="inline-flex items-center px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition-colors duration-150" 
+                   target="_blank">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                    </svg>
+                    Dosyayı Görüntüle
+                </a>
+            </div>
+    {% endif %}
+        
+        <!-- Etiketler -->
+        {% if complaint.tags.all %}
+            <div class="mb-6">
+                <span class="font-semibold text-gray-700 dark:text-gray-300 block mb-2">Etiketler:</span>
+                <div class="flex flex-wrap gap-2">
+        {% for tag in complaint.tags.all %}
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" 
+                              style="background-color:{{ tag.color }};color:#fff">
+                            #{{ tag.name }}
+                        </span>
+        {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- İşlem Butonları -->
+    <div class="mb-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">İşlemler</h3>
+        <div class="flex flex-wrap gap-4">
+            <!-- Güncelleme butonu - sadece şikayet sahibi -->
+            {% if complaint.submitter == request.user %}
+                <a href="{% url 'complaints:complaint_update' complaint.pk %}" 
+                   class="inline-flex items-center px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition-all duration-150 shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Düzenle
+                </a>
+            {% endif %}
+            
+            <!-- Geri çekme butonu - sadece şikayet sahibi ve uygun durumlarda -->
+            {% if complaint.submitter == request.user and complaint.can_withdraw %}
+                <button onclick="openWithdrawModal({{ complaint.pk }}, '{{ complaint.title|escapejs }}')" 
+                        class="inline-flex items-center px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-150 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                    </svg>
+                    🔄 Geri Çek
+                </button>
+            {% endif %}
+            
+            <!-- İptal butonu - sadece yöneticiler -->
+            {% if request.user.is_staff %}
+                <form method="post" action="{% url 'complaints:cancel_complaint' complaint.pk %}" class="inline-flex">
+                    {% csrf_token %}
+                    <input type="text" name="cancellation_reason" placeholder="İptal sebebi" 
+                           class="border border-gray-300 rounded-l-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent" 
+                           maxlength="200" required>
+                    <button type="submit" 
+                            class="inline-flex items-center px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-r-lg transition-all duration-150 shadow-sm"
+                            onclick="return confirm('Bu şikayeti iptal etmek istediğinizden emin misiniz?')">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        İptal Et
+                    </button>
+                </form>
+            {% endif %}
+            
+            <!-- Silme butonu - sadece şikayet sahibi -->
+            {% if complaint.submitter == request.user %}
+                <a href="{% url 'complaints:complaint_delete' complaint.pk %}" 
+                   class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-all duration-150 shadow-sm"
+                   onclick="return confirm('Bu şikayeti silmek istediğinizden emin misiniz?')">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Sil
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'complaints:complaint_list' %}" 
+               class="inline-flex items-center px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-all duration-150 shadow-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Geri Dön
+            </a>
+        </div>
+    </div>
+
+    <!-- Durum güncelleme formu - sadece yetkili kullanıcılar için -->
+    {% if request.user.is_staff %}
+    <div class="mb-8 p-6 bg-blue-50 dark:bg-blue-900 rounded-lg">
+        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Durum Güncelleme</h3>
+        <form method="post" action="{% url 'complaints:update_status' complaint.pk %}" class="flex items-center gap-4">
+        {% csrf_token %}
+            <select name="status" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            {% for status in statuses %}
+                <option value="{{ status.id }}" {% if status == complaint.status %}selected{% endif %}>{{ status.name }}</option>
+            {% endfor %}
+        </select>
+            <button type="submit" 
+                    class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-150 shadow-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Durumu Güncelle
+            </button>
+    </form>
+    </div>
+    {% endif %}
+
+    <!-- Yorumlar -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">Yorumlar</h2>
+        <div class="space-y-6">
+            {% for comment in comments %}
+                <div class="p-6 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="font-medium text-gray-900 dark:text-white">{{ comment.user.get_full_name|default:comment.user.username }}</div>
+                        <div class="text-sm text-gray-500">{{ comment.created_at|date:'d.m.Y H:i' }}</div>
+                    </div>
+                    <div class="text-gray-700 dark:text-gray-300 mb-3">{{ comment.content }}</div>
+                    {% if comment.attachments %}
+                        <div class="mt-3">
+                            <a href="{{ comment.attachments.url }}" 
+                               class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-150" 
+                               target="_blank">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                </svg>
+                                Ek Dosya
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="text-center py-8 text-gray-500">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <p>Henüz yorum yapılmamış.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Yorum ekleme formu -->
+        <div class="mt-8 p-6 bg-green-50 dark:bg-green-900 rounded-lg">
+            <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Yorum Ekle</h3>
+            <form method="post" action="{% url 'complaints:add_comment' complaint.pk %}" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            {{ comment_form.non_field_errors }}
+            {% for field in comment_form %}
+                <div>
+                        <label class="block font-medium mb-2 text-gray-700 dark:text-gray-300">{{ field.label }}</label>
+                    {{ field }}
+                        {% if field.help_text %}<p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
+                        {% for error in field.errors %}<p class="text-sm text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+            {% endfor %}
+                <button type="submit" 
+                        class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-all duration-150 shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Yorum Ekle
+                </button>
+        </form>
+        </div>
+    </div>
+
+    <!-- Geçmiş -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">İşlem Geçmişi</h2>
+        <div class="space-y-3">
+            {% for h in history %}
+                <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mr-4"></div>
+                    <div class="flex-1">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ h.created_at|date:'d.m.Y H:i' }}</div>
+                        <div class="text-gray-900 dark:text-white">
+                            <span class="font-medium">{{ h.user.get_full_name|default:h.user.username }}</span> 
+                            {{ h.action }}: 
+                            <span class="font-medium">{{ h.field }}</span>
+                        </div>
+                        {% if h.old_value and h.new_value %}
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                <span class="text-red-600">{{ h.old_value }}</span> → <span class="text-green-600">{{ h.new_value }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-8 text-gray-500">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p>Henüz işlem geçmişi bulunmuyor.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Geri Çekme Modal -->
+<div id="withdrawModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true"></div>
+  
+  <!-- Modal panel -->
+  <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full mx-auto transform transition-all">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 sm:mx-0 sm:h-10 sm:w-10">
+            <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+              Şikayet Geri Çekme
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                <strong id="modalComplaintTitle"></strong> başlıklı şikayetinizi geri çekmek istediğinizden emin misiniz?
+              </p>
+            </div>
+            
+            <form id="withdrawForm" method="post" action="" class="mt-4">
+              {% csrf_token %}
+              <div class="mb-4">
+                <label for="withdrawal_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                  Geri çekme sebebi (isteğe bağlı)
+                </label>
+                <textarea 
+                  id="withdrawal_reason" 
+                  name="withdrawal_reason" 
+                  rows="3" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  placeholder="Şikayetinizi neden geri çekiyorsunuz?"></textarea>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button type="button" 
+                onclick="submitWithdraw()"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-orange-600 text-base font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:ml-3 sm:w-auto sm:text-sm">
+          Geri Çek
+        </button>
+        <button type="button" 
+                onclick="closeWithdrawModal()"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          İptal
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openWithdrawModal(complaintId, complaintTitle) {
+    console.log('Modal açılıyor:', complaintId, complaintTitle);
+    
+    // Modal'ı göster
+    const modal = document.getElementById('withdrawModal');
+    modal.classList.remove('hidden');
+    
+    // Form action'ını güncelle
+    const form = document.getElementById('withdrawForm');
+    form.action = '/complaints/' + complaintId + '/withdraw/';
+    
+    // Modal'a complaint ID'sini kaydet
+    modal.setAttribute('data-complaint-id', complaintId);
+    
+    // Şikayet başlığını güncelle
+    document.getElementById('modalComplaintTitle').textContent = complaintTitle;
+    
+    // Body scroll'unu engelle
+    document.body.style.overflow = 'hidden';
+}
+
+function closeWithdrawModal() {
+    // Modal'ı gizle
+    const modal = document.getElementById('withdrawModal');
+    modal.classList.add('hidden');
+    
+    // Form'u temizle
+    document.getElementById('withdrawal_reason').value = '';
+    
+    // Body scroll'unu aktif et
+    document.body.style.overflow = 'auto';
+}
+
+function submitWithdraw() {
+    const form = document.getElementById('withdrawForm');
+    form.submit();
+}
+
+// ESC tuşu ile modal'ı kapat
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeWithdrawModal();
+    }
+});
+
+// Modal backdrop'a tıklayınca kapat
+document.getElementById('withdrawModal').addEventListener('click', function(event) {
+    if (event.target === this || event.target.classList.contains('bg-black')) {
+        closeWithdrawModal();
+    }
+});
+</script>
+{% endblock %} 

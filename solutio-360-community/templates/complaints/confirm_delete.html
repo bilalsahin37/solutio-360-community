@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Şikayeti Sil - {{ complaint.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto p-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Şikayeti Sil</h2>
+            <p class="text-gray-600">Bu işlem geri alınamaz!</p>
+        </div>
+        
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700">
+                        <strong>Uyarı:</strong> Bu şikayeti sildiğinizde, tüm veriler kalıcı olarak kaybolacaktır. 
+                        Bu işlem geri alınamaz.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 class="font-semibold text-gray-900 mb-2">Silinecek Şikayet:</h3>
+            <div class="space-y-2 text-sm text-gray-600">
+                <div><strong>Başlık:</strong> {{ complaint.title }}</div>
+                <div><strong>Durum:</strong> 
+                    <span class="px-2 py-1 bg-gray-200 text-gray-800 rounded text-xs">
+                        {{ complaint.get_status_display }}
+                    </span>
+                </div>
+                <div><strong>Oluşturma Tarihi:</strong> {{ complaint.created_at|date:"d.m.Y H:i" }}</div>
+                {% if complaint.category %}
+                <div><strong>Kategori:</strong> {{ complaint.category.name }}</div>
+                {% endif %}
+                <div class="pt-2">
+                    <strong>Açıklama:</strong>
+                    <p class="mt-1 text-gray-700">{{ complaint.description|truncatewords:20 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <label class="flex items-center">
+                    <input type="checkbox" id="confirm_delete" name="confirm_delete" required
+                           class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500">
+                    <span class="ml-2 text-sm text-red-700">
+                        Bu şikayeti kalıcı olarak silmek istediğimi onaylıyorum ve bu işlemin geri alınamayacağını anlıyorum.
+                    </span>
+                </label>
+            </div>
+            
+            <div class="flex justify-between pt-4">
+                <a href="{% url 'complaints:complaint_detail' complaint.pk %}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    İptal Et
+                </a>
+                
+                <button type="submit" id="delete_button" disabled
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Şikayeti Sil
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('confirm_delete').addEventListener('change', function() {
+    document.getElementById('delete_button').disabled = !this.checked;
+});
+</script>
+{% endblock %} 

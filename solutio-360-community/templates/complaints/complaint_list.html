@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Şikayetler{% endblock %}
+
+{% block content %}
+<div class="w-full p-6 w-full-page">
+    <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-900">Şikayetler</h1>
+        <a href="{% url 'complaints:complaint_create' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+            + Yeni Şikayet
+        </a>
+    </div>
+
+    <!-- Filtreler -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <form method="get" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-64">
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Arama</label>
+                <input type="text" id="search" name="search" value="{{ request.GET.search }}"
+                       placeholder="Başlık veya açıklama ara..."
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="min-w-32">
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Durum</label>
+                <select id="status" name="status" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tüm Durumlar</option>
+                    <option value="DRAFT" {% if request.GET.status == 'DRAFT' %}selected{% endif %}>Taslak</option>
+                    <option value="SUBMITTED" {% if request.GET.status == 'SUBMITTED' %}selected{% endif %}>Gönderildi</option>
+                    <option value="IN_REVIEW" {% if request.GET.status == 'IN_REVIEW' %}selected{% endif %}>İnceleniyor</option>
+                    <option value="IN_PROGRESS" {% if request.GET.status == 'IN_PROGRESS' %}selected{% endif %}>İşlemde</option>
+                    <option value="RESOLVED" {% if request.GET.status == 'RESOLVED' %}selected{% endif %}>Çözüldü</option>
+                    <option value="WITHDRAWN" {% if request.GET.status == 'WITHDRAWN' %}selected{% endif %}>Geri Çekildi</option>
+                    <option value="CANCELLED" {% if request.GET.status == 'CANCELLED' %}selected{% endif %}>İptal Edildi</option>
+                </select>
+            </div>
+            <div class="min-w-32">
+                <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Öncelik</label>
+                <select id="priority" name="priority" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tüm Öncelikler</option>
+                    <option value="LOW" {% if request.GET.priority == 'LOW' %}selected{% endif %}>Düşük</option>
+                    <option value="MEDIUM" {% if request.GET.priority == 'MEDIUM' %}selected{% endif %}>Orta</option>
+                    <option value="HIGH" {% if request.GET.priority == 'HIGH' %}selected{% endif %}>Yüksek</option>
+                    <option value="CRITICAL" {% if request.GET.priority == 'CRITICAL' %}selected{% endif %}>Kritik</option>
+                </select>
+            </div>
+            <button type="submit" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md font-medium">
+                Filtrele
+            </button>
+            <a href="{% url 'complaints:complaint_list' %}" 
+               class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium">
+                Temizle
+            </a>
+        </form>
+    </div>
+
+    <!-- Şikayet Listesi -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        {% if object_list %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Şikayet
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Durum
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Öncelik
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tarih
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                İşlemler
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for complaint in object_list %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            <a href="{% url 'complaints:complaint_detail' complaint.pk %}" 
+                                               class="hover:text-blue-600">
+                                                {{ complaint.title }}
+                                            </a>
+                                        </div>
+                                        <div class="text-sm text-gray-500 mt-1">
+                                            {{ complaint.description|truncatewords:15 }}
+                                        </div>
+                                        {% if complaint.category %}
+                                        <div class="text-xs text-gray-400 mt-1">
+                                            📂 {{ complaint.category.name }}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Geri Çekilme Bilgisi -->
+                                        {% if complaint.is_withdrawn %}
+                                        <div class="text-xs text-orange-600 mt-1 flex items-center">
+                                            🔄 {{ complaint.withdrawal_date|date:"d.m.Y" }} tarihinde geri çekildi
+                                            {% if complaint.withdrawal_reason %}
+                                                - {{ complaint.withdrawal_reason|truncatewords:8 }}
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if complaint.status == 'DRAFT' %}bg-gray-100 text-gray-800
+                                    {% elif complaint.status == 'SUBMITTED' %}bg-blue-100 text-blue-800
+                                    {% elif complaint.status == 'IN_REVIEW' %}bg-yellow-100 text-yellow-800
+                                    {% elif complaint.status == 'IN_PROGRESS' %}bg-purple-100 text-purple-800
+                                    {% elif complaint.status == 'RESOLVED' %}bg-green-100 text-green-800
+                                    {% elif complaint.status == 'CLOSED' %}bg-gray-100 text-gray-800
+                                    {% elif complaint.status == 'WITHDRAWN' %}bg-orange-100 text-orange-800
+                                    {% elif complaint.status == 'CANCELLED' %}bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ complaint.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if complaint.priority == 'LOW' %}bg-green-100 text-green-800
+                                    {% elif complaint.priority == 'MEDIUM' %}bg-yellow-100 text-yellow-800
+                                    {% elif complaint.priority == 'HIGH' %}bg-orange-100 text-orange-800
+                                    {% elif complaint.priority == 'CRITICAL' %}bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ complaint.get_priority_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ complaint.created_at|date:"d.m.Y" }}
+                                <div class="text-xs text-gray-400">
+                                    {{ complaint.created_at|date:"H:i" }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <!-- Görüntüle -->
+                                    <a href="{% url 'complaints:complaint_detail' complaint.pk %}" 
+                                       class="text-blue-600 hover:text-blue-900" title="Görüntüle">
+                                        👁️
+                                    </a>
+                                    
+                                    <!-- Kullanıcının kendi şikayetleri için işlemler -->
+                                    {% if complaint.submitter == user %}
+                                        <!-- Düzenle (sadece taslaklar) -->
+                                        {% if complaint.status == 'DRAFT' %}
+                                        <a href="{% url 'complaints:complaint_update' complaint.pk %}" 
+                                           class="text-green-600 hover:text-green-900" title="Düzenle">
+                                            ✏️
+                                        </a>
+                                        {% endif %}
+                                        
+                                        <!-- Geri Çek -->
+                                        {% if complaint.can_withdraw %}
+                                        <button onclick="quickWithdraw('{{ complaint.pk }}', '{{ complaint.title|escapejs }}')" 
+                                                class="text-orange-600 hover:text-orange-900" title="Geri Çek">
+                                            🔄
+                                        </button>
+                                        {% endif %}
+                                        
+                                        <!-- Sil (sadece taslaklar) -->
+                                        {% if complaint.status == 'DRAFT' %}
+                                        <a href="{% url 'complaints:delete_draft' complaint.pk %}" 
+                                           class="text-red-600 hover:text-red-900" title="Sil">
+                                            🗑️
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    <!-- Admin işlemleri -->
+                                    {% if user.is_staff or perms.complaints.change_complaint %}
+                                        {% if complaint.status not in 'CANCELLED,WITHDRAWN' %}
+                                        <button onclick="quickCancel('{{ complaint.pk }}', '{{ complaint.title|escapejs }}')" 
+                                                class="text-red-600 hover:text-red-900" title="İptal Et">
+                                            ❌
+                                        </button>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Sayfalama -->
+            {% if is_paginated %}
+            <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Önceki
+                            </a>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" 
+                               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Sonraki
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                <span class="font-medium">{{ page_obj.start_index }}</span>
+                                -
+                                <span class="font-medium">{{ page_obj.end_index }}</span>
+                                arası, toplam
+                                <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                                sonuç
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                {% if page_obj.has_previous %}
+                                    <a href="?page=1" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        ⏮️
+                                    </a>
+                                    <a href="?page={{ page_obj.previous_page_number }}" 
+                                       class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        ⏪
+                                    </a>
+                                {% endif %}
+                                
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                                </span>
+                                
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}" 
+                                       class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        ⏩
+                                    </a>
+                                    <a href="?page={{ page_obj.paginator.num_pages }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        ⏭️
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-12">
+                <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Henüz şikayet yok</h3>
+                <p class="text-gray-500 mb-4">İlk şikayetinizi oluşturmak için aşağıdaki butona tıklayın.</p>
+                <a href="{% url 'complaints:complaint_create' %}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    + Yeni Şikayet
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Hızlı Geri Çekme Modal -->
+<div id="quickWithdrawModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex justify-center items-center h-full">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Şikayeti Geri Çek</h3>
+            <p class="text-gray-600 mb-4">
+                "<span id="withdrawComplaintTitle"></span>" başlıklı şikayeti geri çekmek istediğinizden emin misiniz?
+            </p>
+            <form id="withdrawForm" method="post" onsubmit="return handleWithdrawSubmit(event)">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="quick_withdrawal_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Geri Çekme Sebebi (isteğe bağlı):
+                    </label>
+                    <textarea id="quick_withdrawal_reason" name="withdrawal_reason" rows="2" 
+                              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Neden bu şikayeti geri çekiyorsunuz?"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeQuickWithdrawModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        İptal
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">
+                        Geri Çek
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Hızlı İptal Modal -->
+<div id="quickCancelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex justify-center items-center h-full">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Şikayeti İptal Et</h3>
+            <p class="text-gray-600 mb-4">
+                "<span id="cancelComplaintTitle"></span>" başlıklı şikayeti iptal etmek istediğinizden emin misiniz?
+            </p>
+            <form id="cancelForm" method="post" onsubmit="return handleCancelSubmit(event)">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="quick_cancellation_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        İptal Sebebi: <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="quick_cancellation_reason" name="cancellation_reason" rows="2" required
+                              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                              placeholder="Bu şikayeti neden iptal ediyorsunuz?"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeQuickCancelModal()" 
+                            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Vazgeç
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                        İptal Et
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function quickWithdraw(complaintId, complaintTitle) {
+    document.getElementById('withdrawComplaintTitle').textContent = complaintTitle;
+    document.getElementById('withdrawForm').action = `{% url 'complaints:withdraw_complaint' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', complaintId);
+    document.getElementById('quickWithdrawModal').classList.remove('hidden');
+}
+
+function closeQuickWithdrawModal() {
+    document.getElementById('quickWithdrawModal').classList.add('hidden');
+    document.getElementById('quick_withdrawal_reason').value = '';
+}
+
+function handleWithdrawSubmit(event) {
+    // Form gönderimini normal şekilde devam ettir
+    // Gönderimden sonra sayfayı yenile
+    setTimeout(function() {
+        window.location.reload();
+    }, 1000);
+    return true;
+}
+
+function quickCancel(complaintId, complaintTitle) {
+    document.getElementById('cancelComplaintTitle').textContent = complaintTitle;
+    document.getElementById('cancelForm').action = `{% url 'complaints:cancel_complaint' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', complaintId);
+    document.getElementById('quickCancelModal').classList.remove('hidden');
+}
+
+function closeQuickCancelModal() {
+    document.getElementById('quickCancelModal').classList.add('hidden');
+    document.getElementById('quick_cancellation_reason').value = '';
+}
+
+function handleCancelSubmit(event) {
+    // Form gönderimini normal şekilde devam ettir
+    // Gönderimden sonra sayfayı yenile
+    setTimeout(function() {
+        window.location.reload();
+    }, 1000);
+    return true;
+}
+
+// Modal dışına tıklayınca kapat
+document.addEventListener('click', function(event) {
+    if (event.target.id === 'quickWithdrawModal') closeQuickWithdrawModal();
+    if (event.target.id === 'quickCancelModal') closeQuickCancelModal();
+});
+</script>
+{% endblock %} 

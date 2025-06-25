@@ -1,0 +1,256 @@
+{% load static %}
+
+<!-- Footer Bölümü -->
+<footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            <!-- Logo ve Hakkında -->
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center mb-4">
+                    <img class="h-8 w-8" src="{% static 'images/logo.png' %}" alt="Solutio 360" onerror="this.style.display='none'">
+                    <span class="ml-2 text-xl font-bold text-gray-900 dark:text-white">Solutio 360</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 text-sm max-w-md">
+                    Modern şikayet ve rapor yönetim sistemi. Kullanıcı dostu PWA teknolojisi ile 
+                    her yerden erişilebilir ve offline çalışabilir.
+                </p>
+                <div class="mt-4">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">PWA Özellikleri</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded">
+                            Offline Çalışır
+                        </span>
+                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded">
+                            Mobil Uyumlu
+                        </span>
+                        <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs px-2 py-1 rounded">
+                            Hızlı Yükleme
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hızlı Linkler -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+                    Hızlı Linkler
+                </h3>
+                <ul class="space-y-2">
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'dashboard' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'complaints:complaint_list' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Şikayetler
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'complaints:complaint_create' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Yeni Şikayet
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'reports:report_list' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Raporlar
+                        </a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'home' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Ana Sayfa
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'account_login' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Giriş Yap
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'account_signup' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Kayıt Ol
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Destek ve İletişim -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+                    Destek
+                </h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Yardım Merkezi
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            İletişim
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'health' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            Sistem Durumu
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'schema-swagger-ui' %}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors">
+                            API Dokümantasyonu
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Alt Çizgi ve Telif Hakkı -->
+        <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                
+                <!-- Telif Hakkı -->
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <p>&copy; {% now "Y" %} Solutio 360. Tüm hakları saklıdır.</p>
+                    <p class="mt-1">
+                        Django {{ django_version }} ile ❤️ ile yapıldı
+                    </p>
+                </div>
+
+                <!-- Sosyal Medya ve Linkler -->
+                <div class="flex items-center space-x-6 mt-4 md:mt-0">
+                    <!-- Gizlilik ve Kullanım -->
+                    <div class="flex space-x-4 text-sm">
+                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            Gizlilik Politikası
+                        </a>
+                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            Kullanım Şartları
+                        </a>
+                    </div>
+                    
+                    <!-- Sosyal Medya -->
+                    <div class="flex space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PWA Install Banner - Mobil için -->
+        <div id="pwa-install-banner" class="hidden mt-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-mobile-alt text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Uygulamayı Telefonunuza Yükleyin
+                        </h4>
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            Offline çalışır ve daha hızlı yüklenir
+                        </p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="pwa-install-banner-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition-colors">
+                        Yükle
+                    </button>
+                    <button id="pwa-dismiss-banner" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm px-3 py-1">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Footer JavaScript -->
+<script>
+// PWA install banner gösterme/gizleme
+document.addEventListener('DOMContentLoaded', function() {
+    const installBanner = document.getElementById('pwa-install-banner');
+    const installBtn = document.getElementById('pwa-install-banner-btn');
+    const dismissBtn = document.getElementById('pwa-dismiss-banner');
+    
+    // PWA install event'ini yakala
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Banner'ı göster (eğer daha önce dismiss edilmemişse)
+        if (!localStorage.getItem('pwa-banner-dismissed')) {
+            installBanner.classList.remove('hidden');
+        }
+    });
+    
+    // Install butonuna tıklama
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('PWA yüklendi');
+                }
+                
+                deferredPrompt = null;
+                installBanner.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Dismiss butonuna tıklama
+    if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+            installBanner.classList.add('hidden');
+            localStorage.setItem('pwa-banner-dismissed', 'true');
+        });
+    }
+    
+    // PWA yüklendikten sonra banner'ı gizle
+    window.addEventListener('appinstalled', () => {
+        installBanner.classList.add('hidden');
+        localStorage.setItem('pwa-banner-dismissed', 'true');
+    });
+});
+
+// Scroll to top butonu
+const scrollToTopBtn = document.createElement('button');
+scrollToTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+scrollToTopBtn.className = 'fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 pointer-events-none z-40';
+scrollToTopBtn.setAttribute('aria-label', 'Üste git');
+document.body.appendChild(scrollToTopBtn);
+
+// Scroll durumuna göre buton gösterme/gizleme
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 500) {
+        scrollToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        scrollToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+    }
+});
+
+// Scroll to top işlevi
+scrollToTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+</script> 

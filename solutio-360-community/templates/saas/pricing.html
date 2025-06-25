@@ -1,0 +1,535 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Solutio 360 - Fiyatlandırma{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pricing.css' %}">
+<style>
+.pricing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.pricing-hero {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.pricing-hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.pricing-hero p {
+    font-size: 1.25rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pricing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.pricing-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.pricing-card.featured {
+    border-color: #3b82f6;
+    transform: scale(1.05);
+}
+
+.pricing-card.featured::before {
+    content: 'En Popüler';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3b82f6;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.plan-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.plan-price {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 2rem;
+}
+
+.price-amount {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.price-currency {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-right: 0.25rem;
+}
+
+.price-period {
+    font-size: 1rem;
+    color: #9ca3af;
+    margin-left: 0.5rem;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #4b5563;
+}
+
+.plan-features li:before {
+    content: '✓';
+    background: #10b981;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.plan-features li.unavailable {
+    color: #9ca3af;
+}
+
+.plan-features li.unavailable:before {
+    content: '✗';
+    background: #ef4444;
+}
+
+.plan-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.plan-button.primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.plan-button.primary:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+}
+
+.plan-button.secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 2px solid #d1d5db;
+}
+
+.plan-button.secondary:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.plan-button.current {
+    background: #10b981;
+    color: white;
+    cursor: default;
+}
+
+.comparison-table {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.comparison-table h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.comparison-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+
+.comparison-table td {
+    color: #6b7280;
+}
+
+.feature-check {
+    color: #10b981;
+    font-weight: bold;
+}
+
+.feature-cross {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.faq-section {
+    margin-top: 4rem;
+}
+
+.faq-section h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1f2937;
+}
+
+.faq-item {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.faq-question {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.faq-answer {
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .pricing-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .pricing-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .pricing-card.featured {
+        transform: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pricing-container">
+    <!-- Hero Section -->
+    <div class="pricing-hero">
+        <h1>Solutio 360 Fiyatlandırma</h1>
+        <p>İşletmenizin büyüklüğüne uygun planı seçin ve yapay zeka destekli şikayet yönetiminin gücünü keşfedin.</p>
+    </div>
+
+    <!-- Pricing Cards -->
+    <div class="pricing-cards">
+        {% for plan in plans %}
+        <div class="pricing-card {% if plan.code == 'professional' %}featured{% endif %}">
+            <div class="plan-name">{{ plan.name }}</div>
+            
+            <div class="plan-price">
+                <span class="price-currency">₺</span>
+                <span class="price-amount">
+                    {% if plan.code == 'free' %}
+                        0
+                    {% else %}
+                        {{ plan.price_monthly|floatformat:0 }}
+                    {% endif %}
+                </span>
+                <span class="price-period">/ay</span>
+            </div>
+
+            <ul class="plan-features">
+                {% if plan.code == 'free' %}
+                    <li>25 şikayet/ay</li>
+                    <li>1 kullanıcı</li>
+                    <li>Temel raporlama</li>
+                    <li>Email destek</li>
+                    <li class="unavailable">Gelişmiş ML</li>
+                    <li class="unavailable">API erişimi</li>
+                    <li class="unavailable">Real-time analytics</li>
+                {% elif plan.code == 'starter' %}
+                    <li>250 şikayet/ay</li>
+                    <li>5 kullanıcı</li>
+                    <li>Temel ML analitik</li>
+                    <li>Duygu analizi</li>
+                    <li>API erişimi (100/gün)</li>
+                    <li>Email + Chat destek</li>
+                    <li class="unavailable">Real-time analytics</li>
+                {% elif plan.code == 'professional' %}
+                    <li>1000 şikayet/ay</li>
+                    <li>15 kullanıcı</li>
+                    <li>Gelişmiş ML & RL</li>
+                    <li>Real-time analytics</li>
+                    <li>Custom dashboard</li>
+                    <li>API (1000/gün)</li>
+                    <li>WhatsApp/SMS entegrasyon</li>
+                    <li>Öncelikli destek</li>
+                {% elif plan.code == 'enterprise' %}
+                    <li>Sınırsız şikayet</li>
+                    <li>Sınırsız kullanıcı</li>
+                    <li>Tam ML suite</li>
+                    <li>White-label çözüm</li>
+                    <li>Custom domain</li>
+                    <li>Advanced API (sınırsız)</li>
+                    <li>SSO entegrasyonu</li>
+                    <li>Dedicated support</li>
+                {% endif %}
+            </ul>
+
+            {% if user.is_authenticated and request.tenant.subscription_plan == plan.code %}
+                <div class="plan-button current">Aktif Plan</div>
+            {% elif plan.code == 'free' %}
+                <a href="{% url 'signup' %}" class="plan-button secondary">Ücretsiz Başla</a>
+            {% else %}
+                <a href="{% if user.is_authenticated %}{% url 'saas:upgrade_plan' plan.id %}{% else %}{% url 'signup' %}{% endif %}" 
+                   class="plan-button {% if plan.code == 'professional' %}primary{% else %}secondary{% endif %}">
+                    {% if user.is_authenticated %}Planı Seç{% else %}Başlayın{% endif %}
+                </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <div class="comparison-table">
+        <h3>Özellik Karşılaştırması</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Özellik</th>
+                    <th>Free</th>
+                    <th>Starter</th>
+                    <th>Professional</th>
+                    <th>Enterprise</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Aylık Şikayet Limiti</td>
+                    <td>25</td>
+                    <td>250</td>
+                    <td>1,000</td>
+                    <td>Sınırsız</td>
+                </tr>
+                <tr>
+                    <td>Kullanıcı Sayısı</td>
+                    <td>1</td>
+                    <td>5</td>
+                    <td>15</td>
+                    <td>Sınırsız</td>
+                </tr>
+                <tr>
+                    <td>Duygu Analizi</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>Makine Öğrenmesi</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td>Temel</td>
+                    <td>Gelişmiş</td>
+                    <td>Tam Suite</td>
+                </tr>
+                <tr>
+                    <td>API Erişimi</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td>100/gün</td>
+                    <td>1,000/gün</td>
+                    <td>Sınırsız</td>
+                </tr>
+                <tr>
+                    <td>Real-time Analytics</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>Custom Branding</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>White Label</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>SSO Entegrasyonu</td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-cross">✗</span></td>
+                    <td><span class="feature-check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>Destek</td>
+                    <td>Email</td>
+                    <td>Email + Chat</td>
+                    <td>Öncelikli</td>
+                    <td>Dedicated</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h3>Sıkça Sorulan Sorular</h3>
+        
+        <div class="faq-item">
+            <div class="faq-question">🔄 Planımı istediğim zaman değiştirebilir miyim?</div>
+            <div class="faq-answer">
+                Evet, planınızı istediğiniz zaman yükseltebilir veya düşürebilirsiniz. 
+                Değişiklikler anında etkili olur ve fatura döngünüz buna göre ayarlanır.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💳 Hangi ödeme yöntemlerini kabul ediyorsunuz?</div>
+            <div class="faq-answer">
+                Kredi kartı, banka kartı ve banka havalesi ile ödeme yapabilirsiniz. 
+                Tüm ödemeler SSL ile korunmaktadır.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">📊 Limitimi aştığımda ne olur?</div>
+            <div class="faq-answer">
+                Limitinizi aştığınızda sistem sizi uyarır ve planınızı yükseltmenizi önerir. 
+                Önemli işlemleriniz kesilmez, ancak ek özellikler kısıtlanabilir.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">🆓 Ücretsiz deneme var mı?</div>
+            <div class="faq-answer">
+                Evet! Free plan ile başlayabilir ve sistemi deneyebilirsiniz. 
+                Ayrıca Professional ve Enterprise planları için 14 günlük ücretsiz deneme sunuyoruz.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">📱 Mobil uygulama var mı?</div>
+            <div class="faq-answer">
+                Solutio 360 PWA (Progressive Web App) teknolojisi ile geliştirilmiştir. 
+                Bu sayede tüm cihazlarda native app deneyimi yaşarsınız.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">🔒 Verilerim güvende mi?</div>
+            <div class="faq-answer">
+                Evet, tüm verileriniz şifrelenir ve güvenli sunucularda saklanır. 
+                GDPR ve KVKK uyumlu olarak hareket ediyoruz.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// FAQ accordion functionality
+document.querySelectorAll('.faq-question').forEach(question => {
+    question.addEventListener('click', function() {
+        const answer = this.nextElementSibling;
+        const isOpen = answer.style.display === 'block';
+        
+        // Close all answers
+        document.querySelectorAll('.faq-answer').forEach(a => {
+            a.style.display = 'none';
+        });
+        
+        // Toggle current answer
+        if (!isOpen) {
+            answer.style.display = 'block';
+        }
+    });
+});
+
+// Plan selection tracking
+document.querySelectorAll('.plan-button').forEach(button => {
+    button.addEventListener('click', function(e) {
+        // Google Analytics tracking
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'select_plan', {
+                'plan_name': this.closest('.pricing-card').querySelector('.plan-name').textContent,
+                'value': this.closest('.pricing-card').querySelector('.price-amount').textContent
+            });
+        }
+    });
+});
+</script>
+{% endblock %} 
