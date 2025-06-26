@@ -231,10 +231,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [API Documentation](docs/api.md)
 - [Development Guide](docs/development.md)
 
-### Community
-- [GitHub Issues](https://github.com/your-org/solutio-360/issues)
-- [Discussions](https://github.com/your-org/solutio-360/discussions)
-- [Wiki](https://github.com/your-org/solutio-360/wiki)
+### Links & Community
+- **🌐 Website**: [solutio360.com](https://solutio360.com) *(Coming Soon)*
+- **👥 Community**: [solutio-360.org](https://solutio-360.org) *(Coming Soon)*
+- **📚 Documentation**: [docs.solutio360.com](https://docs.solutio360.com) *(Coming Soon)*
+- **📖 GitHub Issues**: [Issues](https://github.com/bilalsahin37/solutio-360-community/issues)
+- **💬 Discussions**: [Discussions](https://github.com/bilalsahin37/solutio-360-community/discussions)
+- **📝 Wiki**: [Wiki](https://github.com/bilalsahin37/solutio-360-community/wiki)
 
 ## 🔒 Security
 
