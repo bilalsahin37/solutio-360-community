@@ -1,66 +1,66 @@
 # 🔄 Solutio 360 - Dual Licensing Model
 
-## Çift Lisanslama Stratejisi
+## Dual Licensing Strategy
 
-Solutio 360, geliştiricilere ve işletmelere esneklik sağlamak için **çift lisanslama modeli** sunar:
+Solutio 360 offers a **dual licensing model** to provide flexibility for developers and businesses:
 
 ---
 
 ## 📝 **Option 1: Community License (GPL-3.0)**
 
-### 🆓 **Community Edition - Ücretsiz Kullanım**
+### 🆓 **Community Edition - Free Usage**
 
-**Kim İçin:**
-- ✅ Open source projeleri
-- ✅ Akademik araştırmalar
-- ✅ Kişisel kullanım
-- ✅ Non-profit organizasyonlar
-- ✅ GPL uyumlu projeler
+**For:**
+- ✅ Open source projects
+- ✅ Academic research
+- ✅ Personal use
+- ✅ Non-profit organizations
+- ✅ GPL compatible projects
 
-**Şartlar:**
-- ✅ Kaynak kodu açık olmalı
-- ✅ Değişiklikler paylaşılmalı
-- ✅ GPL-3.0 lisansı korunmalı
-- ✅ Copyright notice'lar korunmalı
+**Conditions:**
+- ✅ Source code must be open
+- ✅ Changes must be shared
+- ✅ GPL-3.0 license must be maintained
+- ✅ Copyright notices must be preserved
 
-**İndirme:**
+**Download:**
 ```bash
-git clone https://github.com/yourusername/solutio-360-community
+git clone https://github.com/bilalsahin37/solutio-360-community
 ```
 
 ---
 
 ## 💼 **Option 2: Commercial License (Proprietary)**
 
-### 💰 **Enterprise Edition - Ticari Lisans**
+### 💰 **Enterprise Edition - Commercial License**
 
-**Kim İçin:**
-- 🏢 Ticari şirketler
-- 💼 SaaS sağlayıcıları
-- 🔒 Proprietary yazılım geliştiricileri
-- 📦 OEM entegrasyonları
+**For:**
+- 🏢 Commercial companies
+- 💼 SaaS providers
+- 🔒 Proprietary software developers
+- 📦 OEM integrations
 - 🚀 Production deployments
 
-**Avantajlar:**
-- ✅ Kaynak kodu kapatabilme
-- ✅ Proprietary kullanım hakkı
-- ✅ GPL zorunluluğu yok
-- ✅ Premium özellikler
-- ✅ Prioritized support
+**Advantages:**
+- ✅ Can close source code
+- ✅ Proprietary usage rights
+- ✅ No GPL obligations
+- ✅ Premium features
+- ✅ Priority support
 - ✅ Custom development
 
 ---
 
 ## 🎯 **Feature Comparison**
 
-| Özellik | Community (GPL) | Enterprise (Commercial) |
+| Feature | Community (GPL) | Enterprise (Commercial) |
 |---------|----------------|-------------------------|
-| **Temel Şikayet Yönetimi** | ✅ | ✅ |
-| **Kullanıcı Yönetimi** | ✅ | ✅ |
-| **Raporlama** | ✅ | ✅ |
-| **PWA Desteği** | ✅ | ✅ |
-| **Temel API** | ✅ | ✅ |
-| **AI/ML Analytics** | ⚠️ Sınırlı | ✅ Tam |
+| **Basic Complaint Management** | ✅ | ✅ |
+| **User Management** | ✅ | ✅ |
+| **Reporting** | ✅ | ✅ |
+| **PWA Support** | ✅ | ✅ |
+| **Basic API** | ✅ | ✅ |
+| **AI/ML Analytics** | ⚠️ Limited | ✅ Full |
 | **Advanced Dashboard** | ❌ | ✅ |
 | **SSO Integration** | ❌ | ✅ |
 | **Custom Branding** | ❌ | ✅ |
@@ -141,4 +141,4 @@ curl -O https://solutio360.com/cla.pdf
 
 ---
 
-**© 2024 [Your Name/Company]. All rights reserved.** 
+**© 2024 Solutio 360 Team. All rights reserved.** 
