@@ -246,7 +246,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Role-based access control
 
 ### Reporting Security Issues
-Please report security vulnerabilities to security@solutio360.com
+Please report security vulnerabilities to bilalsahin37@gmail.com
 
 ## 📈 Roadmap
 
