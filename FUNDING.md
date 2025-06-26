@@ -154,7 +154,8 @@
 ## 📞 **Contact for Investment**
 
 **Bilal ŞAHİN** - Founder
-- **Email**: bilalsahin37@hotmail.com
+- **Email**: bilal@solutio360.net
+- **Website**: [www.solutio360.net](https://www.solutio360.net)
 - **GitHub**: [@bilalsahin37](https://github.com/bilalsahin37)
 - **Project**: [Solutio 360 Community](https://github.com/bilalsahin37/solutio-360-community)
 

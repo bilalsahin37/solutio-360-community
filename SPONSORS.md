@@ -4,25 +4,25 @@ Thank you to all our amazing sponsors who make Solutio 360 possible!
 
 ## 🏆 **Premium Sponsors ($500+ monthly)**
 
-*Your logo and company name could be here! [Become a sponsor](mailto:bilalsahin37@hotmail.com)*
+*Your logo and company name could be here! [Become a sponsor](mailto:bilal@solutio360.net)*
 
 ---
 
 ## 🥈 **Gold Sponsors ($100+ monthly)**
 
-*Your logo and company name could be here! [Become a sponsor](mailto:bilalsahin37@hotmail.com)*
+*Your logo and company name could be here! [Become a sponsor](mailto:bilal@solutio360.net)*
 
 ---
 
 ## 🥉 **Silver Sponsors ($50+ monthly)**
 
-*Your logo and company name could be here! [Become a sponsor](mailto:bilalsahin37@hotmail.com)*
+*Your logo and company name could be here! [Become a sponsor](mailto:bilal@solutio360.net)*
 
 ---
 
 ## ☕ **Coffee Sponsors ($10+ monthly)**
 
-*Your name could be here! [Become a sponsor](mailto:bilalsahin37@hotmail.com)*
+*Your name could be here! [Become a sponsor](mailto:bilal@solutio360.net)*
 
 ---
 
@@ -115,7 +115,8 @@ Thank you to all our amazing sponsors who make Solutio 360 possible!
 ## 📞 **Contact for Sponsorship**
 
 **Bilal ŞAHİN** - Project Creator & Maintainer
-- **Email**: bilalsahin37@hotmail.com
+- **Email**: bilal@solutio360.net
+- **Website**: [www.solutio360.net](https://www.solutio360.net)
 - **GitHub**: [@bilalsahin37](https://github.com/bilalsahin37)
 - **LinkedIn**: [Connect with me](https://linkedin.com/in/bilalsahin37) *(if available)*
 

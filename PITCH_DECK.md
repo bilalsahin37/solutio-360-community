@@ -130,7 +130,8 @@
 - 🎓 **Background**: Full-stack developer, Django expert
 - 💼 **Experience**: 5+ years in enterprise software
 - 🎯 **Vision**: Democratizing complaint management through open source
-- 📧 **Contact**: bilalsahin37@hotmail.com
+- 📧 **Contact**: bilal@solutio360.net
+- 🌐 **Website**: [www.solutio360.net](https://www.solutio360.net)
 
 ### **🔍 Hiring Plan (Post-Funding)**
 - **CTO**: Technical leadership and architecture scaling
@@ -220,7 +221,7 @@
 ### **🚀 Ready to Join the Revolution?**
 
 #### **Next Steps**
-1. **📧 Email**: bilalsahin37@hotmail.com
+1. **📧 Email**: bilal@solutio360.net
 2. **📅 Schedule**: 30-minute intro call
 3. **🔍 Due Diligence**: Full data room access
 4. **📋 Term Sheet**: Investment terms discussion
@@ -250,7 +251,8 @@
 
 ### **📞 Contact Information**
 - **Founder**: Bilal ŞAHİN
-- **Email**: bilalsahin37@hotmail.com
+- **Email**: bilal@solutio360.net
+- **Website**: [www.solutio360.net](https://www.solutio360.net)
 - **GitHub**: [@bilalsahin37](https://github.com/bilalsahin37)
 - **Project**: [Solutio 360 Community](https://github.com/bilalsahin37/solutio-360-community)
 

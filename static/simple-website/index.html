@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Solutio 360 - Modern complaint management platform built with Django and PWA technology. Enterprise-ready with AI-powered features.">
+    <meta name="keywords" content="complaint management, customer feedback, Django, PWA, open source, enterprise">
+    <meta name="author" content="Bilal ŞAHİN">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Solutio 360 - Modern Complaint Management Platform">
+    <meta property="og:description" content="Enterprise-ready complaint management system with PWA technology and AI-powered features">
+    <meta property="og:image" content="https://www.solutio360.net/images/og-image.png">
+    <meta property="og:url" content="https://www.solutio360.net">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Solutio 360">
+    <meta name="twitter:description" content="Modern complaint management platform">
+    <meta name="twitter:image" content="https://www.solutio360.net/images/og-image.png">
+    
+    <title>Solutio 360 - Modern Complaint Management Platform</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Solutio 360</h1>
+                    <span class="ml-2 px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">BETA</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#features" class="text-gray-600 hover:text-gray-900">Features</a>
+                    <a href="#demo" class="text-gray-600 hover:text-gray-900">Demo</a>
+                    <a href="#sponsors" class="text-gray-600 hover:text-gray-900">Sponsors</a>
+                    <a href="https://github.com/bilalsahin37/solutio-360-community" class="text-gray-600 hover:text-gray-900">GitHub</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="mailto:bilal@solutio360.net" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Revolutionize Your<br>
+                    <span class="text-yellow-300">Customer Feedback</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                    Modern complaint management platform built with Django and PWA technology.<br>
+                    Enterprise-ready with AI-powered features.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="https://github.com/bilalsahin37/solutio-360-community" 
+                       class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                        🚀 Try Demo
+                    </a>
+                    <a href="https://github.com/bilalsahin37/solutio-360-community" 
+                       class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition">
+                        ⭐ GitHub Repo
+                    </a>
+                </div>
+                
+                <!-- GitHub Stats -->
+                <div class="flex justify-center space-x-8 mt-12 text-blue-100">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold">1K+</div>
+                        <div class="text-sm">Users</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold">100+</div>
+                        <div class="text-sm">GitHub Stars</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold">MIT</div>
+                        <div class="text-sm">Open Source</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose Solutio 360?</h2>
+                <p class="text-xl text-gray-600">Modern technology stack with enterprise-grade features</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- PWA Feature -->
+                <div class="feature-card bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl">📱</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Progressive Web App</h3>
+                    <p class="text-gray-600">Works offline, installs like a native app, fast loading with modern caching strategies.</p>
+                </div>
+                
+                <!-- AI Feature -->
+                <div class="feature-card bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl">🤖</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">AI-Powered Routing</h3>
+                    <p class="text-gray-600">Intelligent categorization and automatic assignment using machine learning algorithms.</p>
+                </div>
+                
+                <!-- Analytics Feature -->
+                <div class="feature-card bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl">📊</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Real-time Analytics</h3>
+                    <p class="text-gray-600">Live dashboards with insights, KPI tracking, and comprehensive reporting tools.</p>
+                </div>
+                
+                <!-- Enterprise Feature -->
+                <div class="feature-card bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl">🏢</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Enterprise Ready</h3>
+                    <p class="text-gray-600">Scalable architecture, security compliance, multi-tenant support for large organizations.</p>
+                </div>
+                
+                <!-- Open Source Feature -->
+                <div class="feature-card bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl">🔓</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Open Source</h3>
+                    <p class="text-gray-600">GPL-3.0 licensed community edition with commercial licensing options available.</p>
+                </div>
+                
+                <!-- Integration Feature -->
+                <div class="feature-card bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl">🔌</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Easy Integration</h3>
+                    <p class="text-gray-600">REST API, webhooks, and plugins for seamless integration with existing systems.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">See It In Action</h2>
+            <p class="text-xl text-gray-600 mb-8">Experience the power of modern complaint management</p>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg mb-8 flex items-center justify-center">
+                    <div class="text-center">
+                        <span class="text-6xl mb-4 block">🎥</span>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Live Demo</h3>
+                        <p class="text-gray-600 mb-4">Interactive demonstration of all features</p>
+                        <a href="https://github.com/bilalsahin37/solutio-360-community" 
+                           class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                            🚀 Launch Demo
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Demo Stats -->
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div>
+                        <div class="text-3xl font-bold text-blue-600">5 min</div>
+                        <div class="text-gray-600">Quick Setup</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-green-600">90%</div>
+                        <div class="text-gray-600">Cost Reduction</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-purple-600">24/7</div>
+                        <div class="text-gray-600">Offline Access</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sponsors Section -->
+    <section id="sponsors" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Support Open Source Innovation</h2>
+            <p class="text-xl text-gray-600 mb-12">Help us accelerate development and get your brand featured</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Sponsor Tiers -->
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+                    <div class="text-3xl mb-2">🏆</div>
+                    <h3 class="font-bold text-lg mb-2">Premium</h3>
+                    <p class="text-sm text-gray-600 mb-3">$500+/month</p>
+                    <ul class="text-sm text-left space-y-1">
+                        <li>✅ Logo on homepage</li>
+                        <li>✅ Dedicated blog post</li>
+                        <li>✅ Priority support</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-6">
+                    <div class="text-3xl mb-2">🥈</div>
+                    <h3 class="font-bold text-lg mb-2">Gold</h3>
+                    <p class="text-sm text-gray-600 mb-3">$100+/month</p>
+                    <ul class="text-sm text-left space-y-1">
+                        <li>✅ Logo in README</li>
+                        <li>✅ Social mentions</li>
+                        <li>✅ Newsletter inclusion</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
+                    <div class="text-3xl mb-2">🥉</div>
+                    <h3 class="font-bold text-lg mb-2">Silver</h3>
+                    <p class="text-sm text-gray-600 mb-3">$50+/month</p>
+                    <ul class="text-sm text-left space-y-1">
+                        <li>✅ Name in sponsors</li>
+                        <li>✅ GitHub promotion</li>
+                        <li>✅ Issue priority</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 border-2 border-green-200 rounded-xl p-6">
+                    <div class="text-3xl mb-2">☕</div>
+                    <h3 class="font-bold text-lg mb-2">Coffee</h3>
+                    <p class="text-sm text-gray-600 mb-3">$10+/month</p>
+                    <ul class="text-sm text-left space-y-1">
+                        <li>✅ Supporters list</li>
+                        <li>✅ Community recognition</li>
+                        <li>✅ Early access</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="mailto:bilal@solutio360.net?subject=Sponsorship Inquiry" 
+                   class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    💝 Become a Sponsor
+                </a>
+                <a href="https://github.com/bilalsahin37/solutio-360-community/blob/main/SPONSORS.md" 
+                   class="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                    📋 View Details
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 gradient-bg text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+            <p class="text-xl mb-8 text-blue-100">
+                Join the community of developers and businesses revolutionizing complaint management
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <a href="https://github.com/bilalsahin37/solutio-360-community" 
+                   class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                    📥 Download Now
+                </a>
+                <a href="mailto:bilal@solutio360.net?subject=Enterprise Inquiry" 
+                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition">
+                    💼 Enterprise Sales
+                </a>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="text-blue-100">
+                <p class="mb-2">Questions? Contact us at:</p>
+                <p class="font-semibold">bilal@solutio360.net</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Solutio 360</h3>
+                    <p class="text-gray-400">Modern complaint management platform for the digital age.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#features" class="hover:text-white">Features</a></li>
+                        <li><a href="#demo" class="hover:text-white">Demo</a></li>
+                        <li><a href="https://github.com/bilalsahin37/solutio-360-community" class="hover:text-white">Download</a></li>
+                        <li><a href="mailto:bilal@solutio360.net" class="hover:text-white">Enterprise</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Community</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="https://github.com/bilalsahin37/solutio-360-community" class="hover:text-white">GitHub</a></li>
+                        <li><a href="#sponsors" class="hover:text-white">Sponsors</a></li>
+                        <li><a href="https://github.com/bilalsahin37/solutio-360-community/issues" class="hover:text-white">Issues</a></li>
+                        <li><a href="https://github.com/bilalsahin37/solutio-360-community/discussions" class="hover:text-white">Discussions</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>bilal@solutio360.net</li>
+                        <li>www.solutio360.net</li>
+                        <li>GitHub: @bilalsahin37</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Bilal ŞAHİN. Licensed under GPL-3.0 (Community) / Commercial License (Enterprise).</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Analytics -->
+    <script>
+        // Google Analytics (replace with your tracking ID when available)
+        // gtag('config', 'GA_TRACKING_ID');
+        
+        // Simple click tracking
+        document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+            link.addEventListener('click', () => {
+                console.log('Email contact clicked');
+            });
+        });
+        
+        document.querySelectorAll('a[href*="github"]').forEach(link => {
+            link.addEventListener('click', () => {
+                console.log('GitHub link clicked');
+            });
+        });
+    </script>
+</body>
+</html> 
