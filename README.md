@@ -1,60 +1,60 @@
-# Solutio 360 - Şikayet Yönetim Sistemi
+# Solutio 360 - Complaint Management System
 
-Modern, güvenli ve kullanıcı dostu Progressive Web App (PWA) olarak geliştirilen şikayet yönetim sistemi.
+Modern, secure, and user-friendly complaint management system developed as a Progressive Web App (PWA).
 
-## 🚀 Özellikler
+## 🚀 Features
 
-### Temel Özellikler
-- **Şikayet Yönetimi**: Şikayet oluşturma, takip etme ve çözüm süreçleri
-- **Kullanıcı Yönetimi**: Rol bazlı yetkilendirme sistemi
-- **Raporlama**: Detaylı analitik ve raporlama araçları
-- **Bildirim Sistemi**: Real-time bildirimler ve email entegrasyonu
+### Core Features
+- **Complaint Management**: Create, track, and resolve complaints
+- **User Management**: Role-based authorization system
+- **Reporting**: Detailed analytics and reporting tools
+- **Notification System**: Real-time notifications and email integration
 
-### PWA Özellikleri
-- **Offline Çalışma**: Service Worker ile offline desteği
-- **App Install**: Mobil cihazlara yüklenebilir
-- **Push Bildirimleri**: Gerçek zamanlı bildirimler
-- **Responsive Tasarım**: Tüm cihazlarda uyumlu
+### PWA Features
+- **Offline Support**: Service Worker with offline capabilities
+- **App Installation**: Installable on mobile devices
+- **Push Notifications**: Real-time notifications
+- **Responsive Design**: Compatible with all devices
 
-### Teknoloji Stack
+### Technology Stack
 - **Backend**: Django 5.2.2, Python 3.11+
 - **Frontend**: Tailwind CSS, JavaScript ES6+
-- **Database**: SQLite (geliştirme), PostgreSQL (production)
+- **Database**: SQLite (development), PostgreSQL (production)
 - **Cache**: Redis
 - **Queue**: Celery
 - **PWA**: Service Worker, Web App Manifest
 
-## 📋 Gereksinimler
+## 📋 Requirements
 
 - Python 3.11+
 - Django 5.2.2
-- Node.js 18+ (frontend build için)
-- Redis (cache ve celery için)
-- PostgreSQL (production için)
+- Node.js 18+ (for frontend build)
+- Redis (for cache and celery)
+- PostgreSQL (for production)
 
-## 🛠️ Kurulum
+## 🛠️ Installation
 
-### 1. Projeyi Klonlama
+### 1. Clone the Project
 ```bash
 git clone <repo-url>
 cd solutio_360
 ```
 
-### 2. Virtual Environment Oluşturma
+### 2. Create Virtual Environment
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# veya
+# or
 venv\Scripts\activate  # Windows
 ```
 
-### 3. Bağımlılıkları Yükleme
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Environment Değişkenleri
-`.env` dosyası oluşturun:
+### 4. Environment Variables
+Create a `.env` file:
 ```env
 DEBUG=True
 SECRET_KEY=your-secret-key-here
@@ -64,205 +64,207 @@ EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 ```
 
-### 5. Veritabanı Migrasyonları
+### 5. Database Migrations
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 6. Superuser Oluşturma
+### 6. Create Superuser
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Static Dosyları Toplama
+### 7. Collect Static Files
 ```bash
 python manage.py collectstatic
 ```
 
-### 8. Sunucuyu Başlatma
+### 8. Start the Server
 ```bash
 python manage.py runserver
 ```
 
-## 🎯 Kullanım
+## 🎯 Usage
 
-### Yönetici Paneli
+### Admin Panel
 - **URL**: http://localhost:8000/admin/
-- **Özellikler**: 
-  - Kullanıcı yönetimi
-  - Şikayet kategorileri
-  - Sistem ayarları
-  - Raporlar
+- **Features**: 
+  - User management
+  - Complaint categories
+  - System settings
+  - Reports
 
-### Ana Uygulama
+### Main Application
 - **URL**: http://localhost:8000/
-- **Giriş**: Kayıtlı kullanıcı bilgileri ile
-- **Özellikler**:
-  - Şikayet oluşturma
-  - Şikayet takibi
+- **Login**: Use registered user credentials
+- **Features**:
+  - Create complaints
+  - Track complaints
   - Dashboard
-  - Raporlar
+  - Reports
 
 ### API Endpoints
 - **Base URL**: http://localhost:8000/api/
 - **Swagger**: http://localhost:8000/swagger/
 - **ReDoc**: http://localhost:8000/redoc/
 
-## 📱 PWA Kullanımı
+## 📱 PWA Usage
 
-### Yükleme
-1. Uygulamayı web tarayıcısında açın
-2. Tarayıcıda "Ana ekrana ekle" seçeneğini kullanın
-3. Veya uygulama içindeki install banner'ını kullanın
+### Installation
+1. Open the application in a web browser
+2. Use the "Add to Home Screen" option in the browser
+3. Or use the install banner within the application
 
-### Offline Kullanım
-- Daha önce görüntülenen sayfalar offline erişilebilir
-- Offline oluşturulan veriler otomatik sync edilir
-- Cache stratejisi ile hızlı yükleme
+### Offline Usage
+- Previously viewed pages are accessible offline
+- Data created offline is automatically synced
+- Fast loading with cache strategy
 
-## 🔧 Geliştirme
+## 🔧 Development
 
-### Proje Yapısı
+### Project Structure
 ```
 solutio_360/
-├── complaints/          # Şikayet modülü
-├── core/               # Temel modül
-├── reports/            # Raporlama modülü
-├── users/              # Kullanıcı modülü
-├── static/             # Static dosyalar
-├── templates/          # Template dosyalar
-├── media/              # Media dosyalar
-└── solutio_360/        # Ana proje ayarları
+├── complaints/          # Complaint module
+├── core/               # Core module
+├── reports/            # Reporting module
+├── users/              # User module
+├── static/             # Static files
+├── templates/          # Template files
+├── media/              # Media files
+└── solutio_360/        # Main project settings
 ```
 
-### Kod Standartları
-- **PEP 8**: Python kod standardı
-- **Black**: Kod formatlaması
+### Code Standards
+- **PEP 8**: Python code standard
+- **Black**: Code formatting
 - **flake8**: Linting
 - **mypy**: Type checking
 
-### Test Etme
+### Testing
 ```bash
-# Tüm testleri çalıştır
+# Run all tests
 python manage.py test
 
-# Coverage raporu
+# Coverage report
 coverage run --source='.' manage.py test
 coverage html
 ```
 
-### Linting ve Formatting
+### Linting and Formatting
 ```bash
-# Black ile formatlama
+# Format with Black
 black .
 
-# flake8 ile linting
+# Lint with flake8
 flake8 .
 
-# isort ile import sıralama
+# Sort imports with isort
 isort .
 ```
 
 ## 🚀 Deployment
 
-### Production Ayarları
-1. `DEBUG = False` yapın
-2. `ALLOWED_HOSTS` ayarlayın
-3. PostgreSQL veritabanı yapılandırın
-4. Redis yapılandırın
-5. Email ayarlarını yapın
-6. SSL sertifikası ekleyin
+### Production Settings
+1. Set `DEBUG = False`
+2. Configure `ALLOWED_HOSTS`
+3. Set up PostgreSQL database
+4. Configure Redis
+5. Set up email settings
+6. Add SSL certificate
 
-### Docker ile Deployment
+### Docker Deployment
 ```bash
-# Docker container oluştur
+# Build Docker container
 docker build -t solutio360 .
 
-# Çalıştır
+# Run
 docker run -p 8000:8000 solutio360
 ```
 
-### Heroku ile Deployment
+### Heroku Deployment
 ```bash
-# Heroku CLI kurulu olmalı
+# Heroku CLI must be installed
 heroku create solutio360-app
 git push heroku main
 heroku run python manage.py migrate
 ```
 
-## 📊 Monitoring ve Analytics
+## 📊 Monitoring and Analytics
 
-### Sistem Metrikleri
-- User aktiviteleri
-- Şikayet istatistikleri
-- Performans metrikleri
+### System Metrics
+- User activities
+- Complaint statistics
+- Performance metrics
 - Error tracking
 
-### Loglar
-- Application logs: `logs/solutio_360.log`
-- Error logs: Console ve file
-- Audit logs: Database
+### Built-in Analytics
+- Real-time dashboard
+- Performance monitoring
+- User behavior analytics
+- System health checks
 
-## 🔒 Güvenlik
+## 🤝 Contributing
 
-### Güvenlik Özellikleri
-- **CSRF Protection**: Django built-in
-- **SQL Injection**: ORM kullanımı
-- **XSS Protection**: Template escaping
-- **Authentication**: Django auth system
-- **Authorization**: Role-based permissions
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
 
-### KVKV Uyumluluk
-- Kişisel veri şifreleme
-- Veri silme hakları
-- Consent yönetimi
-- Audit trail
+### Code Quality
+- All code must pass CI/CD pipeline
+- Unit test coverage minimum 80%
+- Follow Python PEP 8 standards
+- Use semantic commit messages
 
-## 🤝 Katkıda Bulunma
+## 📝 License
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/yeni-ozellik`)
-3. Commit edin (`git commit -am 'Yeni özellik eklendi'`)
-4. Branch'i push edin (`git push origin feature/yeni-ozellik`)
-5. Pull Request oluşturun
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📝 Lisans
+## 🆘 Support
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
+### Documentation
+- [User Guide](docs/user-guide.md)
+- [API Documentation](docs/api.md)
+- [Development Guide](docs/development.md)
 
-## 📞 İletişim
+### Community
+- [GitHub Issues](https://github.com/your-org/solutio-360/issues)
+- [Discussions](https://github.com/your-org/solutio-360/discussions)
+- [Wiki](https://github.com/your-org/solutio-360/wiki)
 
-- **Email**: info@solutio360.com
-- **Website**: https://solutio360.com
-- **Issues**: GitHub Issues
+## 🔒 Security
 
-## 🎯 Roadmap
+### Security Features
+- CSRF protection
+- SQL injection prevention
+- XSS protection
+- Secure authentication
+- Role-based access control
 
-### v1.1
-- [ ] AI-powered şikayet kategorilendirme
-- [ ] Advanced analytics dashboard
+### Reporting Security Issues
+Please report security vulnerabilities to security@solutio360.com
+
+## 📈 Roadmap
+
+### Version 2.0
 - [ ] Mobile app (React Native)
+- [ ] Advanced AI features
+- [ ] Multi-tenant support
+- [ ] Enhanced analytics
 
-### v1.2
-- [ ] Multi-tenant architecture
-- [ ] Advanced reporting
-- [ ] Integration API'lar
-
-### v1.3
-- [ ] Workflow automation
-- [ ] Advanced notifications
+### Version 1.5
+- [ ] API v2
+- [ ] Improved UI/UX
 - [ ] Performance optimizations
+- [ ] Additional integrations
 
-## 📈 Changelog
+## 🏆 Acknowledgments
 
-### v1.0.0 (Current)
-- İlk kararlı sürüm
-- Temel şikayet yönetimi
-- PWA özellikleri
-- Kullanıcı yönetimi
-- Raporlama sistemi
-
----
-
-**Solutio 360** - Modern Şikayet Yönetim Sistemi 
+- Django community for the excellent framework
+- Contributors and maintainers
+- Beta testers and early adopters
+- Open source community 
