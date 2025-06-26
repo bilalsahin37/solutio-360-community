@@ -14,9 +14,7 @@ urlpatterns = [
     # ML Dashboard
     path("ml-dashboard/", views.MLDashboardView.as_view(), name="ml_dashboard"),
     # LeewayHertz-style AI Processing Dashboard
-    path(
-        "ai-processing/", views.ai_processing_dashboard, name="ai_processing_dashboard"
-    ),
+    path("ai-processing/", views.ai_processing_dashboard, name="ai_processing_dashboard"),
     # Enterprise AI API Endpoints
     path("api/dashboard-data/", views.dashboard_data_api, name="dashboard_data_api"),
     path(
@@ -36,9 +34,7 @@ urlpatterns = [
         name="sentiment_analysis",
     ),
     path("api/predictions/", views.prediction_api, name="predictions"),
-    path(
-        "api/model-performance/", views.model_performance_api, name="model_performance"
-    ),
+    path("api/model-performance/", views.model_performance_api, name="model_performance"),
     path("api/auto-response/", views.auto_response_api, name="auto_response"),
     # Legacy API Endpoints
     path("api/refresh-models/", views.refresh_models_api, name="refresh_models_api"),

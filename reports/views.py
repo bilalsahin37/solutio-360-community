@@ -23,7 +23,6 @@ View Türleri:
 import json
 import logging
 
-import openpyxl  # Excel dosyası oluşturma kütüphanesi
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import HttpResponse
@@ -38,6 +37,8 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+
+import openpyxl  # Excel dosyası oluşturma kütüphanesi
 from xhtml2pdf import pisa  # HTML'den PDF oluşturma kütüphanesi
 
 from .models import Report
@@ -97,9 +98,7 @@ class ReportListView(LoginRequiredMixin, ListView):
         monthly_counts = []
         for m in months:
             y, mo = m.split("-")
-            count = reports.filter(
-                created_at__year=int(y), created_at__month=int(mo)
-            ).count()
+            count = reports.filter(created_at__year=int(y), created_at__month=int(mo)).count()
             monthly_counts.append(count)
 
         # Chart.js için JSON formatında veri hazırla
@@ -362,6 +361,4 @@ def report_list_excel(request):
     except Exception as e:
         # Beklenmeyen hata durumu
         logger.error("Excel dışa aktarma hatası: %s", str(e))
-        return HttpResponse(
-            f"Excel dosyası oluşturulurken bir hata oluştu: {str(e)}", status=500
-        )
+        return HttpResponse(f"Excel dosyası oluşturulurken bir hata oluştu: {str(e)}", status=500)

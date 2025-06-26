@@ -17,16 +17,17 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
+from django.core.cache import cache
+from django.db import connection
+from django.db.models import Avg, Count, F, Q
+from django.utils import timezone
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.core.cache import cache
-from django.db import connection
-from django.db.models import Avg, Count, F, Q
-from django.utils import timezone
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
@@ -112,14 +113,10 @@ class RealTimeMetrics:
             resolution_date__gte=this_week, status="RESOLVED"
         ).count()
 
-        submitted_this_week = Complaint.objects.filter(
-            created_at__gte=this_week
-        ).count()
+        submitted_this_week = Complaint.objects.filter(created_at__gte=this_week).count()
 
         resolution_rate = (
-            (resolved_this_week / submitted_this_week * 100)
-            if submitted_this_week > 0
-            else 0
+            (resolved_this_week / submitted_this_week * 100) if submitted_this_week > 0 else 0
         )
 
         # Average resolution time
@@ -141,9 +138,7 @@ class RealTimeMetrics:
                 "today_complaints": today_complaints,
                 "resolution_rate": round(resolution_rate, 2),
                 "avg_resolution_hours": (
-                    avg_resolution_time.total_seconds() / 3600
-                    if avg_resolution_time
-                    else 0
+                    avg_resolution_time.total_seconds() / 3600 if avg_resolution_time else 0
                 ),
             },
             "distributions": {
@@ -301,9 +296,7 @@ class RealTimeMetrics:
         try:
             # Get recent complaint data
             complaints_data = list(
-                Complaint.objects.filter(
-                    created_at__gte=timezone.now() - timedelta(days=30)
-                )
+                Complaint.objects.filter(created_at__gte=timezone.now() - timedelta(days=30))
                 .values("created_at__hour", "priority", "category_id")
                 .annotate(count=Count("id"))
             )
@@ -404,9 +397,7 @@ class RealTimeMetrics:
         for category, current_count in current_week_cats.items():
             previous_count = previous_week_cats.get(category, 0)
             if previous_count > 0:
-                change_percent = (
-                    (current_count - previous_count) / previous_count
-                ) * 100
+                change_percent = ((current_count - previous_count) / previous_count) * 100
                 if abs(change_percent) > 25:  # Significant change
                     trend_direction = "increase" if change_percent > 0 else "decrease"
                     trends.append(
@@ -449,9 +440,7 @@ class RealTimeMetrics:
                         {
                             "type": "ml_anomaly",
                             "severity": (
-                                "high"
-                                if anomaly_result["anomaly_score"] > 0.8
-                                else "medium"
+                                "high" if anomaly_result["anomaly_score"] > 0.8 else "medium"
                             ),
                             "title": f"Suspicious complaint detected (ID: {complaint.id})",
                             "description": f"Anomaly score: {anomaly_result['anomaly_score']:.2f}. Reasons: {', '.join(anomaly_result.get('reasons', []))}",
@@ -509,9 +498,7 @@ class RealTimeMetrics:
 
             # Overall RL performance insight
             if total_recommendations > 0:
-                confidence_rate = (
-                    high_confidence_recommendations / total_recommendations
-                ) * 100
+                confidence_rate = (high_confidence_recommendations / total_recommendations) * 100
                 insights.append(
                     {
                         "type": "rl_performance",
@@ -571,9 +558,7 @@ class RealTimeMetrics:
                 if metric_name in current_thresholds:
                     threshold = current_thresholds[metric_name]
                     if current_value > threshold:
-                        severity = (
-                            "high" if current_value > threshold * 1.5 else "medium"
-                        )
+                        severity = "high" if current_value > threshold * 1.5 else "medium"
                         insights.append(
                             {
                                 "type": "threshold_breach",
@@ -604,9 +589,7 @@ class RealTimeMetrics:
                             "severity": "info",
                             "title": f"Threshold auto-adjusted: {adjustment['metric']}",
                             "description": f"Adjusted from {adjustment['old_value']:.1f} to {adjustment['new_value']:.1f}",
-                            "reason": adjustment.get(
-                                "reason", "performance_optimization"
-                            ),
+                            "reason": adjustment.get("reason", "performance_optimization"),
                         }
                     )
 
@@ -700,9 +683,7 @@ class RealTimeMetrics:
 
             # Get recent complaints for NLP analysis
             recent_complaints = (
-                Complaint.objects.filter(
-                    created_at__gte=timezone.now() - timedelta(days=7)
-                )
+                Complaint.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
                 .exclude(description__isnull=True)
                 .exclude(description="")[:50]
             )
@@ -713,17 +694,13 @@ class RealTimeMetrics:
 
             for complaint in recent_complaints:
                 # Sentiment analysis
-                sentiment_result = nlp_processor.predict_sentiment(
-                    complaint.description
-                )
+                sentiment_result = nlp_processor.predict_sentiment(complaint.description)
                 sentiment = sentiment_result.get("sentiment", "neutral")
                 sentiment_counts[sentiment] += 1
 
                 # Category prediction
                 category_result = nlp_processor.predict_category(complaint.description)
-                predicted_category = category_result.get(
-                    "predicted_category", "Unknown"
-                )
+                predicted_category = category_result.get("predicted_category", "Unknown")
                 category_predictions[predicted_category] = (
                     category_predictions.get(predicted_category, 0) + 1
                 )
@@ -914,9 +891,7 @@ class PredictiveAnalytics:
         try:
             # Get historical data
             historical_data = list(
-                Complaint.objects.filter(
-                    created_at__gte=timezone.now() - timedelta(days=30)
-                )
+                Complaint.objects.filter(created_at__gte=timezone.now() - timedelta(days=30))
                 .extra(select={"date": "DATE(created_at)"})
                 .values("date")
                 .annotate(count=Count("id"))
@@ -982,8 +957,7 @@ class PredictiveAnalytics:
 
             # Calculate average resolution time
             resolution_times = [
-                comp.resolution_hours.total_seconds() / 3600
-                for comp in similar_complaints
+                comp.resolution_hours.total_seconds() / 3600 for comp in similar_complaints
             ]
 
             avg_resolution_hours = np.mean(resolution_times)

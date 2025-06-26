@@ -9,9 +9,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
-import openai
 from django.conf import settings
 from django.utils import timezone
+
+import openai
 
 from complaints.models import Complaint
 from users.models import User
@@ -28,9 +29,7 @@ class GenAICustomerServiceAgent:
     """
 
     def __init__(self):
-        self.openai_client = openai.OpenAI(
-            api_key=getattr(settings, "OPENAI_API_KEY", "")
-        )
+        self.openai_client = openai.OpenAI(api_key=getattr(settings, "OPENAI_API_KEY", ""))
         self.model_name = "gpt-4-turbo-preview"
         self.max_tokens = 1000
         self.temperature = 0.7
@@ -183,9 +182,7 @@ class GenAICustomerServiceAgent:
             enhanced_analysis = self._enhance_with_rules(complaint_text, ai_analysis)
 
             # Add confidence scores
-            enhanced_analysis["confidence_score"] = self._calculate_confidence(
-                ai_analysis
-            )
+            enhanced_analysis["confidence_score"] = self._calculate_confidence(ai_analysis)
 
             return enhanced_analysis
 
@@ -193,9 +190,7 @@ class GenAICustomerServiceAgent:
             logger.error(f"GenAI processing error: {str(e)}")
             return self._fallback_analysis(complaint_text)
 
-    def _create_analysis_prompt(
-        self, complaint_text: str, customer_context: Dict = None
-    ) -> str:
+    def _create_analysis_prompt(self, complaint_text: str, customer_context: Dict = None) -> str:
         """Create comprehensive analysis prompt"""
 
         context_info = ""
@@ -357,15 +352,9 @@ class GenAICustomerServiceAgent:
             "department_routing" in ai_analysis
             and "routing_confidence" in ai_analysis["department_routing"]
         ):
-            confidence_factors.append(
-                ai_analysis["department_routing"]["routing_confidence"]
-            )
+            confidence_factors.append(ai_analysis["department_routing"]["routing_confidence"])
 
-        return (
-            sum(confidence_factors) / len(confidence_factors)
-            if confidence_factors
-            else 0.7
-        )
+        return sum(confidence_factors) / len(confidence_factors) if confidence_factors else 0.7
 
     def _fallback_analysis(self, complaint_text: str) -> Dict:
         """Fallback analysis when AI is unavailable"""
@@ -408,15 +397,11 @@ class GenAICustomerServiceAgent:
             "fallback_mode": True,
         }
 
-    def generate_auto_response(
-        self, complaint_analysis: Dict, complaint_text: str
-    ) -> str:
+    def generate_auto_response(self, complaint_analysis: Dict, complaint_text: str) -> str:
         """Generate automated response based on analysis"""
 
         try:
-            sentiment = complaint_analysis.get("sentiment", {}).get(
-                "overall", "neutral"
-            )
+            sentiment = complaint_analysis.get("sentiment", {}).get("overall", "neutral")
             category = complaint_analysis.get("category", {}).get("primary", "general")
             priority = complaint_analysis.get("priority", {}).get("level", "medium")
 
@@ -587,9 +572,7 @@ class GenAICustomerServiceAgent:
 
         return workflow_steps
 
-    def track_resolution_effectiveness(
-        self, complaint_id: str, resolution_data: Dict
-    ) -> Dict:
+    def track_resolution_effectiveness(self, complaint_id: str, resolution_data: Dict) -> Dict:
         """Track and analyze resolution effectiveness"""
 
         try:
@@ -603,16 +586,12 @@ class GenAICustomerServiceAgent:
             satisfaction_score = customer_satisfaction / 5.0  # 5-star scale
             escalation_penalty = max(0, 1 - (escalation_count * 0.2))
 
-            effectiveness_score = (
-                time_score + satisfaction_score + escalation_penalty
-            ) / 3
+            effectiveness_score = (time_score + satisfaction_score + escalation_penalty) / 3
 
             # Generate insights
             insights = []
             if resolution_time > 72:
-                insights.append(
-                    "Resolution time exceeded 3 days - consider process optimization"
-                )
+                insights.append("Resolution time exceeded 3 days - consider process optimization")
 
             if customer_satisfaction < 3:
                 insights.append("Low customer satisfaction - review resolution quality")
@@ -648,14 +627,10 @@ class GenAICustomerServiceAgent:
         category = resolution_data.get("category", "general")
 
         if resolution_time > 48:
-            recommendations.append(
-                f"Implement faster {category} issue resolution procedures"
-            )
+            recommendations.append(f"Implement faster {category} issue resolution procedures")
 
         if satisfaction < 4:
-            recommendations.append(
-                "Enhance customer communication during resolution process"
-            )
+            recommendations.append("Enhance customer communication during resolution process")
 
         recommendations.append(
             "Consider implementing AI-powered auto-resolution for similar issues"

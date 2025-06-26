@@ -13,9 +13,10 @@ Inspired by best practices from:
 import uuid
 from datetime import datetime, timedelta
 
-import factory
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+import factory
 
 from complaints.models import (
     Complaint,
@@ -148,9 +149,7 @@ class StatusFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Status
 
-    name = factory.Iterator(
-        ["SUBMITTED", "UNDER_REVIEW", "IN_PROGRESS", "RESOLVED", "CLOSED"]
-    )
+    name = factory.Iterator(["SUBMITTED", "UNDER_REVIEW", "IN_PROGRESS", "RESOLVED", "CLOSED"])
     description = factory.Faker("text", max_nb_chars=100)
     order = factory.Sequence(lambda n: n)
     color = factory.Faker("hex_color")

@@ -18,10 +18,11 @@ from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
-import numpy as np
 from django.core.cache import cache
 from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
+
+import numpy as np
 from sklearn.ensemble import IsolationForest
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
@@ -53,9 +54,7 @@ class ComplaintResolutionAgent:
             priority = complaint.priority or "MEDIUM"
             category = complaint.category.name if complaint.category else "OTHER"
 
-            description_length = (
-                len(complaint.description) if complaint.description else 0
-            )
+            description_length = len(complaint.description) if complaint.description else 0
             if description_length > 500:
                 complexity = "HIGH"
             elif description_length > 200:
@@ -97,9 +96,7 @@ class ComplaintResolutionAgent:
             state = self.get_state(complaint)
             recommended_action = self.choose_action(state)
 
-            q_values = [
-                self.q_table[state][action] for action in self.get_possible_actions()
-            ]
+            q_values = [self.q_table[state][action] for action in self.get_possible_actions()]
             max_q = max(q_values) if q_values else 0
             confidence = min(100, max(50, abs(max_q) * 10))
 
@@ -228,9 +225,7 @@ class AdaptiveThresholdManager:
             week_ago = timezone.now() - timedelta(days=7)
             avg_time = Complaint.objects.filter(
                 status="RESOLVED", resolution_date__gte=week_ago
-            ).aggregate(avg_time=Avg(F("resolution_date") - F("created_at")))[
-                "avg_time"
-            ]
+            ).aggregate(avg_time=Avg(F("resolution_date") - F("created_at")))["avg_time"]
 
             if avg_time:
                 return avg_time.total_seconds() / 3600  # Convert to hours
@@ -264,9 +259,7 @@ class AdaptiveThresholdManager:
             threshold_data = {
                 "thresholds": self.thresholds,
                 "last_updated": timezone.now().isoformat(),
-                "adjustment_history": list(self.adjustment_history)[
-                    -10
-                ],  # Son 10 ayarlama
+                "adjustment_history": list(self.adjustment_history)[-10],  # Son 10 ayarlama
             }
             cache.set("adaptive_thresholds", threshold_data, timeout=86400)
 
@@ -341,9 +334,7 @@ class IncrementalMLModel:
             features.append(category_hash)
 
             # User history
-            user_complaint_count = Complaint.objects.filter(
-                submitter=complaint.submitter
-            ).count()
+            user_complaint_count = Complaint.objects.filter(submitter=complaint.submitter).count()
             features.append(min(user_complaint_count, 50))  # Cap at 50
 
             return np.array(features).reshape(1, -1)
@@ -564,9 +555,7 @@ class NLPProcessor:
             logger.error(f"Error in sentiment prediction: {e}")
             return self._rule_based_sentiment(text)
 
-    def predict_anomaly(
-        self, text: str, user_id: int, created_at: datetime
-    ) -> Dict[str, Any]:
+    def predict_anomaly(self, text: str, user_id: int, created_at: datetime) -> Dict[str, Any]:
         """Gelişmiş anomali tespiti"""
         try:
             anomaly_score = 0.0
@@ -691,9 +680,7 @@ class NLPProcessor:
 
             if scores:
                 best_category = max(scores, key=scores.get)
-                confidence = scores[best_category] / max(
-                    1, len(text_lower.split()) // 10
-                )
+                confidence = scores[best_category] / max(1, len(text_lower.split()) // 10)
             else:
                 best_category = "Genel Şikayet"
                 confidence = 0.5
@@ -748,14 +735,10 @@ class NLPProcessor:
 
             if negative_score > positive_score:
                 sentiment = "negative"
-                confidence = min(
-                    1.0, negative_score / max(1, len(text_lower.split()) // 5)
-                )
+                confidence = min(1.0, negative_score / max(1, len(text_lower.split()) // 5))
             elif positive_score > negative_score:
                 sentiment = "positive"
-                confidence = min(
-                    1.0, positive_score / max(1, len(text_lower.split()) // 5)
-                )
+                confidence = min(1.0, positive_score / max(1, len(text_lower.split()) // 5))
             else:
                 sentiment = "neutral"
                 confidence = 0.5
@@ -803,14 +786,10 @@ class NLPProcessor:
         try:
             model_data = {
                 "category_model": (
-                    pickle.dumps(self.category_model)
-                    if self.is_category_trained
-                    else None
+                    pickle.dumps(self.category_model) if self.is_category_trained else None
                 ),
                 "sentiment_model": (
-                    pickle.dumps(self.sentiment_model)
-                    if self.is_sentiment_trained
-                    else None
+                    pickle.dumps(self.sentiment_model) if self.is_sentiment_trained else None
                 ),
                 "vectorizer": pickle.dumps(self.vectorizer),
                 "is_category_trained": self.is_category_trained,

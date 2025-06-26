@@ -36,6 +36,7 @@ Güvenlik Özellikleri:
 """
 
 from django.contrib.auth import get_user_model
+
 from rest_framework import serializers
 
 from complaints.models import Complaint
@@ -200,12 +201,8 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
     # Display alanları (okunabilir format)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
-    priority_display = serializers.CharField(
-        source="get_priority_display", read_only=True
-    )
-    category_display = serializers.CharField(
-        source="get_category_display", read_only=True
-    )
+    priority_display = serializers.CharField(source="get_priority_display", read_only=True)
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
 
     class Meta:
         model = Complaint  # Complaint modeli ile bağlantı
@@ -269,9 +266,7 @@ class ReportSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
 
     # Display alanları (okunabilir format)
-    report_type_display = serializers.CharField(
-        source="get_report_type_display", read_only=True
-    )
+    report_type_display = serializers.CharField(source="get_report_type_display", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:

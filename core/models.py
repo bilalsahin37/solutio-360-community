@@ -65,9 +65,7 @@ class UUIDModel(models.Model):
     """
 
     # UUID formatında birincil anahtar - otomatik oluşturulur
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, db_index=True
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
 
     class Meta:
         abstract = True
@@ -172,9 +170,7 @@ class AuditLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     # İşlemi yapan kullanıcı
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     # Yapılan işlem türü
     action = models.CharField(max_length=10, choices=ACTION_CHOICES)
@@ -387,9 +383,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Bildirim türü
-    type = models.ForeignKey(
-        NotificationType, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    type = models.ForeignKey(NotificationType, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         """

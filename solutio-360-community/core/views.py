@@ -151,38 +151,24 @@ def _get_admin_dashboard_data(user):
 
     # Temel sayılar
     total_complaints = Complaint.objects.filter(is_active=True).count()
-    new_complaints = Complaint.objects.filter(
-        created_at__gte=last_30_days, is_active=True
-    ).count()
+    new_complaints = Complaint.objects.filter(created_at__gte=last_30_days, is_active=True).count()
 
     pending_complaints = Complaint.objects.filter(
         status__in=["SUBMITTED", "IN_REVIEW"], is_active=True
     ).count()
 
-    resolved_complaints = Complaint.objects.filter(
-        status="RESOLVED", is_active=True
-    ).count()
+    resolved_complaints = Complaint.objects.filter(status="RESOLVED", is_active=True).count()
 
     # Detaylı durum istatistikleri
     status_stats = {
         "DRAFT": Complaint.objects.filter(status="DRAFT", is_active=True).count(),
-        "SUBMITTED": Complaint.objects.filter(
-            status="SUBMITTED", is_active=True
-        ).count(),
-        "IN_REVIEW": Complaint.objects.filter(
-            status="IN_REVIEW", is_active=True
-        ).count(),
-        "IN_PROGRESS": Complaint.objects.filter(
-            status="IN_PROGRESS", is_active=True
-        ).count(),
+        "SUBMITTED": Complaint.objects.filter(status="SUBMITTED", is_active=True).count(),
+        "IN_REVIEW": Complaint.objects.filter(status="IN_REVIEW", is_active=True).count(),
+        "IN_PROGRESS": Complaint.objects.filter(status="IN_PROGRESS", is_active=True).count(),
         "RESOLVED": Complaint.objects.filter(status="RESOLVED", is_active=True).count(),
         "CLOSED": Complaint.objects.filter(status="CLOSED", is_active=True).count(),
-        "CANCELLED": Complaint.objects.filter(
-            status="CANCELLED", is_active=True
-        ).count(),
-        "WITHDRAWN": Complaint.objects.filter(
-            status="WITHDRAWN", is_active=True
-        ).count(),
+        "CANCELLED": Complaint.objects.filter(status="CANCELLED", is_active=True).count(),
+        "WITHDRAWN": Complaint.objects.filter(status="WITHDRAWN", is_active=True).count(),
     }
 
     # Kategori istatistikleri
@@ -197,35 +183,25 @@ def _get_admin_dashboard_data(user):
     daily_complaints = []
     for i in range(30):
         date = timezone.now() - timedelta(days=i)
-        count = Complaint.objects.filter(
-            created_at__date=date.date(), is_active=True
-        ).count()
+        count = Complaint.objects.filter(created_at__date=date.date(), is_active=True).count()
         daily_complaints.append({"date": date.strftime("%d.%m"), "count": count})
     daily_complaints.reverse()
 
     # Son aktiviteler
-    recent_activities = Complaint.objects.filter(is_active=True).order_by(
-        "-created_at"
-    )[:5]
+    recent_activities = Complaint.objects.filter(is_active=True).order_by("-created_at")[:5]
 
     # Kullanıcı istatistikleri
     total_users = User.objects.filter(is_active=True).count()
     new_users_this_month = User.objects.filter(
-        date_joined__gte=timezone.now().replace(
-            day=1, hour=0, minute=0, second=0, microsecond=0
-        )
+        date_joined__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     ).count()
 
     # Rapor istatistikleri
     total_reports = Report.objects.filter(is_active=True).count()
-    recent_reports = Report.objects.filter(
-        created_at__gte=last_30_days, is_active=True
-    ).count()
+    recent_reports = Report.objects.filter(created_at__gte=last_30_days, is_active=True).count()
 
     # Bugünkü aktivite
-    today_complaints = Complaint.objects.filter(
-        created_at__date=today, is_active=True
-    ).count()
+    today_complaints = Complaint.objects.filter(created_at__date=today, is_active=True).count()
 
     # Bu hafta oluşturulan şikayetler
     this_week_complaints = Complaint.objects.filter(
@@ -244,9 +220,7 @@ def _get_admin_dashboard_data(user):
     total_processed = Complaint.objects.filter(
         status__in=["RESOLVED", "CLOSED", "CANCELLED"], is_active=True
     ).count()
-    resolution_rate = (
-        (resolved_complaints / total_processed * 100) if total_processed > 0 else 0
-    )
+    resolution_rate = (resolved_complaints / total_processed * 100) if total_processed > 0 else 0
 
     return {
         "total_complaints": total_complaints,
@@ -276,9 +250,7 @@ def _get_user_dashboard_data(user):
 
     # Temel sayılar
     total_complaints = user_complaints.count()
-    pending_complaints = user_complaints.filter(
-        status__in=["SUBMITTED", "IN_REVIEW"]
-    ).count()
+    pending_complaints = user_complaints.filter(status__in=["SUBMITTED", "IN_REVIEW"]).count()
     resolved_complaints = user_complaints.filter(status="RESOLVED").count()
 
     # Durum bazlı dağılım
@@ -298,16 +270,12 @@ def _get_user_dashboard_data(user):
 
     # Bu ay oluşturulan şikayetler
     this_month_complaints = user_complaints.filter(
-        created_at__gte=timezone.now().replace(
-            day=1, hour=0, minute=0, second=0, microsecond=0
-        )
+        created_at__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     ).count()
 
     # Kategori dağılımı
     category_stats = (
-        user_complaints.values("category__name")
-        .annotate(count=Count("id"))
-        .order_by("-count")[:5]
+        user_complaints.values("category__name").annotate(count=Count("id")).order_by("-count")[:5]
     )
 
     return {
@@ -327,9 +295,7 @@ def get_notifications(request):
     """Kullanıcı bildirimlerini JSON olarak döndür."""
     from users.models import UserNotification
 
-    notifications = UserNotification.objects.filter(user=request.user).order_by(
-        "-created_at"
-    )[:20]
+    notifications = UserNotification.objects.filter(user=request.user).order_by("-created_at")[:20]
 
     notifications_data = []
     for notification in notifications:
@@ -345,13 +311,9 @@ def get_notifications(request):
             }
         )
 
-    unread_count = UserNotification.objects.filter(
-        user=request.user, is_read=False
-    ).count()
+    unread_count = UserNotification.objects.filter(user=request.user, is_read=False).count()
 
-    return JsonResponse(
-        {"notifications": notifications_data, "unread_count": unread_count}
-    )
+    return JsonResponse({"notifications": notifications_data, "unread_count": unread_count})
 
 
 @login_required
@@ -361,9 +323,7 @@ def mark_notification_read(request, notification_id):
     from users.models import UserNotification
 
     try:
-        notification = UserNotification.objects.get(
-            id=notification_id, user=request.user
-        )
+        notification = UserNotification.objects.get(id=notification_id, user=request.user)
         notification.mark_as_read()
         return JsonResponse({"success": True})
     except UserNotification.DoesNotExist:
@@ -528,9 +488,7 @@ def simple_chat_api(request):
             category = "Şikayet"
 
         # Selamlama
-        elif any(
-            word in message_lower for word in ["merhaba", "selam", "hello", "hi", "hey"]
-        ):
+        elif any(word in message_lower for word in ["merhaba", "selam", "hello", "hi", "hey"]):
             responses = [
                 "Merhaba! Ben Solutio 360 AI asistanıyım. Size nasıl yardımcı olabilirim? 😊",
                 "Selam! Şikayetlerinizi analiz edebilir, sorularınızı yanıtlayabilirim. Ne konuda yardıma ihtiyacınız var?",
@@ -541,8 +499,7 @@ def simple_chat_api(request):
 
         # Teşekkür
         elif any(
-            word in message_lower
-            for word in ["teşekkür", "sağol", "merci", "thanks", "eyvallah"]
+            word in message_lower for word in ["teşekkür", "sağol", "merci", "thanks", "eyvallah"]
         ):
             responses = [
                 "Rica ederim! Size yardımcı olabildiğim için mutluyum. Başka sorularınız varsa çekinmeyin. 😊",
@@ -553,9 +510,7 @@ def simple_chat_api(request):
             category = "Teşekkür"
 
         # Yardım talepleri
-        elif any(
-            word in message_lower for word in ["yardım", "help", "destek", "nasıl"]
-        ):
+        elif any(word in message_lower for word in ["yardım", "help", "destek", "nasıl"]):
             responses = [
                 "Tabii ki size yardımcı olabilirim! Şikayet yönetimi, raporlama veya sistem kullanımı hakkında sorularınızı yanıtlayabilirim.",
                 "Yardım için buradayım! Hangi konuda destek istiyorsunuz? Şikayet oluşturma, takip etme veya başka bir konu mu?",
@@ -565,10 +520,7 @@ def simple_chat_api(request):
             category = "Yardım"
 
         # Fatura/ödeme
-        elif any(
-            word in message_lower
-            for word in ["fatura", "ödeme", "ücret", "para", "borç"]
-        ):
+        elif any(word in message_lower for word in ["fatura", "ödeme", "ücret", "para", "borç"]):
             responses = [
                 "Fatura ve ödeme konularında size yardımcı olabilirim. Hangi konuda sorun yaşıyorsunuz?",
                 "Ödeme ile ilgili sorununuzu anlıyorum. Mali işler departmanına yönlendirmek için detayları alabilir miyim?",

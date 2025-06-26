@@ -119,9 +119,7 @@ def create_community_edition():
     for file_path in core_files:
         if Path(file_path).exists():
             if Path(file_path).is_dir():
-                shutil.copytree(
-                    file_path, community_dir / file_path, dirs_exist_ok=True
-                )
+                shutil.copytree(file_path, community_dir / file_path, dirs_exist_ok=True)
             else:
                 shutil.copy2(file_path, community_dir / file_path)
 
@@ -144,9 +142,7 @@ def create_enterprise_extensions():
     for app in FEATURE_MAPPING["enterprise"]["apps"]:
         app_path = Path(app)
         if app_path.exists():
-            shutil.copytree(
-                app_path, enterprise_dir / "extensions" / app, dirs_exist_ok=True
-            )
+            shutil.copytree(app_path, enterprise_dir / "extensions" / app, dirs_exist_ok=True)
 
     print_success("Enterprise extensions created")
 

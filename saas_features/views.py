@@ -1,7 +1,6 @@
 import json
 from datetime import datetime, timedelta
 
-import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -14,6 +13,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, TemplateView
+
+import stripe
 
 from .decorators import feature_required, usage_limit_check
 from .models import (
@@ -82,9 +83,9 @@ class SubscriptionDashboardView(TemplateView):
             return None
 
         # Son faturalar
-        recent_invoices = Invoice.objects.filter(subscription=subscription).order_by(
-            "-created_at"
-        )[:5]
+        recent_invoices = Invoice.objects.filter(subscription=subscription).order_by("-created_at")[
+            :5
+        ]
 
         # Sonraki ödeme tarihi
         next_payment_date = subscription.end_date
@@ -110,15 +111,11 @@ class SubscriptionDashboardView(TemplateView):
 
         # Limit yüzdeleri
         complaint_percentage = (
-            (monthly_usage["total_complaints"] or 0)
-            / organization.monthly_complaint_limit
-            * 100
+            (monthly_usage["total_complaints"] or 0) / organization.monthly_complaint_limit * 100
         )
 
         api_percentage = (
-            (monthly_usage["total_api_requests"] or 0)
-            / organization.api_rate_limit
-            * 100
+            (monthly_usage["total_api_requests"] or 0) / organization.api_rate_limit * 100
         )
 
         return {
@@ -448,9 +445,9 @@ def usage_analytics(request):
     ).order_by("date")
 
     # Özellik kullanım istatistikleri
-    feature_usage = FeatureUsage.objects.filter(organization=organization).order_by(
-        "-usage_count"
-    )[:10]
+    feature_usage = FeatureUsage.objects.filter(organization=organization).order_by("-usage_count")[
+        :10
+    ]
 
     # API kullanım trendi
     api_usage_data = [usage.api_requests_count for usage in daily_usage]
@@ -474,9 +471,7 @@ class PricingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["plans"] = SubscriptionPlan.objects.filter(is_active=True).order_by(
-            "price_monthly"
-        )
+        context["plans"] = SubscriptionPlan.objects.filter(is_active=True).order_by("price_monthly")
         return context
 
 
@@ -485,14 +480,10 @@ def billing_dashboard(request):
     """Billing dashboard view"""
     organization = getattr(request, "tenant", None)
     if not organization:
-        return render(
-            request, "saas/billing_dashboard.html", {"error": "No organization found"}
-        )
+        return render(request, "saas/billing_dashboard.html", {"error": "No organization found"})
 
     subscription = getattr(organization, "subscription", None)
-    invoices = Invoice.objects.filter(organization=organization).order_by(
-        "-created_at"
-    )[:10]
+    invoices = Invoice.objects.filter(organization=organization).order_by("-created_at")[:10]
 
     context = {
         "organization": organization,
@@ -527,9 +518,7 @@ def organization_settings(request):
     """Organization settings view"""
     organization = getattr(request, "tenant", None)
 
-    return render(
-        request, "saas/organization_settings.html", {"organization": organization}
-    )
+    return render(request, "saas/organization_settings.html", {"organization": organization})
 
 
 @login_required
@@ -537,9 +526,7 @@ def organization_branding(request):
     """Organization branding view"""
     organization = getattr(request, "tenant", None)
 
-    return render(
-        request, "saas/organization_branding.html", {"organization": organization}
-    )
+    return render(request, "saas/organization_branding.html", {"organization": organization})
 
 
 @login_required

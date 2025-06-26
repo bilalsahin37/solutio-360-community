@@ -144,9 +144,7 @@ class Institution(models.Model):
 class Unit(models.Model):
     """Kurum altındaki birim modeli."""
 
-    institution = models.ForeignKey(
-        Institution, on_delete=models.CASCADE, related_name="units"
-    )
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="units")
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -240,9 +238,7 @@ class Complaint(BaseModel):
     )
 
     # Durum ve öncelik
-    status = models.CharField(
-        _("status"), max_length=20, choices=STATUS_CHOICES, default="DRAFT"
-    )
+    status = models.CharField(_("status"), max_length=20, choices=STATUS_CHOICES, default="DRAFT")
     priority = models.CharField(
         _("priority"), max_length=20, choices=PRIORITY_CHOICES, default="MEDIUM"
     )
@@ -308,36 +304,24 @@ class Complaint(BaseModel):
     # Enhanced AI Analysis Results - LeewayHertz Style
     ai_analysis = models.JSONField(_("AI analysis"), default=dict, blank=True)
     sentiment_score = models.FloatField(_("sentiment score"), null=True, blank=True)
-    urgency_level = models.CharField(
-        _("urgency level"), max_length=20, default="medium"
-    )
+    urgency_level = models.CharField(_("urgency level"), max_length=20, default="medium")
     emotional_intensity = models.CharField(
         _("emotional intensity"), max_length=20, default="medium"
     )
-    formality_level = models.CharField(
-        _("formality level"), max_length=20, default="neutral"
-    )
+    formality_level = models.CharField(_("formality level"), max_length=20, default="neutral")
     auto_response = models.TextField(_("auto response"), blank=True)
 
     # Department Routing - Enhanced
-    assigned_department = models.CharField(
-        _("assigned department"), max_length=50, blank=True
-    )
-    routing_confidence = models.FloatField(
-        _("routing confidence"), null=True, blank=True
-    )
+    assigned_department = models.CharField(_("assigned department"), max_length=50, blank=True)
+    routing_confidence = models.FloatField(_("routing confidence"), null=True, blank=True)
     escalation_path = models.JSONField(_("escalation path"), default=list, blank=True)
 
     # Processing Timestamps
     ai_processed_at = models.DateTimeField(_("AI processed at"), null=True, blank=True)
-    auto_response_sent_at = models.DateTimeField(
-        _("auto response sent at"), null=True, blank=True
-    )
+    auto_response_sent_at = models.DateTimeField(_("auto response sent at"), null=True, blank=True)
 
     # Multi-language Support
-    detected_language = models.CharField(
-        _("detected language"), max_length=10, default="tr"
-    )
+    detected_language = models.CharField(_("detected language"), max_length=10, default="tr")
     cultural_context = models.JSONField(_("cultural context"), default=dict, blank=True)
 
     class Meta:
@@ -362,9 +346,7 @@ class Complaint(BaseModel):
         """Kaydetme işlemi sırasında otomatik işlemler."""
         # İlk kez kaydediliyorsa due_date ayarla
         if not self.pk and self.category and self.category.sla_hours:
-            self.due_date = timezone.now() + timezone.timedelta(
-                hours=self.category.sla_hours
-            )
+            self.due_date = timezone.now() + timezone.timedelta(hours=self.category.sla_hours)
         super().save(*args, **kwargs)
 
     @property
@@ -559,9 +541,7 @@ class ComplaintWorkflow(BaseModel):
     from_status = models.CharField(
         _("from status"), max_length=20, choices=Complaint.STATUS_CHOICES
     )
-    to_status = models.CharField(
-        _("to status"), max_length=20, choices=Complaint.STATUS_CHOICES
-    )
+    to_status = models.CharField(_("to status"), max_length=20, choices=Complaint.STATUS_CHOICES)
     comment = models.TextField(_("comment"), blank=True)
     transition_time = models.DateTimeField(_("transition time"), auto_now_add=True)
 

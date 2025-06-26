@@ -110,9 +110,7 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         # Status'a göre şikayet sayıları
         context["pending_complaints"] = complaints.filter(status="SUBMITTED").count()
         context["resolved_complaints"] = complaints.filter(status="RESOLVED").count()
-        context["in_progress_complaints"] = complaints.filter(
-            status="IN_PROGRESS"
-        ).count()
+        context["in_progress_complaints"] = complaints.filter(status="IN_PROGRESS").count()
         context["draft_complaints"] = complaints.filter(status="DRAFT").count()
         context["in_review_complaints"] = complaints.filter(status="IN_REVIEW").count()
 

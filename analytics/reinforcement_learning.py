@@ -13,10 +13,11 @@ from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
-import numpy as np
 from django.core.cache import cache
 from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
+
+import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import StandardScaler
 
@@ -57,9 +58,7 @@ class ComplaintResolutionAgent:
             category = complaint.category.name if complaint.category else "OTHER"
 
             # Complexity calculation based on description length and category
-            description_length = (
-                len(complaint.description) if complaint.description else 0
-            )
+            description_length = len(complaint.description) if complaint.description else 0
             if description_length > 500:
                 complexity = "HIGH"
             elif description_length > 200:
@@ -109,9 +108,7 @@ class ComplaintResolutionAgent:
             best_action_idx = np.argmax(q_values)
             return actions[best_action_idx]
 
-    def update_q_value(
-        self, state: Tuple, action: str, reward: float, next_state: Tuple
-    ):
+    def update_q_value(self, state: Tuple, action: str, reward: float, next_state: Tuple):
         """Q-değerini güncelle"""
         try:
             current_q = self.q_table[state][action]
@@ -167,9 +164,7 @@ class ComplaintResolutionAgent:
             # Otomatik çözüm başarı ödülü
             if action == "auto_resolve" and outcome.get("resolved_successfully", False):
                 reward += 20.0
-            elif action == "auto_resolve" and not outcome.get(
-                "resolved_successfully", False
-            ):
+            elif action == "auto_resolve" and not outcome.get("resolved_successfully", False):
                 reward -= 15.0
 
             # Uzman atama verimliliği
@@ -189,9 +184,7 @@ class ComplaintResolutionAgent:
                 else:
                     reward -= 3.0
 
-            logger.info(
-                f"Reward calculated: Action={action}, Outcome={outcome}, Reward={reward}"
-            )
+            logger.info(f"Reward calculated: Action={action}, Outcome={outcome}, Reward={reward}")
 
         except Exception as e:
             logger.error(f"Error calculating reward: {e}")
@@ -207,9 +200,7 @@ class ComplaintResolutionAgent:
                 created_at__gte=timezone.now() - timedelta(days=30),
             ).order_by("created_at")
 
-            logger.info(
-                f"Training from {resolved_complaints.count()} historical complaints"
-            )
+            logger.info(f"Training from {resolved_complaints.count()} historical complaints")
 
             for complaint in resolved_complaints:
                 state = self.get_state(complaint)
@@ -257,9 +248,7 @@ class ComplaintResolutionAgent:
             recommended_action = self.choose_action(state)
 
             # Confidence calculation
-            q_values = [
-                self.q_table[state][action] for action in self.get_possible_actions()
-            ]
+            q_values = [self.q_table[state][action] for action in self.get_possible_actions()]
             max_q = max(q_values) if q_values else 0
             confidence = min(100, max(50, abs(max_q) * 10))  # Scale to 50-100%
 
@@ -302,16 +291,12 @@ class ComplaintResolutionAgent:
         try:
             model_data = cache.get("rl_agent_model")
             if model_data:
-                self.q_table = defaultdict(
-                    lambda: defaultdict(float), model_data["q_table"]
-                )
+                self.q_table = defaultdict(lambda: defaultdict(float), model_data["q_table"])
                 self.epsilon = model_data.get("epsilon", self.epsilon)
                 self.episode_count = model_data.get("episode_count", 0)
                 self.total_rewards = model_data.get("total_rewards", 0)
 
-                logger.info(
-                    f"RL model loaded from cache. Episodes: {self.episode_count}"
-                )
+                logger.info(f"RL model loaded from cache. Episodes: {self.episode_count}")
 
         except Exception as e:
             logger.error(f"Error loading model: {e}")
@@ -416,9 +401,7 @@ class AdaptiveThresholdManager:
             week_ago = timezone.now() - timedelta(days=7)
             avg_time = Complaint.objects.filter(
                 status="RESOLVED", resolution_date__gte=week_ago
-            ).aggregate(avg_time=Avg(F("resolution_date") - F("created_at")))[
-                "avg_time"
-            ]
+            ).aggregate(avg_time=Avg(F("resolution_date") - F("created_at")))["avg_time"]
 
             if avg_time:
                 return avg_time.total_seconds() / 3600  # Convert to hours
@@ -452,9 +435,7 @@ class AdaptiveThresholdManager:
             threshold_data = {
                 "thresholds": self.thresholds,
                 "last_updated": timezone.now().isoformat(),
-                "adjustment_history": list(self.adjustment_history)[
-                    -10
-                ],  # Son 10 ayarlama
+                "adjustment_history": list(self.adjustment_history)[-10],  # Son 10 ayarlama
             }
             cache.set("adaptive_thresholds", threshold_data, timeout=86400)
 
@@ -529,9 +510,7 @@ class IncrementalMLModel:
             features.append(category_hash)
 
             # User history
-            user_complaint_count = Complaint.objects.filter(
-                submitter=complaint.submitter
-            ).count()
+            user_complaint_count = Complaint.objects.filter(submitter=complaint.submitter).count()
             features.append(min(user_complaint_count, 50))  # Cap at 50
 
             return np.array(features).reshape(1, -1)
@@ -647,9 +626,7 @@ class IncrementalMLModel:
 
             # Train with all recent data
             self.partial_fit(list(recent_complaints))
-            logger.info(
-                f"Full retraining completed with {recent_complaints.count()} complaints"
-            )
+            logger.info(f"Full retraining completed with {recent_complaints.count()} complaints")
 
         except Exception as e:
             logger.error(f"Error in full retrain: {e}")
@@ -708,9 +685,7 @@ class FeedbackLearningSystem:
             }
 
             # Cache'e kaydet
-            cache.set(
-                f"prediction_{prediction_id}", prediction_data, timeout=604800
-            )  # 7 days
+            cache.set(f"prediction_{prediction_id}", prediction_data, timeout=604800)  # 7 days
 
         except Exception as e:
             logger.error(f"Error recording prediction: {e}")
@@ -735,9 +710,7 @@ class FeedbackLearningSystem:
             }
 
             # Calculate accuracy
-            prediction_accuracy = self._calculate_accuracy(
-                prediction_id, actual_outcome
-            )
+            prediction_accuracy = self._calculate_accuracy(prediction_id, actual_outcome)
 
             self.model_accuracy_history.append(
                 {
@@ -773,9 +746,7 @@ class FeedbackLearningSystem:
         except Exception as e:
             logger.error(f"Error processing feedback: {e}")
 
-    def _calculate_accuracy(
-        self, prediction_id: str, actual_outcome: Dict[str, Any]
-    ) -> float:
+    def _calculate_accuracy(self, prediction_id: str, actual_outcome: Dict[str, Any]) -> float:
         """Tahmin doğruluğunu hesapla"""
         try:
             prediction_data = self.prediction_outcomes[prediction_id]["prediction"]
@@ -855,22 +826,18 @@ class FeedbackLearningSystem:
                 entry["accuracy"] for entry in list(self.model_accuracy_history)[-20:]
             ]
             recent_satisfaction = [
-                entry["satisfaction"]
-                for entry in list(self.model_accuracy_history)[-20:]
+                entry["satisfaction"] for entry in list(self.model_accuracy_history)[-20:]
             ]
 
             return {
                 "total_feedback_count": len(self.feedback_history),
-                "recent_average_accuracy": (
-                    np.mean(recent_accuracy) if recent_accuracy else 0
-                ),
+                "recent_average_accuracy": (np.mean(recent_accuracy) if recent_accuracy else 0),
                 "recent_average_satisfaction": (
                     np.mean(recent_satisfaction) if recent_satisfaction else 0
                 ),
                 "accuracy_trend": (
                     "improving"
-                    if len(recent_accuracy) > 1
-                    and recent_accuracy[-1] > recent_accuracy[0]
+                    if len(recent_accuracy) > 1 and recent_accuracy[-1] > recent_accuracy[0]
                     else "stable"
                 ),
                 "satisfaction_trend": (

@@ -10,9 +10,10 @@ Inspired by best practices from GitHub, Spotify, and Airbnb.
 import uuid
 from datetime import datetime, timedelta
 
-import factory
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+import factory
 
 from complaints.models import (
     Complaint,

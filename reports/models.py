@@ -37,9 +37,7 @@ class ReportTemplate(BaseModel):
     name = models.CharField(_("name"), max_length=200)
     description = models.TextField(_("description"), blank=True)
     template_file = models.FileField(_("template file"), upload_to="reports/templates/")
-    report_type = models.CharField(
-        _("report type"), max_length=20, choices=REPORT_TYPES
-    )
+    report_type = models.CharField(_("report type"), max_length=20, choices=REPORT_TYPES)
     format = models.CharField(_("format"), max_length=10, choices=FORMAT_CHOICES)
     parameters = models.JSONField(_("parameters"), default=dict)
     is_active = models.BooleanField(_("is active"), default=True)
@@ -73,12 +71,8 @@ class Report(BaseModel):
 
     name = models.CharField(_("name"), max_length=200)
     description = models.TextField(_("description"), blank=True)
-    report_type = models.CharField(
-        _("report type"), max_length=20, choices=REPORT_TYPES
-    )
-    format = models.CharField(
-        _("format"), max_length=10, choices=FORMAT_CHOICES, default="PDF"
-    )
+    report_type = models.CharField(_("report type"), max_length=20, choices=REPORT_TYPES)
+    format = models.CharField(_("format"), max_length=10, choices=FORMAT_CHOICES, default="PDF")
     created_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -110,9 +104,7 @@ class Report(BaseModel):
         verbose_name=_("schedule"),
     )
     last_generated = models.DateTimeField(_("last generated"), null=True, blank=True)
-    file = models.FileField(
-        _("file"), upload_to="reports/%Y/%m/", null=True, blank=True
-    )
+    file = models.FileField(_("file"), upload_to="reports/%Y/%m/", null=True, blank=True)
     is_public = models.BooleanField(_("is public"), default=False)
     access_level = models.PositiveSmallIntegerField(
         _("access level"),
@@ -172,9 +164,7 @@ class ReportSchedule(BaseModel):
 
     name = models.CharField(_("name"), max_length=200)
     description = models.TextField(_("description"), blank=True)
-    frequency = models.CharField(
-        _("frequency"), max_length=20, choices=FREQUENCY_CHOICES
-    )
+    frequency = models.CharField(_("frequency"), max_length=20, choices=FREQUENCY_CHOICES)
     cron_expression = models.CharField(_("cron expression"), max_length=100, blank=True)
     start_date = models.DateTimeField(_("start date"))
     end_date = models.DateTimeField(_("end date"), null=True, blank=True)
@@ -316,9 +306,7 @@ class DashboardWidget(BaseModel):
         verbose_name=_("dashboard"),
     )
     name = models.CharField(_("name"), max_length=200)
-    widget_type = models.CharField(
-        _("widget type"), max_length=20, choices=WIDGET_TYPES
-    )
+    widget_type = models.CharField(_("widget type"), max_length=20, choices=WIDGET_TYPES)
     data_source = models.CharField(_("data source"), max_length=200)
     configuration = models.JSONField(_("configuration"), default=dict)
     position = models.JSONField(_("position"), default=dict)

@@ -1,6 +1,7 @@
-import pytest
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+
+import pytest
 
 from core.models import BaseModel
 

@@ -88,9 +88,7 @@ class ComplaintForm(forms.ModelForm):
                 }
             ),
             # Başlık alanı - tek satır metin kutusu
-            "title": forms.TextInput(
-                attrs={"placeholder": "Konu/Başlık"}  # Yardımcı metin
-            ),
+            "title": forms.TextInput(attrs={"placeholder": "Konu/Başlık"}),  # Yardımcı metin
         }
 
     def __init__(self, *args, **kwargs):
@@ -144,9 +142,7 @@ class ComplaintForm(forms.ModelForm):
 
             # Çok satırlı metin kutuları (Textarea)
             elif isinstance(field.widget, forms.Textarea):
-                field.widget.attrs["class"] = (
-                    base_class + " resize-vertical min-h-[100px]"
-                )
+                field.widget.attrs["class"] = base_class + " resize-vertical min-h-[100px]"
 
             # Dosya yükleme alanları (FileInput)
             elif isinstance(field.widget, forms.FileInput):
@@ -320,9 +316,7 @@ class CommentForm(forms.ModelForm):
         self.fields["is_internal"].required = False  # İsteğe bağlı alan
 
         # Placeholder metinlerini güncelle
-        self.fields["content"].widget.attrs.update(
-            {"placeholder": "Yorumunuzu buraya yazın..."}
-        )
+        self.fields["content"].widget.attrs.update({"placeholder": "Yorumunuzu buraya yazın..."})
 
     def clean_content(self):
         """

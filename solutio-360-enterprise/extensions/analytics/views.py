@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
+
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -109,9 +110,7 @@ class MLDashboardView(TemplateView):
         )
 
         return {
-            "avg_score": recent_anomalies.aggregate(avg_score=Avg("anomaly_score"))[
-                "avg_score"
-            ]
+            "avg_score": recent_anomalies.aggregate(avg_score=Avg("anomaly_score"))["avg_score"]
             or 0.0,
             "total_detected": recent_anomalies.count(),
         }
@@ -134,9 +133,7 @@ class MLDashboardView(TemplateView):
                 processed_count += 1
 
         return {
-            "avg_sentiment": (
-                total_sentiment / processed_count if processed_count > 0 else 0.0
-            ),
+            "avg_sentiment": (total_sentiment / processed_count if processed_count > 0 else 0.0),
             "processed_count": processed_count,
         }
 
@@ -180,9 +177,7 @@ class MLDashboardView(TemplateView):
             .order_by("day")
         )
 
-        current_avg = (
-            sum(d["count"] for d in daily_complaints) / 7 if daily_complaints else 0
-        )
+        current_avg = sum(d["count"] for d in daily_complaints) / 7 if daily_complaints else 0
 
         # Basit trend hesaplama (son 3 gün vs önceki 4 gün)
         if len(daily_complaints) >= 7:
@@ -196,9 +191,7 @@ class MLDashboardView(TemplateView):
 
     def get_resolution_predictions(self):
         """Çözüm süresi tahminleri"""
-        resolved_complaints = Complaint.objects.filter(
-            status="resolved", resolved_at__isnull=False
-        )
+        resolved_complaints = Complaint.objects.filter(status="resolved", resolved_at__isnull=False)
 
         total_hours = 0
         count = 0
@@ -273,9 +266,7 @@ class MLDashboardView(TemplateView):
     def get_anomaly_status(self):
         """Anomali durumu"""
         recent_anomaly = (
-            AnomalyDetection.objects.filter(
-                detected_at__gte=timezone.now() - timedelta(hours=1)
-            )
+            AnomalyDetection.objects.filter(detected_at__gte=timezone.now() - timedelta(hours=1))
             .order_by("-detected_at")
             .first()
         )
@@ -497,9 +488,7 @@ def dismiss_insight_api(request, insight_id):
         insight.dismissed_by = request.user
         insight.save()
 
-        return Response(
-            {"status": "success", "message": f'Öngörü "{insight.title}" reddedildi'}
-        )
+        return Response({"status": "success", "message": f'Öngörü "{insight.title}" reddedildi'})
 
     except MLInsight.DoesNotExist:
         return Response(
@@ -522,23 +511,21 @@ def ml_dashboard(request):
     start_date = end_date - timedelta(days=30)
 
     # Basic statistics
-    total_complaints = Complaint.objects.filter(
-        created_at__range=[start_date, end_date]
-    ).count()
+    total_complaints = Complaint.objects.filter(created_at__range=[start_date, end_date]).count()
 
     resolved_complaints = Complaint.objects.filter(
         created_at__range=[start_date, end_date], status="resolved"
     ).count()
 
     # ML Engine statistics
-    ml_insights = MLInsight.objects.filter(
-        created_at__range=[start_date, end_date]
-    ).order_by("-created_at")[:10]
+    ml_insights = MLInsight.objects.filter(created_at__range=[start_date, end_date]).order_by(
+        "-created_at"
+    )[:10]
 
     # Anomaly detection
-    anomalies = AnomalyDetection.objects.filter(
-        detected_at__range=[start_date, end_date]
-    ).order_by("-detected_at")[:5]
+    anomalies = AnomalyDetection.objects.filter(detected_at__range=[start_date, end_date]).order_by(
+        "-detected_at"
+    )[:5]
 
     # Model performance
     model_performance = (
@@ -555,9 +542,7 @@ def ml_dashboard(request):
         "total_complaints": total_complaints,
         "resolved_complaints": resolved_complaints,
         "resolution_rate": (
-            (resolved_complaints / total_complaints * 100)
-            if total_complaints > 0
-            else 0
+            (resolved_complaints / total_complaints * 100) if total_complaints > 0 else 0
         ),
         "ml_insights": ml_insights,
         "anomalies": anomalies,
@@ -580,9 +565,7 @@ def ai_processing_dashboard(request):
 
     # AI Processing Metrics
     ai_metrics = {
-        "processed_today": Complaint.objects.filter(
-            created_at__gte=today_start
-        ).count(),
+        "processed_today": Complaint.objects.filter(created_at__gte=today_start).count(),
         "accuracy": 94.2,  # Would be calculated from actual AI performance
         "avg_time": 2.3,  # Average processing time in seconds
     }
@@ -665,9 +648,7 @@ def process_complaint_with_ai(request):
                 pass
 
         # Process with GenAI
-        ai_analysis = genai_agent.process_complaint_with_genai(
-            complaint_text, customer_context
-        )
+        ai_analysis = genai_agent.process_complaint_with_genai(complaint_text, customer_context)
 
         # Apply department routing
         if complaint_id:
@@ -699,9 +680,7 @@ def process_complaint_with_ai(request):
 
     except Exception as e:
         logger.error(f"AI processing error: {str(e)}")
-        return JsonResponse(
-            {"error": "AI processing failed", "details": str(e)}, status=500
-        )
+        return JsonResponse({"error": "AI processing failed", "details": str(e)}, status=500)
 
 
 @login_required
@@ -721,9 +700,7 @@ def department_routing_api(request):
             # Get AI analysis if available
             ai_analysis = None
             latest_insight = (
-                MLInsight.objects.filter(
-                    complaint_id=complaint_id, insight_type="genai_analysis"
-                )
+                MLInsight.objects.filter(complaint_id=complaint_id, insight_type="genai_analysis")
                 .order_by("-created_at")
                 .first()
             )
@@ -748,9 +725,7 @@ def department_routing_api(request):
 
         except Exception as e:
             logger.error(f"Routing error: {str(e)}")
-            return JsonResponse(
-                {"error": "Routing failed", "details": str(e)}, status=500
-            )
+            return JsonResponse({"error": "Routing failed", "details": str(e)}, status=500)
 
     return JsonResponse({"error": "POST method required"}, status=405)
 
@@ -776,9 +751,7 @@ def ai_insights_api(request):
         )
 
         metrics = {
-            "complaints_processed": Complaint.objects.filter(
-                created_at__gte=today_start
-            ).count(),
+            "complaints_processed": Complaint.objects.filter(created_at__gte=today_start).count(),
             "ai_accuracy": 94.2,  # Would be calculated from model performance
             "avg_sentiment": ml_engine.get_average_sentiment(),
             "routing_efficiency": department_router._calculate_routing_efficiency(),
@@ -830,9 +803,7 @@ def ai_insights_api(request):
 
     except Exception as e:
         logger.error(f"AI insights API error: {str(e)}")
-        return JsonResponse(
-            {"error": "Failed to fetch AI insights", "details": str(e)}, status=500
-        )
+        return JsonResponse({"error": "Failed to fetch AI insights", "details": str(e)}, status=500)
 
 
 @login_required
@@ -855,9 +826,7 @@ def sentiment_analysis_api(request):
                     "success": True,
                     "sentiment": sentiment_result["sentiment"],
                     "confidence": sentiment_result["confidence"],
-                    "emotional_intensity": sentiment_result.get(
-                        "emotional_intensity", "medium"
-                    ),
+                    "emotional_intensity": sentiment_result.get("emotional_intensity", "medium"),
                     "key_emotions": sentiment_result.get("key_emotions", []),
                 }
             )
@@ -900,9 +869,7 @@ def prediction_api(request):
 
     except Exception as e:
         logger.error(f"Prediction API error: {str(e)}")
-        return JsonResponse(
-            {"error": "Prediction failed", "details": str(e)}, status=500
-        )
+        return JsonResponse({"error": "Prediction failed", "details": str(e)}, status=500)
 
 
 @login_required
@@ -932,9 +899,7 @@ def model_performance_api(request):
         # Calculate average performance
         if performance_data.exists():
             avg_accuracy = performance_data.aggregate(Avg("accuracy"))["accuracy__avg"]
-            avg_precision = performance_data.aggregate(Avg("precision"))[
-                "precision__avg"
-            ]
+            avg_precision = performance_data.aggregate(Avg("precision"))["precision__avg"]
             avg_recall = performance_data.aggregate(Avg("recall"))["recall__avg"]
             avg_f1 = performance_data.aggregate(Avg("f1_score"))["f1_score__avg"]
         else:
@@ -984,9 +949,7 @@ def auto_response_api(request):
             ai_analysis = genai_agent.process_complaint_with_genai(complaint_text)
 
             # Generate auto-response
-            auto_response = genai_agent.generate_auto_response(
-                ai_analysis, complaint_text
-            )
+            auto_response = genai_agent.generate_auto_response(ai_analysis, complaint_text)
 
             # Create resolution workflow
             workflow = genai_agent.create_resolution_workflow(ai_analysis)

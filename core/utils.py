@@ -206,9 +206,7 @@ def get_user_agent(request) -> str:
     return request.META.get("HTTP_USER_AGENT", "")
 
 
-def send_notification_email(
-    user, subject: str, template: str, context: Dict[str, Any]
-) -> bool:
+def send_notification_email(user, subject: str, template: str, context: Dict[str, Any]) -> bool:
     """
     Bildirim Email Gönderme
     ======================
@@ -263,9 +261,7 @@ def send_notification_email(
         return False
 
 
-def create_notification(
-    user, message: str, notification_type: str = "INFO", url: str = ""
-) -> None:
+def create_notification(user, message: str, notification_type: str = "INFO", url: str = "") -> None:
     """
     Uygulama İçi Bildirim Oluşturma
     ==============================
@@ -309,9 +305,7 @@ def create_notification(
             code=notification_type, defaults={"name": notification_type}
         )
 
-        Notification.objects.create(
-            user=user, message=message, type=notification_type_obj, url=url
-        )
+        Notification.objects.create(user=user, message=message, type=notification_type_obj, url=url)
     except Exception as e:
         print(f"Bildirim oluşturma hatası: {e}")
 
@@ -348,9 +342,7 @@ def get_cached_data(cache_key: str, default: Any = None) -> Any:
     return cache.get(cache_key, default)
 
 
-def set_cached_data(
-    cache_key: str, data: Any, timeout: int = CACHE_TIMEOUTS["MEDIUM"]
-) -> None:
+def set_cached_data(cache_key: str, data: Any, timeout: int = CACHE_TIMEOUTS["MEDIUM"]) -> None:
     """
     Cache'e Veri Kaydetme
     ====================
@@ -489,9 +481,7 @@ def is_sla_breached(created_at: datetime, sla_hours: int = 24) -> bool:
     return timezone.now() > due_date
 
 
-def get_time_diff_display(
-    start_time: datetime, end_time: Optional[datetime] = None
-) -> str:
+def get_time_diff_display(start_time: datetime, end_time: Optional[datetime] = None) -> str:
     """
     Zaman Farkı Görüntüleme
     ======================
@@ -667,9 +657,7 @@ def get_model_verbose_name(model) -> str:
     return model._meta.verbose_name if hasattr(model, "_meta") else str(model)
 
 
-def create_webhook_payload(
-    event_type: str, object_data: Dict[str, Any]
-) -> Dict[str, Any]:
+def create_webhook_payload(event_type: str, object_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Webhook payload oluştur
     """

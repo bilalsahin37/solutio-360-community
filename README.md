@@ -262,6 +262,16 @@ Please report security vulnerabilities to bilalsahin37@hotmail.com
 - [ ] Performance optimizations
 - [ ] Additional integrations
 
+## 💝 Sponsors
+
+We're looking for sponsors to help accelerate Solutio 360 development! 
+
+**[📋 View Sponsorship Opportunities](SPONSORS.md)**
+
+**[💰 Investment & Funding Information](FUNDING.md)**
+
+Support open source innovation and get your brand featured!
+
 ## 🏆 Acknowledgments
 
 - Django community for the excellent framework

@@ -12,10 +12,11 @@ Comprehensive PWA testing suite inspired by:
 import json
 from unittest.mock import MagicMock, patch
 
-import pytest
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client, TestCase
 from django.urls import reverse
+
+import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -226,9 +227,7 @@ class PWAInstallabilityTests(StaticLiveServerTestCase):
         """Test manifest link tag is present"""
         self.selenium.get(self.live_server_url)
 
-        manifest_link = self.selenium.find_element(
-            By.CSS_SELECTOR, 'link[rel="manifest"]'
-        )
+        manifest_link = self.selenium.find_element(By.CSS_SELECTOR, 'link[rel="manifest"]')
         self.assertIsNotNone(manifest_link)
 
         # Test manifest is accessible

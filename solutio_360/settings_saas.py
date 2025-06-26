@@ -48,9 +48,7 @@ TENANT_APPS = [
     "core",
 ]
 
-INSTALLED_APPS = list(SHARED_APPS) + [
-    app for app in TENANT_APPS if app not in SHARED_APPS
-]
+INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 # Tenant model
 TENANT_MODEL = "saas_features.Organization"

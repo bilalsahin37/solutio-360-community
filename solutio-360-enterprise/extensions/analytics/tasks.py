@@ -9,10 +9,11 @@ Celery tasks for automated ML training and monitoring
 import logging
 from datetime import datetime, timedelta
 
-from celery import shared_task
 from django.core.cache import cache
 from django.db.models import Avg, Count, F
 from django.utils import timezone
+
+from celery import shared_task
 
 from complaints.models import Complaint, ComplaintCategory
 from users.models import User
@@ -257,9 +258,7 @@ def analyze_complaints_with_nlp(self):
             try:
                 # Category prediction
                 category_result = nlp_processor.predict_category(complaint.description)
-                predicted_category = category_result.get(
-                    "predicted_category", "Unknown"
-                )
+                predicted_category = category_result.get("predicted_category", "Unknown")
                 confidence = category_result.get("confidence", 0)
 
                 if predicted_category not in analysis_results["category_predictions"]:
@@ -270,9 +269,7 @@ def analyze_complaints_with_nlp(self):
                     analysis_results["high_confidence_predictions"] += 1
 
                 # Sentiment analysis
-                sentiment_result = nlp_processor.predict_sentiment(
-                    complaint.description
-                )
+                sentiment_result = nlp_processor.predict_sentiment(complaint.description)
                 sentiment = sentiment_result.get("sentiment", "neutral")
                 analysis_results["sentiment_distribution"][sentiment] += 1
 
@@ -335,8 +332,7 @@ def generate_ml_performance_report(self):
             "rl_agent_performance": {
                 "total_episodes": rl_agent.episode_count,
                 "total_rewards": rl_agent.total_rewards,
-                "average_reward": rl_agent.total_rewards
-                / max(1, rl_agent.episode_count),
+                "average_reward": rl_agent.total_rewards / max(1, rl_agent.episode_count),
                 "exploration_rate": rl_agent.epsilon * 100,
                 "q_table_coverage": len(rl_agent.q_table),
                 "last_training": last_rl_training,
@@ -360,12 +356,8 @@ def generate_ml_performance_report(self):
         week_ago = timezone.now() - timedelta(days=7)
 
         ml_statistics = {
-            "complaints_today": Complaint.objects.filter(
-                created_at__date=today
-            ).count(),
-            "complaints_this_week": Complaint.objects.filter(
-                created_at__gte=week_ago
-            ).count(),
+            "complaints_today": Complaint.objects.filter(created_at__date=today).count(),
+            "complaints_this_week": Complaint.objects.filter(created_at__gte=week_ago).count(),
             "resolved_this_week": Complaint.objects.filter(
                 status="RESOLVED", resolution_date__gte=week_ago
             ).count(),
@@ -378,16 +370,12 @@ def generate_ml_performance_report(self):
         ).aggregate(avg_time=Avg(F("resolution_date") - F("created_at")))["avg_time"]
 
         if avg_resolution:
-            ml_statistics["average_resolution_time_hours"] = (
-                avg_resolution.total_seconds() / 3600
-            )
+            ml_statistics["average_resolution_time_hours"] = avg_resolution.total_seconds() / 3600
 
         performance_report["system_statistics"] = ml_statistics
 
         # Cache the performance report
-        cache.set(
-            "ml_performance_report", performance_report, timeout=3600
-        )  # 1 hour cache
+        cache.set("ml_performance_report", performance_report, timeout=3600)  # 1 hour cache
 
         logger.info("ML performance report generated successfully")
         return performance_report
@@ -426,9 +414,7 @@ def cleanup_ml_cache(self):
                         last_updated = datetime.fromisoformat(
                             cached_data["last_updated"].replace("Z", "+00:00")
                         )
-                        if (
-                            timezone.now() - last_updated
-                        ).total_seconds() > 86400:  # 24 hours
+                        if (timezone.now() - last_updated).total_seconds() > 86400:  # 24 hours
                             cache.delete(key)
                             cleaned_count += 1
                     except (ValueError, TypeError):

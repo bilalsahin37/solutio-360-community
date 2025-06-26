@@ -11,9 +11,7 @@ urlpatterns = [
         views.SubscriptionDashboardView.as_view(),
         name="subscription_dashboard",
     ),
-    path(
-        "subscription/upgrade/<int:plan_id>/", views.upgrade_plan, name="upgrade_plan"
-    ),
+    path("subscription/upgrade/<int:plan_id>/", views.upgrade_plan, name="upgrade_plan"),
     path(
         "subscription/downgrade/<int:plan_id>/",
         views.downgrade_plan,

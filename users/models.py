@@ -46,9 +46,7 @@ class User(AbstractUser):
     )
 
     # Kullanıcı avatar resmi
-    avatar = models.ImageField(
-        _("avatar"), upload_to="users/avatars/%Y/%m/", null=True, blank=True
-    )
+    avatar = models.ImageField(_("avatar"), upload_to="users/avatars/%Y/%m/", null=True, blank=True)
 
     # Kullanıcının departmanı - foreign key
     department = models.ForeignKey(
@@ -77,9 +75,7 @@ class User(AbstractUser):
     )
 
     # Son giriş IP adresi
-    last_login_ip = models.GenericIPAddressField(
-        _("last login IP"), null=True, blank=True
-    )
+    last_login_ip = models.GenericIPAddressField(_("last login IP"), null=True, blank=True)
 
     # İki faktörlü kimlik doğrulama aktif mi?
     two_factor_enabled = models.BooleanField(_("two factor enabled"), default=False)
@@ -90,14 +86,10 @@ class User(AbstractUser):
     )
 
     # Bildirim tercihleri - JSON formatında
-    notification_preferences = models.JSONField(
-        _("notification preferences"), default=dict
-    )
+    notification_preferences = models.JSONField(_("notification preferences"), default=dict)
 
     # Tercih edilen dil
-    language_preference = models.CharField(
-        _("language preference"), max_length=10, default="tr"
-    )
+    language_preference = models.CharField(_("language preference"), max_length=10, default="tr")
 
     # Saat dilimi
     timezone = models.CharField(_("timezone"), max_length=50, default="Europe/Istanbul")
@@ -198,9 +190,7 @@ class UserProfile(models.Model):
 
     # İletişim Bilgileri
     alternative_email = models.EmailField(_("Alternatif E-posta"), blank=True)
-    alternative_phone = models.CharField(
-        _("Alternatif Telefon"), max_length=20, blank=True
-    )
+    alternative_phone = models.CharField(_("Alternatif Telefon"), max_length=20, blank=True)
 
     # Sosyal Medya Hesapları
     linkedin = models.URLField(_("LinkedIn"), blank=True)
@@ -216,9 +206,7 @@ class UserProfile(models.Model):
         default="tr",
     )
 
-    timezone = models.CharField(
-        _("Saat Dilimi"), max_length=50, default="Europe/Istanbul"
-    )
+    timezone = models.CharField(_("Saat Dilimi"), max_length=50, default="Europe/Istanbul")
 
     theme = models.CharField(
         _("Tema"),
@@ -229,9 +217,7 @@ class UserProfile(models.Model):
 
     # İstatistikler
     profile_views = models.PositiveIntegerField(_("Profil Görüntülenme"), default=0)
-    last_profile_update = models.DateTimeField(
-        _("Son Profil Güncelleme"), auto_now=True
-    )
+    last_profile_update = models.DateTimeField(_("Son Profil Güncelleme"), auto_now=True)
 
     class Meta:
         verbose_name = _("Kullanıcı Profili")

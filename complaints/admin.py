@@ -349,9 +349,7 @@ class ComplaintTagAdmin(admin.ModelAdmin):
         from django.db.models import Count
 
         queryset = super().get_queryset(request)
-        return queryset.annotate(
-            usage_count=Count("complaint")  # Kaç şikayette kullanıldığını say
-        )
+        return queryset.annotate(usage_count=Count("complaint"))  # Kaç şikayette kullanıldığını say
 
     def usage_count(self, obj):
         """

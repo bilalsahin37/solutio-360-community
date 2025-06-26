@@ -7,11 +7,12 @@ import asyncio
 import json
 from datetime import datetime, timedelta
 
+from django.contrib.auth.models import AnonymousUser
+from django.utils import timezone
+
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.auth.models import AnonymousUser
-from django.utils import timezone
 
 from complaints.models import Complaint
 
@@ -67,9 +68,7 @@ class MLDashboardConsumer(AsyncWebsocketConsumer):
 
         except json.JSONDecodeError:
             await self.send(
-                text_data=json.dumps(
-                    {"type": "error", "message": "Geçersiz JSON formatı"}
-                )
+                text_data=json.dumps({"type": "error", "message": "Geçersiz JSON formatı"})
             )
 
     async def send_initial_data(self):
@@ -220,25 +219,15 @@ class MLDashboardConsumer(AsyncWebsocketConsumer):
                     else:
                         neutral_count += 1
 
-            avg_sentiment = (
-                sentiment_sum / sentiment_count if sentiment_count > 0 else 0.0
-            )
+            avg_sentiment = sentiment_sum / sentiment_count if sentiment_count > 0 else 0.0
 
             sentiment_percentages = {
                 "positive": (
-                    (positive_count / sentiment_count * 100)
-                    if sentiment_count > 0
-                    else 0
+                    (positive_count / sentiment_count * 100) if sentiment_count > 0 else 0
                 ),
-                "neutral": (
-                    (neutral_count / sentiment_count * 100)
-                    if sentiment_count > 0
-                    else 0
-                ),
+                "neutral": ((neutral_count / sentiment_count * 100) if sentiment_count > 0 else 0),
                 "negative": (
-                    (negative_count / sentiment_count * 100)
-                    if sentiment_count > 0
-                    else 0
+                    (negative_count / sentiment_count * 100) if sentiment_count > 0 else 0
                 ),
             }
 

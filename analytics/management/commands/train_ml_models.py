@@ -13,9 +13,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--days", type=int, default=30, help="Days of data to use")
-        parser.add_argument(
-            "--component", choices=["rl", "incremental", "all"], default="all"
-        )
+        parser.add_argument("--component", choices=["rl", "incremental", "all"], default="all")
 
     def handle(self, *args, **options):
         days = options["days"]
@@ -49,9 +47,7 @@ class Command(BaseCommand):
                 rl_agent.update_q_value(state, action, reward, next_state)
 
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"RL agent trained: {rl_agent.episode_count} episodes"
-                )
+                self.style.SUCCESS(f"RL agent trained: {rl_agent.episode_count} episodes")
             )
 
         # Train Incremental Model
@@ -60,8 +56,6 @@ class Command(BaseCommand):
             model = get_incremental_model()
             model.partial_fit(list(resolved_complaints))
 
-            self.stdout.write(
-                self.style.SUCCESS(f"Incremental model trained: {model.is_trained}")
-            )
+            self.stdout.write(self.style.SUCCESS(f"Incremental model trained: {model.is_trained}"))
 
         self.stdout.write(self.style.SUCCESS("ML training completed!"))

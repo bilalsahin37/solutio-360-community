@@ -48,9 +48,7 @@ def debug_withdraw_issue():
     )
 
     if not test_complaint:
-        print(
-            "⚠️ Geri çekilebilir şikayet bulunamadı. Yeni test şikayeti oluşturuluyor..."
-        )
+        print("⚠️ Geri çekilebilir şikayet bulunamadı. Yeni test şikayeti oluşturuluyor...")
         test_complaint = Complaint.objects.create(
             title="Debug Test Şikayeti",
             description="Bu şikayet geri çekme debug testi için oluşturuldu.",
@@ -67,9 +65,7 @@ def debug_withdraw_issue():
     print(f"   can_withdraw: {test_complaint.can_withdraw}")
 
     # URL'i test et
-    withdraw_url = reverse(
-        "complaints:withdraw_complaint", kwargs={"pk": test_complaint.id}
-    )
+    withdraw_url = reverse("complaints:withdraw_complaint", kwargs={"pk": test_complaint.id})
     print(f"\n🔗 Geri çekme URL'i: {withdraw_url}")
 
     # Client ile POST isteği test et

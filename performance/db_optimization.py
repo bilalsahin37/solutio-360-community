@@ -44,9 +44,7 @@ class DatabaseOptimizer:
         if slow_queries:
             logger.warning(f"Found {len(slow_queries)} slow queries")
             for query in slow_queries:
-                logger.warning(
-                    f"Slow query ({query['time']}s): {query['sql'][:100]}..."
-                )
+                logger.warning(f"Slow query ({query['time']}s): {query['sql'][:100]}...")
 
         return slow_queries
 
@@ -84,9 +82,7 @@ class DatabaseOptimizer:
 
         stats = Complaint.objects.aggregate(
             total_complaints=Count("id"),
-            pending_complaints=Count(
-                "id", filter=Q(status__in=["SUBMITTED", "IN_REVIEW"])
-            ),
+            pending_complaints=Count("id", filter=Q(status__in=["SUBMITTED", "IN_REVIEW"])),
             resolved_complaints=Count("id", filter=Q(status="RESOLVED")),
             avg_resolution_days=Avg("resolution_date__date" - "created_at__date"),
         )
@@ -165,9 +161,7 @@ def query_debugger(func):
         # Log slow queries
         for query in queries:
             if float(query["time"]) > 0.05:  # 50ms threshold
-                logger.warning(
-                    f"Slow query: {query['sql'][:100]}... ({query['time']}s)"
-                )
+                logger.warning(f"Slow query: {query['sql'][:100]}... ({query['time']}s)")
 
         return result
 
@@ -192,9 +186,7 @@ class CacheManager:
     }
 
     @classmethod
-    def get_or_set(
-        cls, key: str, fetch_func, timeout: int = None, cache_type: str = "default"
-    ):
+    def get_or_set(cls, key: str, fetch_func, timeout: int = None, cache_type: str = "default"):
         """
         Get data from cache or fetch and cache it
         """
@@ -446,9 +438,7 @@ class DatabaseMaintenance:
 
         cutoff_date = timezone.now() - timedelta(days=730)  # 2 years
 
-        old_complaints = Complaint.objects.filter(
-            created_at__lt=cutoff_date, status="CLOSED"
-        )
+        old_complaints = Complaint.objects.filter(created_at__lt=cutoff_date, status="CLOSED")
 
         # Move to archive table or mark as archived
         count = old_complaints.update(is_archived=True)

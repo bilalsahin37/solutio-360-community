@@ -175,9 +175,7 @@ def generate_invoice_number() -> str:
     return f"INV-{timestamp}-{random_suffix}"
 
 
-def calculate_prorated_amount(
-    plan_price: Decimal, days_remaining: int, total_days: int
-) -> Decimal:
+def calculate_prorated_amount(plan_price: Decimal, days_remaining: int, total_days: int) -> Decimal:
     """
     Calculate prorated amount for plan changes
     """
@@ -193,9 +191,7 @@ def send_billing_notification(organization, notification_type: str, **kwargs):
     Send billing-related notifications
     """
     # Placeholder for notification system
-    logger.info(
-        f"Billing notification sent to {organization.name}: {notification_type}"
-    )
+    logger.info(f"Billing notification sent to {organization.name}: {notification_type}")
 
     # In a real implementation, this would integrate with email/SMS services
     pass
@@ -214,9 +210,7 @@ def validate_subscription_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
     valid_plans = ["free", "starter", "professional", "enterprise"]
     if data.get("plan_type") and data["plan_type"].lower() not in valid_plans:
-        errors["plan_type"] = (
-            f"Invalid plan type. Must be one of: {', '.join(valid_plans)}"
-        )
+        errors["plan_type"] = f"Invalid plan type. Must be one of: {', '.join(valid_plans)}"
 
     valid_cycles = ["monthly", "yearly"]
     if data.get("billing_cycle") and data["billing_cycle"].lower() not in valid_cycles:
@@ -267,7 +261,5 @@ def track_feature_usage(organization, feature: str, usage_count: int = 1):
     usage.usage_count += usage_count
     usage.save()
 
-    logger.info(
-        f"Feature usage tracked: {feature} for {organization.name} (+{usage_count})"
-    )
+    logger.info(f"Feature usage tracked: {feature} for {organization.name} (+{usage_count})")
     return usage

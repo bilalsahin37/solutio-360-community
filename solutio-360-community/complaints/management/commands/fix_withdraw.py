@@ -18,17 +18,13 @@ class Command(BaseCommand):
                 complaint.can_be_withdrawn = True
                 complaint.save(update_fields=["can_be_withdrawn"])
                 updated_count += 1
-                self.stdout.write(
-                    f"Güncellendi: ID {complaint.pk} - {complaint.title[:30]}"
-                )
+                self.stdout.write(f"Güncellendi: ID {complaint.pk} - {complaint.title[:30]}")
 
         self.stdout.write(f"\nToplam {updated_count} şikayet güncellendi.")
 
         # Kontrol et
         self.stdout.write("\n=== Kontrol ===")
         for c in complaints[:5]:
-            self.stdout.write(
-                f"ID: {c.pk} | can_withdraw: {c.can_withdraw} | status: {c.status}"
-            )
+            self.stdout.write(f"ID: {c.pk} | can_withdraw: {c.can_withdraw} | status: {c.status}")
 
         self.stdout.write(self.style.SUCCESS("İşlem tamamlandı!"))

@@ -137,9 +137,7 @@ class AIConfigManager:
             self.daily_usage = {provider: 0 for provider in AIProvider}
             self.last_reset_date = today
             if old_usage:
-                logger.info(
-                    f"🔄 Daily AI usage counters reset. Previous usage: {old_usage}"
-                )
+                logger.info(f"🔄 Daily AI usage counters reset. Previous usage: {old_usage}")
 
     def get_usage_status(self) -> dict:
         """
@@ -173,9 +171,7 @@ class AIConfigManager:
 
         return status
 
-    def check_and_switch_provider(
-        self, current_provider: AIProvider, task_type: str
-    ) -> AIProvider:
+    def check_and_switch_provider(self, current_provider: AIProvider, task_type: str) -> AIProvider:
         """
         🔄 Auto-switch when current provider limit is exceeded
         """
@@ -187,9 +183,7 @@ class AIConfigManager:
                 f"🚨 {current_provider.value} limit exceeded ({current_usage}/{current_config['max_requests_per_day']})"
             )
             new_provider = self.get_best_provider_for_task(task_type)
-            logger.info(
-                f"🔄 Auto-switching from {current_provider.value} to {new_provider.value}"
-            )
+            logger.info(f"🔄 Auto-switching from {current_provider.value} to {new_provider.value}")
             return new_provider
 
         return current_provider
@@ -212,9 +206,7 @@ class AIConfigManager:
 
         return " | ".join(free_status)
 
-    def get_best_provider_for_task(
-        self, task_type: str, priority: str = "medium"
-    ) -> AIProvider:
+    def get_best_provider_for_task(self, task_type: str, priority: str = "medium") -> AIProvider:
         """
         🆓 COST-FREE Provider Selection with Smart Auto-Fallback
 
@@ -251,9 +243,7 @@ class AIConfigManager:
 
         if not suitable_providers:
             # Always fallback to LOCAL - never fail
-            logger.warning(
-                f"All providers exhausted for '{task_type}', falling back to LOCAL"
-            )
+            logger.warning(f"All providers exhausted for '{task_type}', falling back to LOCAL")
             return AIProvider.LOCAL
 
         # 🚀 Smart Selection Logic

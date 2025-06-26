@@ -285,9 +285,7 @@ def test_static_files():
     for img_dir in image_dirs:
         if os.path.exists(img_dir):
             files = os.listdir(img_dir)
-            print_test(
-                f"Resimler: {img_dir}", len(files) > 0, f"{len(files)} dosya bulundu"
-            )
+            print_test(f"Resimler: {img_dir}", len(files) > 0, f"{len(files)} dosya bulundu")
         else:
             print_test(f"Resimler: {img_dir}", False, "Dizin bulunamadı")
 
@@ -327,9 +325,7 @@ def generate_test_report():
     """Genel test raporu oluştur"""
     print_header("SOLUTIO 360 PWA - KAPSAMLI TEST RAPORU")
 
-    print(
-        f"{Colors.CYAN}Test Zamanı: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}"
-    )
+    print(f"{Colors.CYAN}Test Zamanı: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}")
     print(f"{Colors.CYAN}Django Versiyonu: {django.get_version()}{Colors.END}")
     print(f"{Colors.CYAN}Python Versiyonu: {sys.version.split()[0]}{Colors.END}")
 
@@ -364,9 +360,7 @@ def generate_test_report():
         f"{Colors.WHITE}├─ 👨‍💼 Personel Panel: http://127.0.0.1:8000/complaints/reviewer-panel/{Colors.END}"
     )
     print(f"{Colors.WHITE}│  └─ Kullanıcı: reviewer1 / Şifre: Test123456{Colors.END}")
-    print(
-        f"{Colors.WHITE}└─ 👤 Kullanıcı Panel: http://127.0.0.1:8000/complaints/{Colors.END}"
-    )
+    print(f"{Colors.WHITE}└─ 👤 Kullanıcı Panel: http://127.0.0.1:8000/complaints/{Colors.END}")
     print(f"{Colors.WHITE}   └─ Kullanıcı: testuser / Şifre: Test123456{Colors.END}")
 
 

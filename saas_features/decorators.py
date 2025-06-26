@@ -120,11 +120,7 @@ def track_feature_usage(feature_name):
             response = view_func(request, *args, **kwargs)
 
             # Başarılı response ise kullanımı kaydet
-            if (
-                organization
-                and hasattr(response, "status_code")
-                and response.status_code == 200
-            ):
+            if organization and hasattr(response, "status_code") and response.status_code == 200:
                 feature_usage, created = FeatureUsage.objects.get_or_create(
                     organization=organization,
                     feature_name=feature_name,
@@ -187,9 +183,7 @@ def subscription_required(redirect_to="saas:subscription"):
                         status=403,
                     )
 
-                messages.warning(
-                    request, "Bu özelliği kullanmak için aktif abonelik gereklidir."
-                )
+                messages.warning(request, "Bu özelliği kullanmak için aktif abonelik gereklidir.")
                 return redirect(redirect_to)
 
             return view_func(request, *args, **kwargs)
@@ -329,9 +323,7 @@ def check_plan_limits(organization):
 
     # Şikayet limiti kontrolü
     complaint_usage = get_current_usage(organization, "complaints")
-    complaint_percentage = (
-        complaint_usage / organization.monthly_complaint_limit
-    ) * 100
+    complaint_percentage = (complaint_usage / organization.monthly_complaint_limit) * 100
 
     if complaint_percentage >= 90:
         warnings.append(

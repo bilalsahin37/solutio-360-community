@@ -69,17 +69,11 @@ class MLInsight(models.Model):
     is_applied = models.BooleanField(default=False, verbose_name="Uygulandı mı?")
 
     # Tarih bilgileri
-    created_at = models.DateTimeField(
-        default=timezone.now, verbose_name="Oluşturulma Tarihi"
-    )
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="Oluşturulma Tarihi")
 
-    applied_at = models.DateTimeField(
-        null=True, blank=True, verbose_name="Uygulanma Tarihi"
-    )
+    applied_at = models.DateTimeField(null=True, blank=True, verbose_name="Uygulanma Tarihi")
 
-    dismissed_at = models.DateTimeField(
-        null=True, blank=True, verbose_name="Reddedilme Tarihi"
-    )
+    dismissed_at = models.DateTimeField(null=True, blank=True, verbose_name="Reddedilme Tarihi")
 
     # Kullanıcı ilişkileri
     applied_by = models.ForeignKey(
@@ -167,16 +161,12 @@ class AnomalyDetection(models.Model):
     )
 
     # Tespit tarihi
-    detected_at = models.DateTimeField(
-        default=timezone.now, verbose_name="Tespit Tarihi"
-    )
+    detected_at = models.DateTimeField(default=timezone.now, verbose_name="Tespit Tarihi")
 
     # Çözüm durumu
     is_resolved = models.BooleanField(default=False, verbose_name="Çözüldü mü?")
 
-    resolved_at = models.DateTimeField(
-        null=True, blank=True, verbose_name="Çözülme Tarihi"
-    )
+    resolved_at = models.DateTimeField(null=True, blank=True, verbose_name="Çözülme Tarihi")
 
     resolved_by = models.ForeignKey(
         User,
@@ -220,13 +210,9 @@ class ModelPerformance(models.Model):
         ("reinforcement_learning", "Pekiştirmeli Öğrenme"),
     ]
 
-    model_name = models.CharField(
-        max_length=50, choices=MODEL_TYPES, verbose_name="Model Adı"
-    )
+    model_name = models.CharField(max_length=50, choices=MODEL_TYPES, verbose_name="Model Adı")
 
-    model_version = models.CharField(
-        max_length=20, default="1.0.0", verbose_name="Model Versiyonu"
-    )
+    model_version = models.CharField(max_length=20, default="1.0.0", verbose_name="Model Versiyonu")
 
     # Performans metrikleri
     accuracy = models.FloatField(
@@ -250,27 +236,17 @@ class ModelPerformance(models.Model):
     )
 
     # Ek metrikler
-    training_samples = models.PositiveIntegerField(
-        default=0, verbose_name="Eğitim Örnek Sayısı"
-    )
+    training_samples = models.PositiveIntegerField(default=0, verbose_name="Eğitim Örnek Sayısı")
 
-    test_samples = models.PositiveIntegerField(
-        default=0, verbose_name="Test Örnek Sayısı"
-    )
+    test_samples = models.PositiveIntegerField(default=0, verbose_name="Test Örnek Sayısı")
 
-    total_predictions = models.PositiveIntegerField(
-        default=0, verbose_name="Toplam Tahmin Sayısı"
-    )
+    total_predictions = models.PositiveIntegerField(default=0, verbose_name="Toplam Tahmin Sayısı")
 
     # Eğitim süresi (saniye)
-    training_time_seconds = models.FloatField(
-        default=0.0, verbose_name="Eğitim Süresi (saniye)"
-    )
+    training_time_seconds = models.FloatField(default=0.0, verbose_name="Eğitim Süresi (saniye)")
 
     # Model boyutu (byte)
-    model_size_bytes = models.PositiveBigIntegerField(
-        default=0, verbose_name="Model Boyutu (byte)"
-    )
+    model_size_bytes = models.PositiveBigIntegerField(default=0, verbose_name="Model Boyutu (byte)")
 
     # Ek veriler (hyperparameters, loss history, vb.)
     metadata = models.JSONField(default=dict, blank=True, verbose_name="Ek Veriler")
@@ -341,19 +317,13 @@ class MLModelState(models.Model):
     )
 
     # Son eğitim tarihi
-    last_trained_at = models.DateTimeField(
-        null=True, blank=True, verbose_name="Son Eğitim Tarihi"
-    )
+    last_trained_at = models.DateTimeField(null=True, blank=True, verbose_name="Son Eğitim Tarihi")
 
     # Son güncelleme tarihi
-    last_updated_at = models.DateTimeField(
-        auto_now=True, verbose_name="Son Güncelleme Tarihi"
-    )
+    last_updated_at = models.DateTimeField(auto_now=True, verbose_name="Son Güncelleme Tarihi")
 
     # Oluşturulma tarihi
-    created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="Oluşturulma Tarihi"
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Oluşturulma Tarihi")
 
     class Meta:
         verbose_name = "ML Model Durumu"
@@ -387,9 +357,7 @@ class ReinforcementLearningLog(models.Model):
     # Durum, eylem, ödül
     state = models.JSONField(verbose_name="Durum (State)")
 
-    action = models.CharField(
-        max_length=30, choices=ACTION_TYPES, verbose_name="Eylem (Action)"
-    )
+    action = models.CharField(max_length=30, choices=ACTION_TYPES, verbose_name="Eylem (Action)")
 
     action_value = models.JSONField(default=dict, verbose_name="Eylem Değeri")
 

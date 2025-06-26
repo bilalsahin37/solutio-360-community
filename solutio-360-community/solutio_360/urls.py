@@ -45,6 +45,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults
 from django.views.generic import RedirectView, TemplateView
+
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import routers
@@ -94,9 +95,7 @@ urlpatterns = [
     path("dashboard/", dashboard, name="dashboard"),
     path("", include("pwa.urls")),
     path("health/", TemplateView.as_view(template_name="health.html"), name="health"),
-    path(
-        "offline/", TemplateView.as_view(template_name="offline.html"), name="offline"
-    ),
+    path("offline/", TemplateView.as_view(template_name="offline.html"), name="offline"),
     path("analytics/", include("analytics.urls")),
     path("saas/", include("saas_features.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

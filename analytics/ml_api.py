@@ -14,6 +14,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -62,9 +63,7 @@ def ml_engine_status(request):
                     "is_trained": incremental_model.is_trained,
                     "feature_count": len(incremental_model.feature_names),
                     "classes": incremental_model.classes,
-                    "status": (
-                        "active" if incremental_model.is_trained else "training_needed"
-                    ),
+                    "status": ("active" if incremental_model.is_trained else "training_needed"),
                 },
                 "nlp_processing": {
                     "status": "active",
@@ -105,9 +104,7 @@ def get_rl_recommendation(request):
         try:
             complaint = Complaint.objects.get(id=complaint_id)
         except Complaint.DoesNotExist:
-            return Response(
-                {"error": "Complaint not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Complaint not found"}, status=status.HTTP_404_NOT_FOUND)
 
         rl_agent = get_rl_agent()
         recommendation = rl_agent.get_recommendation(complaint)
@@ -152,9 +149,7 @@ def train_rl_agent(request):
         try:
             complaint = Complaint.objects.get(id=complaint_id)
         except Complaint.DoesNotExist:
-            return Response(
-                {"error": "Complaint not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Complaint not found"}, status=status.HTTP_404_NOT_FOUND)
 
         rl_agent = get_rl_agent()
 
@@ -215,9 +210,7 @@ def analyze_with_nlp(request):
         )  # all, category, sentiment, anomaly
 
         if not text:
-            return Response(
-                {"error": "text is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "text is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         nlp_processor = get_nlp_processor()
         results = {}
@@ -232,9 +225,7 @@ def analyze_with_nlp(request):
             # For anomaly detection, we need additional parameters
             user_id = request.data.get("user_id", request.user.id)
             created_at = timezone.now()
-            results["anomaly"] = nlp_processor.predict_anomaly(
-                text, user_id, created_at
-            )
+            results["anomaly"] = nlp_processor.predict_anomaly(text, user_id, created_at)
 
         return Response(
             {
@@ -337,9 +328,7 @@ def get_adaptive_thresholds(request):
                 "adaptive_thresholds": current_thresholds,
                 "current_metrics": current_metrics,
                 "threshold_status": {
-                    metric: (
-                        "BREACH" if current_metrics.get(metric, 0) > threshold else "OK"
-                    )
+                    metric: ("BREACH" if current_metrics.get(metric, 0) > threshold else "OK")
                     for metric, threshold in current_thresholds.items()
                     if metric in current_metrics
                 },
@@ -440,8 +429,7 @@ def get_ml_insights(request):
             "rl_performance": {
                 "episodes_trained": rl_agent.episode_count,
                 "total_rewards": rl_agent.total_rewards,
-                "average_reward": rl_agent.total_rewards
-                / max(1, rl_agent.episode_count),
+                "average_reward": rl_agent.total_rewards / max(1, rl_agent.episode_count),
                 "exploration_rate": rl_agent.epsilon * 100,
                 "q_table_coverage": len(rl_agent.q_table),
             },
@@ -486,12 +474,8 @@ def get_ml_insights(request):
                 if complaint.description:
                     analysis.update(
                         {
-                            "nlp_category": nlp_processor.predict_category(
-                                complaint.description
-                            ),
-                            "nlp_sentiment": nlp_processor.predict_sentiment(
-                                complaint.description
-                            ),
+                            "nlp_category": nlp_processor.predict_category(complaint.description),
+                            "nlp_sentiment": nlp_processor.predict_sentiment(complaint.description),
                         }
                     )
 

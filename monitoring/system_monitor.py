@@ -20,13 +20,14 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-import prometheus_client
-import psutil
-import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.db import connection
 from django.utils import timezone
+
+import prometheus_client
+import psutil
+import requests
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
@@ -86,21 +87,13 @@ class PrometheusMetrics:
     def __init__(self):
         # System metrics
         self.cpu_usage = Gauge("system_cpu_usage_percent", "CPU usage percentage")
-        self.memory_usage = Gauge(
-            "system_memory_usage_percent", "Memory usage percentage"
-        )
+        self.memory_usage = Gauge("system_memory_usage_percent", "Memory usage percentage")
         self.disk_usage = Gauge("system_disk_usage_percent", "Disk usage percentage")
 
         # Database metrics
-        self.db_connections = Gauge(
-            "database_connections_active", "Active database connections"
-        )
-        self.db_query_time = Histogram(
-            "database_query_duration_seconds", "Database query duration"
-        )
-        self.db_slow_queries = Counter(
-            "database_slow_queries_total", "Total slow database queries"
-        )
+        self.db_connections = Gauge("database_connections_active", "Active database connections")
+        self.db_query_time = Histogram("database_query_duration_seconds", "Database query duration")
+        self.db_slow_queries = Counter("database_slow_queries_total", "Total slow database queries")
 
         # Application metrics
         self.http_requests = Counter(
@@ -108,9 +101,7 @@ class PrometheusMetrics:
             "Total HTTP requests",
             ["method", "endpoint", "status"],
         )
-        self.response_time = Histogram(
-            "http_request_duration_seconds", "HTTP request duration"
-        )
+        self.response_time = Histogram("http_request_duration_seconds", "HTTP request duration")
         self.active_users = Gauge("application_active_users", "Currently active users")
         self.complaint_processing = Counter(
             "complaints_processed_total", "Total complaints processed", ["status"]
@@ -150,9 +141,7 @@ class SystemMonitor:
 
     def __init__(self, collection_interval: int = 60):
         self.collection_interval = collection_interval
-        self.metrics_history = deque(
-            maxlen=1440
-        )  # Store 24 hours of metrics (1 min intervals)
+        self.metrics_history = deque(maxlen=1440)  # Store 24 hours of metrics (1 min intervals)
         self.prometheus = PrometheusMetrics()
         self.is_monitoring = False
         self.monitor_thread = None
@@ -161,9 +150,7 @@ class SystemMonitor:
         """Start the monitoring process"""
         if not self.is_monitoring:
             self.is_monitoring = True
-            self.monitor_thread = threading.Thread(
-                target=self._monitoring_loop, daemon=True
-            )
+            self.monitor_thread = threading.Thread(target=self._monitoring_loop, daemon=True)
             self.monitor_thread.start()
             logger.info("System monitoring started")
 
@@ -530,8 +517,7 @@ class SystemMonitor:
         return [
             metric
             for metric in self.metrics_history
-            if datetime.fromisoformat(metric["timestamp"].replace("Z", "+00:00"))
-            > cutoff_time
+            if datetime.fromisoformat(metric["timestamp"].replace("Z", "+00:00")) > cutoff_time
         ]
 
     def get_system_health_score(self) -> Dict[str, Any]:
@@ -566,9 +552,7 @@ class SystemMonitor:
                 db_score -= 15
 
             # Overall score (weighted average)
-            overall_score = (
-                cpu_score * 0.3 + memory_score * 0.3 + disk_score * 0.2 + db_score * 0.2
-            )
+            overall_score = cpu_score * 0.3 + memory_score * 0.3 + disk_score * 0.2 + db_score * 0.2
 
             scores.append(overall_score)
 
@@ -620,9 +604,7 @@ class ApplicationMonitor:
 
         # Log slow requests
         if process_time > 2.0:  # Requests slower than 2 seconds
-            logger.warning(
-                f"Slow request: {request.method} {request.path} - {process_time:.2f}s"
-            )
+            logger.warning(f"Slow request: {request.method} {request.path} - {process_time:.2f}s")
 
     def record_error(self, error_type: str, severity: str = "error"):
         """Record application error"""
@@ -650,9 +632,7 @@ class ApplicationMonitor:
             "p95_response_time": sorted(times)[int(len(times) * 0.95)],
             "request_rate": len(times) / 60,  # Requests per minute
             "error_rate": (
-                (self.error_count / self.request_count) * 100
-                if self.request_count > 0
-                else 0
+                (self.error_count / self.request_count) * 100 if self.request_count > 0 else 0
             ),
         }
 

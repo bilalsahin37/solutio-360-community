@@ -123,24 +123,16 @@ class DepartmentRouter:
             dept_capacities = self._get_department_capacities()
 
             # Apply routing rules
-            routing_scores = self._calculate_routing_scores(
-                complaint, ai_analysis, dept_capacities
-            )
+            routing_scores = self._calculate_routing_scores(complaint, ai_analysis, dept_capacities)
 
             # Select primary department
-            primary_dept = self._select_primary_department(
-                routing_scores, dept_capacities
-            )
+            primary_dept = self._select_primary_department(routing_scores, dept_capacities)
 
             # Generate secondary options
-            secondary_depts = self._get_secondary_departments(
-                routing_scores, primary_dept
-            )
+            secondary_depts = self._get_secondary_departments(routing_scores, primary_dept)
 
             # Estimate resolution time
-            estimated_time = self._estimate_resolution_time(
-                primary_dept, complaint, ai_analysis
-            )
+            estimated_time = self._estimate_resolution_time(primary_dept, complaint, ai_analysis)
 
             # Create escalation path
             escalation_path = self._create_escalation_path(
@@ -156,9 +148,7 @@ class DepartmentRouter:
             routing_result = {
                 "primary_department": primary_dept,
                 "secondary_departments": secondary_depts,
-                "routing_confidence": routing_scores.get(primary_dept, {}).get(
-                    "confidence", 0.7
-                ),
+                "routing_confidence": routing_scores.get(primary_dept, {}).get("confidence", 0.7),
                 "estimated_resolution_time": estimated_time,
                 "assigned_agent": self._assign_best_agent(primary_dept, complaint),
                 "routing_reasoning": reasoning,
@@ -265,21 +255,15 @@ class DepartmentRouter:
             score_components["capacity_available"] = capacity_score
 
             # 4. Specialization performance score
-            score_components["specialization_performance"] = (
-                capacity.specialization_score
-            )
+            score_components["specialization_performance"] = capacity.specialization_score
 
             # 5. Priority handling capability
             complaint_priority = getattr(complaint, "priority", "medium")
-            priority_score = (
-                1.0 if complaint_priority in dept_info["priority_handling"] else 0.3
-            )
+            priority_score = 1.0 if complaint_priority in dept_info["priority_handling"] else 0.3
             score_components["priority_capability"] = priority_score
 
             # 6. Availability score
-            availability_score = (
-                1.0 if capacity.availability_status == "available" else 0.5
-            )
+            availability_score = 1.0 if capacity.availability_status == "available" else 0.5
             score_components["availability"] = availability_score
 
             # Calculate weighted total score
@@ -292,8 +276,7 @@ class DepartmentRouter:
             }
 
             total_score = sum(
-                score_components[component] * weights[component]
-                for component in weights
+                score_components[component] * weights[component] for component in weights
             )
 
             scores[dept_id] = {
@@ -304,9 +287,7 @@ class DepartmentRouter:
 
         return scores
 
-    def _select_primary_department(
-        self, routing_scores: Dict, dept_capacities: Dict
-    ) -> str:
+    def _select_primary_department(self, routing_scores: Dict, dept_capacities: Dict) -> str:
         """Select primary department based on scores and load balancing"""
 
         # Sort departments by score
@@ -323,30 +304,21 @@ class DepartmentRouter:
             second_capacity = dept_capacities[second_dept]
 
             # If top department is overloaded and second has similar score
-            score_diff = (
-                sorted_depts[0][1]["total_score"] - sorted_depts[1][1]["total_score"]
-            )
+            score_diff = sorted_depts[0][1]["total_score"] - sorted_depts[1][1]["total_score"]
             if (
                 score_diff < 0.15
                 and top_capacity.current_workload >= top_capacity.max_capacity * 0.9
-                and second_capacity.current_workload
-                < second_capacity.max_capacity * 0.7
+                and second_capacity.current_workload < second_capacity.max_capacity * 0.7
             ):
                 return second_dept
 
         return sorted_depts[0][0]
 
-    def _get_secondary_departments(
-        self, routing_scores: Dict, primary_dept: str
-    ) -> List[str]:
+    def _get_secondary_departments(self, routing_scores: Dict, primary_dept: str) -> List[str]:
         """Get secondary department options"""
 
         sorted_depts = sorted(
-            [
-                (dept, score)
-                for dept, score in routing_scores.items()
-                if dept != primary_dept
-            ],
+            [(dept, score) for dept, score in routing_scores.items() if dept != primary_dept],
             key=lambda x: x[1]["total_score"],
             reverse=True,
         )
@@ -398,9 +370,7 @@ class DepartmentRouter:
 
         return escalation_path
 
-    def _assign_best_agent(
-        self, department: str, complaint: Complaint
-    ) -> Optional[str]:
+    def _assign_best_agent(self, department: str, complaint: Complaint) -> Optional[str]:
         """Assign best available agent in the department"""
 
         try:
@@ -571,9 +541,7 @@ class DepartmentRouter:
             # Add more rules as needed
         ]
 
-    def update_routing_performance(
-        self, complaint_id: str, actual_resolution_data: Dict
-    ):
+    def update_routing_performance(self, complaint_id: str, actual_resolution_data: Dict):
         """Update routing performance based on actual resolution outcomes"""
 
         try:

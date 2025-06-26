@@ -171,21 +171,15 @@ class ComplaintListView(LoginRequiredMixin, ListView):
 
         # Şikayet edilen birimler filtresi
         if GET.getlist("complained_units"):
-            qs = qs.filter(
-                complained_units__in=GET.getlist("complained_units")
-            ).distinct()
+            qs = qs.filter(complained_units__in=GET.getlist("complained_units")).distinct()
 
         # Şikayet edilen alt birimler filtresi
         if GET.getlist("complained_subunits"):
-            qs = qs.filter(
-                complained_subunits__in=GET.getlist("complained_subunits")
-            ).distinct()
+            qs = qs.filter(complained_subunits__in=GET.getlist("complained_subunits")).distinct()
 
         # Şikayet edilen kişiler filtresi
         if GET.getlist("complained_people"):
-            qs = qs.filter(
-                complained_people__in=GET.getlist("complained_people")
-            ).distinct()
+            qs = qs.filter(complained_people__in=GET.getlist("complained_people")).distinct()
 
         # Tekrarlanan kayıtları temizle ve döndür
         return qs.distinct()
@@ -312,9 +306,7 @@ def complaint_create(request):
         # Etiketler: Tagify bileşeninden gelen string'i işle
         # Format: "etiket1,etiket2,etiket3" veya tab ile ayrılmış
         tags_val = post_data.get("tags", "")
-        tag_names = [
-            t.strip() for t in tags_val.replace("\t", ",").split(",") if t.strip()
-        ]
+        tag_names = [t.strip() for t in tags_val.replace("\t", ",").split(",") if t.strip()]
 
         # Form oluştur ve doğrula
         form = ComplaintForm(post_data, request.FILES)
@@ -388,9 +380,7 @@ class ComplaintUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Complaint  # Şikayet modeli
     form_class = ComplaintForm  # Kullanılacak form sınıfı
     template_name = "complaints/complaint_form.html"  # Form template'i
-    success_url = reverse_lazy(
-        "complaints:complaint_list"
-    )  # Başarı sonrası yönlendirme
+    success_url = reverse_lazy("complaints:complaint_list")  # Başarı sonrası yönlendirme
 
     def test_func(self):
         """
@@ -504,16 +494,11 @@ class ComplaintDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         complaint.delete()
 
         # Başarı mesajı
-        messages.success(
-            request, f"'{complaint_title}' başlıklı şikayet başarıyla silindi."
-        )
+        messages.success(request, f"'{complaint_title}' başlıklı şikayet başarıyla silindi.")
 
         # Referer kontrolü - listeden geliyorsa listeye dön
         referer = request.META.get("HTTP_REFERER", "")
-        if (
-            "complaints/" in referer
-            and "/complaints/" + str(kwargs.get("pk")) not in referer
-        ):
+        if "complaints/" in referer and "/complaints/" + str(kwargs.get("pk")) not in referer:
             return redirect("complaints:complaint_list")
         else:
             return redirect("complaints:complaint_list")
@@ -670,9 +655,7 @@ class ReviewerComplaintListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
                 | Q(submitter__last_name__icontains=search)
             )
 
-        return qs.select_related("submitter", "category", "assigned_to").order_by(
-            "-created_at"
-        )
+        return qs.select_related("submitter", "category", "assigned_to").order_by("-created_at")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -681,12 +664,8 @@ class ReviewerComplaintListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
         context["pending_complaints"] = Complaint.objects.filter(
             status__in=["SUBMITTED", "IN_REVIEW"]
         ).count()
-        context["resolved_complaints"] = Complaint.objects.filter(
-            status="RESOLVED"
-        ).count()
-        context["my_assigned"] = Complaint.objects.filter(
-            assigned_to=self.request.user
-        ).count()
+        context["resolved_complaints"] = Complaint.objects.filter(status="RESOLVED").count()
+        context["my_assigned"] = Complaint.objects.filter(assigned_to=self.request.user).count()
 
         # Filtreleme için seçenekler
         context["status_choices"] = Complaint.STATUS_CHOICES
@@ -718,17 +697,11 @@ class InspectorComplaintListView(LoginRequiredMixin, ListView):
                 complained_institutions__in=GET.getlist("complained_institutions")
             ).distinct()
         if GET.getlist("complained_units"):
-            qs = qs.filter(
-                complained_units__in=GET.getlist("complained_units")
-            ).distinct()
+            qs = qs.filter(complained_units__in=GET.getlist("complained_units")).distinct()
         if GET.getlist("complained_subunits"):
-            qs = qs.filter(
-                complained_subunits__in=GET.getlist("complained_subunits")
-            ).distinct()
+            qs = qs.filter(complained_subunits__in=GET.getlist("complained_subunits")).distinct()
         if GET.getlist("complained_people"):
-            qs = qs.filter(
-                complained_people__in=GET.getlist("complained_people")
-            ).distinct()
+            qs = qs.filter(complained_people__in=GET.getlist("complained_people")).distinct()
         return qs.distinct()
 
     def get_context_data(self, **kwargs):
@@ -772,9 +745,7 @@ def ajax_add_unit(request):
             inst = Institution.objects.filter(id=institution_id).first()
             if inst:
                 obj, created = Unit.objects.get_or_create(name=name, institution=inst)
-                return JsonResponse(
-                    {"id": obj.id, "name": obj.name, "created": created}
-                )
+                return JsonResponse({"id": obj.id, "name": obj.name, "created": created})
     return JsonResponse({"error": "Invalid"}, status=400)
 
 
@@ -789,9 +760,7 @@ def ajax_add_subunit(request):
                 from .models import Subunit
 
                 obj, created = Subunit.objects.get_or_create(name=name, unit=unit)
-                return JsonResponse(
-                    {"id": obj.id, "name": obj.name, "created": created}
-                )
+                return JsonResponse({"id": obj.id, "name": obj.name, "created": created})
     return JsonResponse({"error": "Invalid"}, status=400)
 
 
@@ -907,9 +876,7 @@ def cancel_complaint(request, pk):
     complaint = get_object_or_404(Complaint, pk=pk)
 
     # Sadece admin veya yetkili kullanıcılar iptal edebilir
-    if not (
-        request.user.is_staff or request.user.has_perm("complaints.change_complaint")
-    ):
+    if not (request.user.is_staff or request.user.has_perm("complaints.change_complaint")):
         return HttpResponseForbidden("Bu işlem için yetkiniz yok.")
 
     # İptal sebebini al

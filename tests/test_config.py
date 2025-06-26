@@ -86,7 +86,7 @@ SECURITY_TEST_CONFIG = {
     CELERY_TASK_ALWAYS_EAGER=True,
     CELERY_TASK_EAGER_PROPAGATES=True,
     PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"],
-    **SECURITY_TEST_CONFIG
+    **SECURITY_TEST_CONFIG,
 )
 class TestConfigMixin:
     """

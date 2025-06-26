@@ -3,6 +3,7 @@ import os
 import sys
 
 import django
+
 import numpy as np
 
 # Django ayarlarını yükle

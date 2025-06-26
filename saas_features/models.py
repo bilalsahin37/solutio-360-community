@@ -201,9 +201,7 @@ class Subscription(models.Model):
     @property
     def is_active(self):
         """Abonelik aktif mi?"""
-        return self.status == "active" and (
-            not self.end_date or self.end_date > timezone.now()
-        )
+        return self.status == "active" and (not self.end_date or self.end_date > timezone.now())
 
     @property
     def days_until_renewal(self):

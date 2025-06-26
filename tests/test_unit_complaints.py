@@ -12,11 +12,12 @@ Comprehensive unit tests inspired by:
 from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
-import pytest
 from django.contrib.auth import get_user_model
 from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
 from django.utils import timezone
+
+import pytest
 
 from complaints.models import (
     Complaint,
@@ -168,9 +169,7 @@ class ComplaintViewTests(TestCase):
     def test_complaint_detail_view(self):
         """Test complaint detail view"""
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("complaints:complaint_detail", args=[self.complaint.id])
-        )
+        response = self.client.get(reverse("complaints:complaint_detail", args=[self.complaint.id]))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.complaint.title)
@@ -212,9 +211,7 @@ class ComplaintViewTests(TestCase):
         other_user = UserFactory()
         self.client.force_login(other_user)
 
-        response = self.client.get(
-            reverse("complaints:complaint_update", args=[self.complaint.id])
-        )
+        response = self.client.get(reverse("complaints:complaint_update", args=[self.complaint.id]))
 
         self.assertEqual(response.status_code, 403)  # Forbidden
 
@@ -222,9 +219,7 @@ class ComplaintViewTests(TestCase):
         """Test complaint owner can access update view"""
         self.client.force_login(self.user)
 
-        response = self.client.get(
-            reverse("complaints:complaint_update", args=[self.complaint.id])
-        )
+        response = self.client.get(reverse("complaints:complaint_update", args=[self.complaint.id]))
 
         self.assertEqual(response.status_code, 200)
 
@@ -327,17 +322,13 @@ class ComplaintPerformanceTests(TransactionTestCase):
 
         # Add related objects
         for i in range(5):
-            ComplaintComment.objects.create(
-                complaint=complaint, content=f"Test comment {i}"
-            )
+            ComplaintComment.objects.create(complaint=complaint, content=f"Test comment {i}")
 
         self.client.force_login(complaint.submitter)
 
         # Test query performance
         with self.assertNumQueries(5):  # Should be optimized
-            response = self.client.get(
-                reverse("complaints:complaint_detail", args=[complaint.id])
-            )
+            response = self.client.get(reverse("complaints:complaint_detail", args=[complaint.id]))
             self.assertEqual(response.status_code, 200)
 
 
@@ -362,9 +353,7 @@ class ComplaintIntegrationTests(TransactionTestCase):
             "priority": "HIGH",
         }
 
-        response = self.client.post(
-            reverse("complaints:complaint_create"), complaint_data
-        )
+        response = self.client.post(reverse("complaints:complaint_create"), complaint_data)
         self.assertEqual(response.status_code, 302)
 
         # Verify complaint was created
@@ -379,9 +368,7 @@ class ComplaintIntegrationTests(TransactionTestCase):
         )
 
         # Verify comment was added
-        self.assertTrue(
-            complaint.comments.filter(content="Test comment from submitter").exists()
-        )
+        self.assertTrue(complaint.comments.filter(content="Test comment from submitter").exists())
 
         # Step 3: Update status (as reviewer)
         self.client.force_login(reviewer)

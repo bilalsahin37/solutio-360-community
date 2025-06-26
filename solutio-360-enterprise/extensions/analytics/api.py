@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -144,9 +145,7 @@ def provider_limits_check(request):
                 "success": True,
                 "available": available_providers,
                 "exhausted": exhausted_providers,
-                "total_free_providers": len(
-                    [p for p in status.values() if p["cost"] == "FREE"]
-                ),
+                "total_free_providers": len([p for p in status.values() if p["cost"] == "FREE"]),
                 "recommendation": "Use available free providers in order: Local → Hugging Face → Gemini → Anthropic",
             }
         )
@@ -181,9 +180,7 @@ def test_ai_provider(request):
                 {
                     "success": False,
                     "error": f"Provider {provider_name} is not available or limit exceeded",
-                    "alternative": ai_config.get_best_provider_for_task(
-                        "sentiment_analysis"
-                    ).value,
+                    "alternative": ai_config.get_best_provider_for_task("sentiment_analysis").value,
                 }
             )
 
@@ -197,8 +194,7 @@ def test_ai_provider(request):
             "processing_time": "0.2s",
             "cost": (
                 "FREE"
-                if ai_config.get_provider_config(provider).get("cost_per_request", 0)
-                == 0
+                if ai_config.get_provider_config(provider).get("cost_per_request", 0) == 0
                 else "PAID"
             ),
         }
@@ -264,11 +260,7 @@ def process_complaint_ai(request):
         # Extract message with multiple fallbacks
         message = ""
         if isinstance(data, dict):
-            message = (
-                data.get("message", "")
-                or data.get("text", "")
-                or data.get("content", "")
-            )
+            message = data.get("message", "") or data.get("text", "") or data.get("content", "")
             # Handle list values (from request.POST)
             if isinstance(message, list) and message:
                 message = message[0]
@@ -289,9 +281,7 @@ def process_complaint_ai(request):
         message_lower = message.lower()
 
         # Enhanced AI Response Generation with Turkish context
-        if any(
-            word in message_lower for word in ["şikayet", "problem", "sorun", "hata"]
-        ):
+        if any(word in message_lower for word in ["şikayet", "problem", "sorun", "hata"]):
             responses = [
                 f"'{message}' şikayetinizi anlıyorum. Bu konuda size yardımcı olabilirim. Şikayetinizin kategorisi analiz ediliyor...",
                 f"Belirttiğiniz sorunu değerlendiriyorum. '{message}' konusunda çözüm önerileri hazırlıyorum.",
@@ -300,9 +290,7 @@ def process_complaint_ai(request):
             sentiment = "olumsuz"
             category = "Şikayet"
 
-        elif any(
-            word in message_lower for word in ["teşekkür", "sağol", "merci", "thanks"]
-        ):
+        elif any(word in message_lower for word in ["teşekkür", "sağol", "merci", "thanks"]):
             responses = [
                 "Rica ederim! Size yardımcı olabildiğim için mutluyum. Başka bir konuda yardıma ihtiyacınız var mı?",
                 "Memnun olduğunuzu duymak güzel! Solutio 360 ekibi olarak her zaman hizmetinizdeyiz.",

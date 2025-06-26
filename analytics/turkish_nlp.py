@@ -264,9 +264,7 @@ class TurkishNLPProcessor:
             grammar_errors = self._detect_grammar_errors(text)
 
             # Response tone suggestion
-            response_tone = self._suggest_response_tone(
-                sentiment, formality_level, urgency_level
-            )
+            response_tone = self._suggest_response_tone(sentiment, formality_level, urgency_level)
 
             # Cultural context analysis
             cultural_context = self._analyze_cultural_context(cleaned_text)
@@ -378,12 +376,8 @@ class TurkishNLPProcessor:
     def _detect_formality(self, text: str) -> str:
         """Detect formality level of Turkish text"""
 
-        formal_count = sum(
-            1 for indicator in self.formal_indicators if indicator in text
-        )
-        informal_count = sum(
-            1 for indicator in self.informal_indicators if indicator in text
-        )
+        formal_count = sum(1 for indicator in self.formal_indicators if indicator in text)
+        informal_count = sum(1 for indicator in self.informal_indicators if indicator in text)
 
         # Check for formal sentence structures
         formal_patterns = [
@@ -394,9 +388,7 @@ class TurkishNLPProcessor:
             r"olunmaktadır",
         ]
 
-        formal_structure_count = sum(
-            1 for pattern in formal_patterns if re.search(pattern, text)
-        )
+        formal_structure_count = sum(1 for pattern in formal_patterns if re.search(pattern, text))
 
         total_formal = formal_count + formal_structure_count
 
@@ -524,9 +516,7 @@ class TurkishNLPProcessor:
 
         return errors
 
-    def _suggest_response_tone(
-        self, sentiment: str, formality: str, urgency: str
-    ) -> str:
+    def _suggest_response_tone(self, sentiment: str, formality: str, urgency: str) -> str:
         """Suggest appropriate response tone"""
 
         if sentiment == "negative" and urgency == "high":
@@ -561,9 +551,7 @@ class TurkishNLPProcessor:
 
         # Determine politeness level
         politeness_indicators = sum(
-            1
-            for softener in self.cultural_patterns["complaint_softeners"]
-            if softener in text
+            1 for softener in self.cultural_patterns["complaint_softeners"] if softener in text
         )
 
         if politeness_indicators > 1:
@@ -656,9 +644,7 @@ class TurkishNLPProcessor:
             """,
         }
 
-        return templates.get(
-            analysis.suggested_response_tone, templates["friendly_professional"]
-        )
+        return templates.get(analysis.suggested_response_tone, templates["friendly_professional"])
 
 
 # Global instance

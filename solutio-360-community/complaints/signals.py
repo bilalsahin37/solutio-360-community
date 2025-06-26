@@ -31,9 +31,7 @@ def complaint_post_save(sender, instance, created, **kwargs):
             process_new_complaint_ml.delay(instance.id)
         except ImportError:
             # Analytics app henüz hazır değilse logla ve devam et
-            logger.warning(
-                "Analytics tasks import edilemedi, ML işlemleri yapılamayacak"
-            )
+            logger.warning("Analytics tasks import edilemedi, ML işlemleri yapılamayacak")
         except Exception as e:
             logger.error(f"ML task başlatma hatası: {e}")
 
@@ -71,11 +69,7 @@ def complaint_status_changed(sender, instance, created, **kwargs):
     """
     Şikayet durumu değiştiğinde ML modellerini güncelle
     """
-    if (
-        not created
-        and hasattr(instance, "_status_changed")
-        and instance._status_changed
-    ):
+    if not created and hasattr(instance, "_status_changed") and instance._status_changed:
         try:
             # ML feedback'i async task olarak başlat
             from analytics.tasks import process_complaint_status_change_ml
@@ -84,9 +78,7 @@ def complaint_status_changed(sender, instance, created, **kwargs):
                 instance.id, instance._old_status, instance._new_status
             )
         except ImportError:
-            logger.warning(
-                "Analytics tasks import edilemedi, ML feedback yapılamayacak"
-            )
+            logger.warning("Analytics tasks import edilemedi, ML feedback yapılamayacak")
         except Exception as e:
             logger.error(f"ML status change task başlatma hatası: {e}")
 
@@ -96,20 +88,14 @@ def complaint_description_changed(sender, instance, created, **kwargs):
     """
     Şikayet açıklaması değiştiğinde yeniden analiz et
     """
-    if (
-        not created
-        and hasattr(instance, "_description_changed")
-        and instance._description_changed
-    ):
+    if not created and hasattr(instance, "_description_changed") and instance._description_changed:
         try:
             # NLP analizi async task olarak başlat
             from analytics.tasks import reanalyze_complaint_content
 
             reanalyze_complaint_content.delay(instance.id)
         except ImportError:
-            logger.warning(
-                "Analytics tasks import edilemedi, NLP analizi yapılamayacak"
-            )
+            logger.warning("Analytics tasks import edilemedi, NLP analizi yapılamayacak")
         except Exception as e:
             logger.error(f"NLP reanalysis task başlatma hatası: {e}")
 
