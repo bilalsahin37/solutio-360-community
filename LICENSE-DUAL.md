@@ -102,12 +102,12 @@ git clone https://github.com/bilalsahin37/solutio-360-community
 ## 📞 **Licensing Contact**
 
 ### **Commercial License Sales**
-- **Email**: bilalsahin37@gmail.com
+- **Email**: bilalsahin37@hotmail.com
 - **Phone**: [Contact via email]
 - **Calendar**: [Contact via email for demo]
 
 ### **Technical Licensing Questions**
-- **Email**: bilalsahin37@gmail.com
+- **Email**: bilalsahin37@hotmail.com
 - **Documentation**: [Available upon request]
 
 ---
@@ -120,7 +120,7 @@ See [LICENSE-GPL](LICENSE-GPL) for full terms.
 
 ### **Commercial License**
 Commercial licenses are available for businesses that want to use Solutio 360 
-without GPL requirements. Contact bilalsahin37@gmail.com for custom license agreements.
+without GPL requirements. Contact bilalsahin37@hotmail.com for custom license agreements.
 
 ---
 
@@ -135,10 +135,10 @@ Contributors to the community edition automatically grant dual licensing rights:
 **CLA Process:**
 ```bash
 # Sign CLA before first contribution
-# Contact bilalsahin37@gmail.com for CLA document
-# Fill, sign, and email back to bilalsahin37@gmail.com
+# Contact bilalsahin37@hotmail.com for CLA document
+# Fill, sign, and email back to bilalsahin37@hotmail.com
 ```
 
 ---
 
-**© 2024 Bilal Şahin. All rights reserved.** 
+**© 2024 Bilal ŞAHİN. All rights reserved.** 
