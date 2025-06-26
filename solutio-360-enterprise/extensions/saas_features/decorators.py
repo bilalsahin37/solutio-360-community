@@ -1,6 +1,7 @@
 from functools import wraps
 
 from django.contrib import messages
+from django.db import models
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone

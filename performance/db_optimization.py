@@ -20,6 +20,14 @@ from django.db import connection, transaction
 from django.db.models import Prefetch, Q
 from django.utils import timezone
 
+# Import missing models
+from complaints.models import Complaint
+
+try:
+    from complaints.models import ComplaintComment
+except ImportError:
+    ComplaintComment = None
+
 logger = logging.getLogger(__name__)
 
 

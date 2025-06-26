@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import HttpResponse, JsonResponse
+from django.middleware.csrf import get_token
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
