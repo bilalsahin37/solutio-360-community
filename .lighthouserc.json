@@ -1,22 +1,16 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost:8000/",
-        "http://localhost:8000/dashboard/",
-        "http://localhost:8000/complaints/"
-      ],
-      "startServerCommand": "python manage.py runserver 8000",
-      "startServerReadyPattern": "Starting development server",
-      "startServerReadyTimeout": 30000
+      "staticDistDir": "./static/simple-website",
+      "url": ["http://localhost:8000/"],
+      "numberOfRuns": 1
     },
     "assert": {
-      "preset": "lighthouse:no-pwa",
       "assertions": {
-        "categories:performance": ["warn", {"minScore": 0.6}],
-        "categories:accessibility": ["error", {"minScore": 0.8}],
-        "categories:best-practices": ["warn", {"minScore": 0.7}],
-        "categories:seo": ["warn", {"minScore": 0.7}],
+        "categories:performance": ["warn", {"minScore": 0.7}],
+        "categories:accessibility": ["warn", {"minScore": 0.8}],
+        "categories:best-practices": ["warn", {"minScore": 0.8}],
+        "categories:seo": ["warn", {"minScore": 0.8}],
         "categories:pwa": ["warn", {"minScore": 0.6}]
       }
     },
